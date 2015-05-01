@@ -1,0 +1,1 @@
+SQLsmith is a tool that can generate random SQL queries.
