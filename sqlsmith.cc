@@ -10,6 +10,11 @@ using namespace pqxx;
 
 default_random_engine rng;
 
+template<typename T> T& random_pick(vector<T>& container) {
+  uniform_int_distribution<int> pick(0, container.size()-1);
+  return container[pick(rng)];
+}
+
 struct column {
   string name;
   string type;
@@ -45,10 +50,10 @@ struct schema_pqxx : public schema {
 
     for (auto row = r.begin(); row != r.end(); ++row) {
       string schema(row[2].as<string>());
-      if (schema == "pg_catalog")
-	continue;
-      if (schema == "information_schema")
-	continue;
+//       if (schema == "pg_catalog")
+// 	continue;
+//       if (schema == "information_schema")
+// 	continue;
       
       tables.push_back(table(row[0].as<string>(),
 			     row[1].as<string>(),
@@ -65,7 +70,7 @@ struct schema_pqxx : public schema {
       q += ";";
 
       r = w.exec(q);
-      for (auto row = r.begin(); row != r.end(); ++row) {
+      for (auto row : r) {
 	column c(row[0].as<string>());
 	c.type = row[1].as<string>();
 	c.table = &*t;
@@ -81,36 +86,57 @@ struct prod {
   virtual string to_str() = 0;
 };
 
-struct table_expression : public prod {
-  vector<table> reference_list;
-  
+struct table_scope {
+  struct table_scope *parent;
+  vector<table> tables;
+};
+
+struct column_scope {
+  struct column_scope *parent;
+  vector<column> columns;
+};
+
+struct from_clause : public prod {
+  vector<table> reflist;
   string to_str() {
     string r("");
-    if (! reference_list.size())
+    if (! reflist.size())
       return r;
-
-    r += "from ";
-    r += reference_list[0].name;
-
+    r += "\n    from " + reflist[0].schema + "." + reflist[0].name;
     return r;
   }
-  table_expression() {
-    uniform_int_distribution<int> dist(0,schema.tables.size()-1);
-    reference_list.push_back(schema.tables[dist(rng)]);
+  from_clause() {
+    if (random()%5) {
+      reflist.push_back(random_pick<table>(schema.tables));
+    } else {
+      reflist.push_back(random_pick<table>(schema.tables));
+    }
   }
+};
+
+struct table_expression : public prod {
+  from_clause fc;
+
+  string to_str() {
+    return fc.to_str();
+  }
+  
 };
 
 struct query_spec : public prod {
   string set_quantifier;
-  vector<string> select_list;
+  vector<column> sl;
   table_expression expr;
   
   string to_str() {
     string r("select ");
-    r += set_quantifier + " ";
+    r += set_quantifier ;
 
-    r += accumulate(select_list.begin(),select_list.end(),string(),
-		    [](string a,string b){ return a.length() ? a+","+b:b; }); 
+    for (auto col = sl.begin(); col != sl.end(); col++) {
+      r += col->name;
+      if (col+1 != sl.end())
+	r += ", ";
+    }
 
     r += " " + expr.to_str();
     r += ";";
@@ -118,9 +144,17 @@ struct query_spec : public prod {
   }
 
   query_spec() {
-    set_quantifier = random() & 1 ? "all" : "distinct" ;
-    select_list.push_back("1");
-    select_list.push_back("version()");
+    do {
+      table t = random_pick<table>(expr.fc.reflist);
+      sl.push_back(random_pick<column>(t.columns));
+    } while(random()%3);
+
+
+    set_quantifier = (random() % 5) ? "" : "distinct ";
+    for(auto &c : sl) {
+      if (c.type == "anyarray")
+	set_quantifier = "";
+    }
   }
 };
 
@@ -129,10 +163,10 @@ int main()
   try
     {
       connection c;
-
       schema.summary();
-
-      for (int i; i<20; i++) {
+      work w(c);
+      w.commit();
+      while (1) {
 	work w(c);
 	query_spec gen;
 	cout << gen.to_str() << endl;
