@@ -11,9 +11,9 @@ using namespace std;
 
 table_ref *table_ref::factory(scope &s) {
   table_ref *r;
-  if (random()%2)
+  if (random()%5)
     r = new table_or_query_name(s);
-  else if (random()%2)
+  else if (random()%3)
     r = new table_subquery(s);
   else
     r = new joined_table(s);
@@ -48,10 +48,10 @@ table_subquery::~table_subquery() {
 
 joined_table::joined_table(scope &s) {
  retry:
-  lhs = new table_or_query_name(s);
-  rhs = new table_or_query_name(s);
+  lhs = table_ref::factory(s);
+  rhs = table_ref::factory(s);
   while (lhs->t == rhs->t) {
-    delete rhs; rhs = new table_or_query_name(s);
+    delete rhs; rhs = table_ref::factory(s);
   }
     
   t = random()&1 ? lhs->t : rhs->t;
@@ -82,7 +82,7 @@ joined_table::joined_table(scope &s) {
 
 std::string joined_table::str() {
   string r("");
-  r += lhs->t->ident() + " join " + rhs->t->ident()
+  r += lhs->str() + " join " + rhs->str() +
     + " on (" + condition + ")";
   return r;
 }
