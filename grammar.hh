@@ -46,7 +46,7 @@ struct value_expression: public prod {
 
 struct select_list : public prod {
   struct query_spec *query;
-  std::vector<value_expression> value_exprs;
+  std::vector<value_expression*> value_exprs;
   relation derived_table;
   int columns;
   select_list(struct query_spec *q);

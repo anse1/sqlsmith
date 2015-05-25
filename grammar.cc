@@ -62,6 +62,13 @@ from_clause::from_clause(scope &s) {
 value_expression::value_expression(query_spec *q)
 {
   type = "integer";
+//   for (auto ref : q->expr.fc.reflist) {
+//     named_relation *r = ref->t;
+//     cout << "-- found relation: " << r->ident() << endl;
+//     for (auto col: r->columns) {
+//       cout << "\t-- found column: " << col.name << " " << col.type << endl;
+//     }
+//   }
 }
 
 std::string value_expression::str()
@@ -71,11 +78,11 @@ std::string value_expression::str()
 
 select_list::select_list(query_spec *q)
 {
-  value_expression e = value_expression(q);
+  value_expression *e = new value_expression(q);
   value_exprs.push_back(e);
   ostringstream name;
   name << "c" << columns++;
-  derived_table.columns.push_back(column(name.str(), e.type));
+  derived_table.columns.push_back(column(name.str(), e->type));
 }
 
 std::string select_list::str()
@@ -83,7 +90,7 @@ std::string select_list::str()
   int i = 0;
   std::string r("");
   for (auto expr : value_exprs) {
-    r += expr.str() + " as " + derived_table.columns[i].name + ",";
+    r += expr->str() + " as " + derived_table.columns[i].name + ",";
   }
   r.pop_back();
   return r;
