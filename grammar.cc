@@ -59,26 +59,15 @@ from_clause::from_clause(scope &s) {
   reflist.push_back(table_ref::factory(s));
 }
 
-value_expression::value_expression(query_spec *q)
-{
-  type = "integer";
-//   for (auto ref : q->expr.fc.reflist) {
-//     named_relation *r = ref->t;
-//     cout << "-- found relation: " << r->ident() << endl;
-//     for (auto col: r->columns) {
-//       cout << "\t-- found column: " << col.name << " " << col.type << endl;
-//     }
-//   }
-}
 
-std::string value_expression::str()
+value_expression* value_expression::factory(query_spec *q)
 {
-  return string("42");
+  return new const_expression();
 }
 
 select_list::select_list(query_spec *q)
 {
-  value_expression *e = new value_expression(q);
+  value_expression *e = value_expression::factory(q);
   value_exprs.push_back(e);
   ostringstream name;
   name << "c" << columns++;

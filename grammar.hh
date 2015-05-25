@@ -40,15 +40,21 @@ struct table_expression : public prod {
 
 struct value_expression: public prod {
   std::string type;
-  std::string str();
-  value_expression(struct query_spec *q);
+  virtual std::string str() = 0;
+  static struct value_expression *factory(struct query_spec *q);
+};
+
+struct const_expression: public value_expression {
+  std::string type;
+  const_expression() { type = "integer"; }
+  std::string str() { return std::string("42"); }
 };
 
 struct select_list : public prod {
   struct query_spec *query;
   std::vector<value_expression*> value_exprs;
   relation derived_table;
-  int columns;
+  int columns = 0;
   select_list(struct query_spec *q);
   std::string str();
 };
