@@ -34,7 +34,7 @@ struct table : public named_relation {
 
 struct scope {
   struct scope *parent;
-  std::vector<table*> tables;
+  std::vector<named_relation*> tables;
 };
 
 struct schema {
