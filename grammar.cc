@@ -1,4 +1,3 @@
-#include <pqxx/pqxx>
 #include <cstdlib>
 #include <numeric>
 #include <algorithm>
@@ -8,13 +7,11 @@
 #include "grammar.hh"
 
 using namespace std;
-using namespace pqxx;
 
 
 table_ref *table_ref::factory(scope &s) {
   table_ref *r;
-  random();
-  if (random()%7)
+  if (random()%2)
     r = new table_or_query_name(s);
   else
     r = new table_subquery(s);
@@ -92,11 +89,13 @@ column_reference::column_reference(query_spec *q)
 
 select_list::select_list(query_spec *q)
 {
-  value_expression *e = value_expression::factory(q);
-  value_exprs.push_back(e);
-  ostringstream name;
-  name << "c" << columns++;
-  derived_table.columns.push_back(column(name.str(), e->type));
+  do {
+    value_expression *e = value_expression::factory(q);
+    value_exprs.push_back(e);
+    ostringstream name;
+    name << "c" << columns++;
+    derived_table.columns.push_back(column(name.str(), e->type));
+  } while (random()%5);
 }
 
 std::string select_list::str()
@@ -105,6 +104,7 @@ std::string select_list::str()
   std::string r("");
   for (auto expr : value_exprs) {
     r += expr->str() + " as " + derived_table.columns[i].name + ",";
+    i++;
   }
   r.pop_back();
   return r;
