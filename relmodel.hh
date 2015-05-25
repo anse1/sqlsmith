@@ -12,8 +12,16 @@ struct column {
   column(std::string name) : name(name) { }
 };
 
-struct table {
+struct relation {
   std::vector<column> columns;
+};
+
+struct named_relation : public relation {
+  std::string name;
+  virtual std::string ident() { return name; }
+};
+
+struct table : public named_relation {
   std::string catalog;
   std::string name;
   std::string schema;
@@ -21,6 +29,7 @@ struct table {
     : catalog(catalog), name(name), schema(schema)
   { }
   table() { }
+  virtual std::string ident() { return schema + "." + name; }
 };
 
 struct scope {

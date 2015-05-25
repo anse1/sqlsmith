@@ -26,7 +26,7 @@ table_or_query_name::table_or_query_name(scope &s) {
 
 string table_or_query_name::to_str() {
   string r("");
-  r += t->schema + "." + t->name;
+  r += t->ident();
   return r;
 }
 
@@ -34,7 +34,8 @@ int table_subquery::instances;
 
 table_subquery::table_subquery(scope &s) {
   query = new query_spec(s);
-  t = &query->derived_table;
+  t = new named_relation();
+  t->columns = query->derived_table.columns;
   ostringstream r;
   r << "subq_" << instances++;
   t->name = r.str();
@@ -63,8 +64,8 @@ string query_spec::to_str() {
   r += set_quantifier ;
 
   for (auto col = sl.begin(); col != sl.end(); col++) {
-    table *t = random_pick<table_ref*>(expr.fc.reflist)->t;
-    r += t->name + "." + col->name;
+    named_relation *t = random_pick<table_ref*>(expr.fc.reflist)->t;
+    r += t->ident() + "." + col->name;
     if (col+1 != sl.end())
       r += ", ";
   }
@@ -75,7 +76,7 @@ string query_spec::to_str() {
 
 query_spec::query_spec(scope &s) : expr(s) {
   do {
-    table *t = random_pick<table_ref*>(expr.fc.reflist)->t;
+    named_relation *t = random_pick<table_ref*>(expr.fc.reflist)->t;
     sl.push_back(random_pick<column>(t->columns));
   } while(random()%3);
 

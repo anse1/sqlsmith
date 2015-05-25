@@ -8,7 +8,7 @@ struct prod {
 };
 
 struct table_ref : public prod {
-  table *t;
+  named_relation *t;
   static table_ref *factory(scope &s);
 };
 
@@ -41,7 +41,7 @@ struct table_expression : public prod {
 struct query_spec : public prod {
   std::string set_quantifier;
   table_expression expr;
-  table derived_table;
+  relation derived_table;
   std::vector<column> &sl = derived_table.columns;
   
   std::string to_str();
