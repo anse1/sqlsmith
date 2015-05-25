@@ -7,8 +7,14 @@ struct prod {
   virtual std::string to_str() = 0;
 };
 
+struct table_ref : public prod {
+  table *t;
+  std::string to_str();
+  table_ref(scope &s);
+};
+
 struct from_clause : public prod {
-  std::vector<table*> reflist;
+  std::vector<table_ref*> reflist;
   std::string to_str();
   from_clause(scope &s);
 };
