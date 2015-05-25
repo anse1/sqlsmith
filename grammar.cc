@@ -54,8 +54,6 @@ joined_table::joined_table(scope &s) {
     delete rhs; rhs = table_ref::factory(s);
   }
     
-  t = random()&1 ? lhs->t : rhs->t;
-
   condition = "";
 
   /* try to find a better condition */
@@ -78,11 +76,22 @@ joined_table::joined_table(scope &s) {
     delete lhs;
     goto retry;
   }
+
+  if (random()&1) {
+    type = "inner";
+    t = random()&1 ? lhs->t : rhs->t;
+  } else if (random()&1) {
+    type = "left";
+    t = lhs->t;
+  } else {
+    type = "right";
+    t = rhs->t;
+  }
 }
 
 std::string joined_table::str() {
   string r("");
-  r += lhs->str() + " join " + rhs->str() +
+  r += lhs->str() + " " + type + " join " + rhs->str()
     + " on (" + condition + ")";
   return r;
 }
