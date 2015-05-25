@@ -38,9 +38,17 @@ struct table_expression : public prod {
   }
 };
 
+struct value_expression: public prod {
+  std::string type;
+  std::string str();
+  value_expression(struct query_spec *q);
+};
+
 struct select_list : public prod {
   struct query_spec *query;
+  std::vector<value_expression> value_exprs;
   relation derived_table;
+  int columns;
   select_list(struct query_spec *q);
   std::string str();
 };

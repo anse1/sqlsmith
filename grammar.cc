@@ -59,15 +59,34 @@ from_clause::from_clause(scope &s) {
   reflist.push_back(table_ref::factory(s));
 }
 
+value_expression::value_expression(query_spec *q)
+{
+  type = "integer";
+}
+
+std::string value_expression::str()
+{
+  return string("42");
+}
+
 select_list::select_list(query_spec *q)
 {
-  query = q;
-  derived_table.columns.push_back(column("some", "integer"));
+  value_expression e = value_expression(q);
+  value_exprs.push_back(e);
+  ostringstream name;
+  name << "c" << columns++;
+  derived_table.columns.push_back(column(name.str(), e.type));
 }
 
 std::string select_list::str()
 {
-  return string("1");
+  int i = 0;
+  std::string r("");
+  for (auto expr : value_exprs) {
+    r += expr.str() + " as " + derived_table.columns[i].name + ",";
+  }
+  r.pop_back();
+  return r;
 }
 
 string query_spec::str() {
