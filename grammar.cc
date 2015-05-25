@@ -1,6 +1,7 @@
 #include <pqxx/pqxx>
 #include <cstdlib>
 #include <numeric>
+#include <algorithm>
 
 #include "random.hh"
 #include "relmodel.hh"
@@ -68,6 +69,9 @@ value_expression* value_expression::factory(query_spec *q)
     r = new const_expression();
   else
     r = new column_reference(q);
+
+  if (! r->type.size())
+    throw logic_error("generated expression with unknown type");
   return r;
 }
 
@@ -112,5 +116,11 @@ string query_spec::str() {
 }
 
 query_spec::query_spec(scope &s) : expr(s), sl(this) {
-  set_quantifier = (random() % 5) ? "" : "distinct ";
+  
+  vector<column> &cols = sl.derived_table.columns;
+
+  if (!count_if(cols.begin(), cols.end(),
+		[] (column c) { return c.type == "anyarray"; })) {
+    set_quantifier = (random() % 5) ? "" : "distinct ";
+  }
 }
