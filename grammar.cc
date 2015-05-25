@@ -10,11 +10,15 @@ using namespace std;
 using namespace pqxx;
 
 
-table_ref::table_ref(scope &s) {
+table_ref *table_ref::factory(scope &s) {
+  return new table_primary(s);
+}
+
+table_primary::table_primary(scope &s) {
   t = random_pick<table*>(s.tables);
 }
 
-string table_ref::to_str() {
+string table_primary::to_str() {
   string r("");
   r += t->schema + "." + t->name;
   return r;
@@ -29,7 +33,7 @@ string from_clause::to_str() {
 }
 
 from_clause::from_clause(scope &s) {
-  reflist.push_back(new table_ref(s));
+  reflist.push_back(table_ref::factory(s));
 }
 
 string query_spec::to_str() {

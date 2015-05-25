@@ -9,8 +9,12 @@ struct prod {
 
 struct table_ref : public prod {
   table *t;
+  static table_ref *factory(scope &s);
+};
+
+struct table_primary : public table_ref {
   std::string to_str();
-  table_ref(scope &s);
+  table_primary(scope &s);
 };
 
 struct from_clause : public prod {
