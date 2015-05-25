@@ -12,9 +12,16 @@ struct table_ref : public prod {
   static table_ref *factory(scope &s);
 };
 
-struct table_primary : public table_ref {
+struct table_or_query_name : public table_ref {
   std::string to_str();
-  table_primary(scope &s);
+  table_or_query_name(scope &s);
+};
+
+struct table_subquery : public table_ref {
+  std::string to_str();
+  struct query_spec *query;
+  table_subquery(scope &s);
+  static int instances;
 };
 
 struct from_clause : public prod {

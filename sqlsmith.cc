@@ -27,7 +27,7 @@ int main()
 	work w(c);
 	query_spec gen(scope);
 	cout << gen.to_str() << endl;
-	result r = w.exec(gen.to_str());
+	result r = w.exec(gen.to_str() + ";");
 	w.commit();
       }
     }

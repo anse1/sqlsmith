@@ -11,17 +11,39 @@ using namespace pqxx;
 
 
 table_ref *table_ref::factory(scope &s) {
-  return new table_primary(s);
+  table_ref *r;
+  random();
+  if (random()%7)
+    r = new table_or_query_name(s);
+  else
+    r = new table_subquery(s);
+  return r;
 }
 
-table_primary::table_primary(scope &s) {
+table_or_query_name::table_or_query_name(scope &s) {
   t = random_pick<table*>(s.tables);
 }
 
-string table_primary::to_str() {
+string table_or_query_name::to_str() {
   string r("");
   r += t->schema + "." + t->name;
   return r;
+}
+
+int table_subquery::instances;
+
+table_subquery::table_subquery(scope &s) {
+  query = new query_spec(s);
+  t = &query->derived_table;
+  ostringstream r;
+  r << "subq_" << instances++;
+  t->name = r.str();
+}
+
+string table_subquery::to_str() {
+  ostringstream r;
+  r << "(" << query->to_str() << ") as " << t->name;
+  return r.str();
 }
 
 string from_clause::to_str() {
@@ -41,13 +63,13 @@ string query_spec::to_str() {
   r += set_quantifier ;
 
   for (auto col = sl.begin(); col != sl.end(); col++) {
-    r += col->name;
+    table *t = random_pick<table_ref*>(expr.fc.reflist)->t;
+    r += t->name + "." + col->name;
     if (col+1 != sl.end())
       r += ", ";
   }
 
   r += " " + expr.to_str();
-  r += ";";
   return r;
 }
 
