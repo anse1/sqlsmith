@@ -9,7 +9,6 @@
 struct column {
   std::string name;
   std::string type;
-  struct table *table;
   column(std::string name) : name(name) { }
 };
 
