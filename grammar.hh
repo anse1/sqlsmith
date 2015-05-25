@@ -89,7 +89,7 @@ struct query_spec : public prod {
   std::string set_quantifier;
   table_expression expr;
   select_list sl;
-
+  std::string limit_clause;
   std::string str();
   query_spec(scope &s);
   virtual ~query_spec() { }

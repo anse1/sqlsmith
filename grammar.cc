@@ -160,6 +160,7 @@ string query_spec::str() {
   r += sl.str();
 
   r += " " + expr.str();
+  r += limit_clause;
   return r;
 }
 
@@ -170,5 +171,11 @@ query_spec::query_spec(scope &s) : expr(s), sl(this) {
   if (!count_if(cols.begin(), cols.end(),
 		[] (column c) { return c.type == "anyarray"; })) {
     set_quantifier = (random() % 5) ? "" : "distinct ";
+  }
+
+  if (0 == random()%3) {
+    ostringstream cons;
+    cons << " fetch first " << random()%100 + random()%100 << " rows only ";
+    limit_clause = cons.str();
   }
 }
