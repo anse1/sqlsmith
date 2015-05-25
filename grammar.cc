@@ -59,19 +59,16 @@ joined_table::joined_table(scope &s) {
 
   /* try to find a better condition */
 
-  for (auto c1 : lhs->columns) {
-    if (c1.type == "ARRAY")
-      continue;
-    for (auto c2 : rhs->columns) {
-      if (c1.type == c2.type) {
-	condition +=
-	  lhs->ident() + "." + c1.name + " -- type: " + c1.type + "\n"
-	  " = " + rhs->ident() + "." + c2.name + " -- type: " + c2.type + "\n";
-	break;
-      }
-    }
-    if (condition != "")
+  column c1 = random_pick<column>(lhs->columns);
+  if (c1.type == "ARRAY") goto retry;
+  
+  for (auto c2 : rhs->columns) {
+    if (c1.type == c2.type) {
+      condition +=
+	lhs->ident() + "." + c1.name + " -- type: " + c1.type + "\n"
+	" = " + rhs->ident() + "." + c2.name + " -- type: " + c2.type + "\n";
       break;
+    }
   }
   if (condition == "")
     goto retry;
