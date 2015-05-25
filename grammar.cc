@@ -21,7 +21,7 @@ table_ref *table_ref::factory(scope &s) {
 }
 
 table_or_query_name::table_or_query_name(scope &s) {
-  t = random_pick<table*>(s.tables);
+  t = random_pick<named_relation*>(s.tables);
 }
 
 string table_or_query_name::to_str() {
