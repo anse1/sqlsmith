@@ -75,11 +75,13 @@ string query_spec::to_str() {
 }
 
 query_spec::query_spec(scope &s) : expr(s) {
-  do {
-    named_relation *t = random_pick<table_ref*>(expr.fc.reflist)->t;
+  named_relation *t = random_pick<table_ref*>(expr.fc.reflist)->t;
+  for (auto col : t->columns) {
+    if (random()%1) sl.push_back(col);
+  }
+  if (! sl.size())
     sl.push_back(random_pick<column>(t->columns));
-  } while(random()%3);
-
+  
   set_quantifier = (random() % 5) ? "" : "distinct ";
   for(auto &c : sl) {
     if (c.type == "anyarray")
