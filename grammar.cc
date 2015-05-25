@@ -24,7 +24,7 @@ table_or_query_name::table_or_query_name(scope &s) {
   t = random_pick<named_relation*>(s.tables);
 }
 
-string table_or_query_name::to_str() {
+string table_or_query_name::str() {
   string r("");
   r += t->ident();
   return r;
@@ -41,17 +41,17 @@ table_subquery::table_subquery(scope &s) {
   t->name = r.str();
 }
 
-string table_subquery::to_str() {
+string table_subquery::str() {
   ostringstream r;
-  r << "(" << query->to_str() << ") as " << t->name;
+  r << "(" << query->str() << ") as " << t->name;
   return r.str();
 }
 
-string from_clause::to_str() {
+string from_clause::str() {
   string r("");
   if (! reflist.size())
     return r;
-  r += "\n    from " + reflist[0]->to_str();
+  r += "\n    from " + reflist[0]->str();
   return r;
 }
 
@@ -59,7 +59,7 @@ from_clause::from_clause(scope &s) {
   reflist.push_back(table_ref::factory(s));
 }
 
-string query_spec::to_str() {
+string query_spec::str() {
   string r("select ");
   r += set_quantifier ;
 
@@ -70,7 +70,7 @@ string query_spec::to_str() {
       r += ", ";
   }
 
-  r += " " + expr.to_str();
+  r += " " + expr.str();
   return r;
 }
 
