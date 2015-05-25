@@ -42,6 +42,11 @@ table_subquery::table_subquery(scope &s) {
   t->name = r.str();
 }
 
+table_subquery::~table_subquery() {
+  delete query;
+  delete t;
+}
+
 string table_subquery::str() {
   ostringstream r;
   r << "(" << query->str() << ") as " << t->name;

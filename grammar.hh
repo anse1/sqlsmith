@@ -10,11 +10,13 @@ struct prod {
 struct table_ref : public prod {
   named_relation *t;
   static table_ref *factory(scope &s);
+  virtual ~table_ref() { }
 };
 
 struct table_or_query_name : public table_ref {
   std::string str();
   table_or_query_name(scope &s);
+  virtual ~table_or_query_name() { }
 };
 
 struct table_subquery : public table_ref {
@@ -22,12 +24,14 @@ struct table_subquery : public table_ref {
   struct query_spec *query;
   table_subquery(scope &s);
   static int instances;
+  virtual ~table_subquery();
 };
 
 struct from_clause : public prod {
   std::vector<table_ref*> reflist;
   std::string str();
   from_clause(scope &s);
+  ~from_clause() { for (auto p : reflist) delete p; }
 };
 
 struct table_expression : public prod {
@@ -41,18 +45,21 @@ struct table_expression : public prod {
 struct value_expression: public prod {
   std::string type;
   virtual std::string str() = 0;
+  virtual ~value_expression() { }
   static struct value_expression *factory(struct query_spec *q);
 };
 
 struct const_expression: value_expression {
   const_expression() { type = "integer"; }
   std::string str() { return std::string("42"); }
+  virtual ~const_expression() { }
 };
 
 struct column_reference: value_expression {
   column_reference(struct query_spec *q);
   std::string str() { return reference; }
   std::string reference;
+  virtual ~column_reference() { }
 };
 
 struct select_list : public prod {
@@ -62,6 +69,7 @@ struct select_list : public prod {
   int columns = 0;
   select_list(struct query_spec *q);
   std::string str();
+  ~select_list() { for (auto p : value_exprs) delete p; }
 };
 
 struct query_spec : public prod {
@@ -71,6 +79,7 @@ struct query_spec : public prod {
 
   std::string str();
   query_spec(scope &s);
+  virtual ~query_spec() { }
 };
 
 

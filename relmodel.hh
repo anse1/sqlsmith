@@ -20,6 +20,7 @@ struct relation {
 struct named_relation : public relation {
   std::string name;
   virtual std::string ident() { return name; }
+  virtual ~named_relation() { };
 };
 
 struct table : public named_relation {
@@ -27,10 +28,10 @@ struct table : public named_relation {
   std::string name;
   std::string schema;
   table(std::string catalog, std::string name, std::string schema)
-    : catalog(catalog), name(name), schema(schema)
-  { }
+    : catalog(catalog), name(name), schema(schema) { }
   table() { }
   virtual std::string ident() { return schema + "." + name; }
+  virtual ~table() { };
 };
 
 struct scope {
