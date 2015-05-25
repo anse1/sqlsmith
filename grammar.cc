@@ -35,7 +35,7 @@ int table_subquery::instances;
 table_subquery::table_subquery(scope &s) {
   query = new query_spec(s);
   t = new named_relation();
-  t->columns = query->derived_table.columns;
+  t->columns = query->sl.derived_table.columns;
   ostringstream r;
   r << "subq_" << instances++;
   t->name = r.str();
@@ -59,32 +59,27 @@ from_clause::from_clause(scope &s) {
   reflist.push_back(table_ref::factory(s));
 }
 
+select_list::select_list(query_spec *q)
+{
+  query = q;
+  derived_table.columns.push_back(column("some", "integer"));
+}
+
+std::string select_list::str()
+{
+  return string("1");
+}
+
 string query_spec::str() {
   string r("select ");
-  r += set_quantifier ;
+  r += set_quantifier + " ";
 
-  for (auto col = sl.begin(); col != sl.end(); col++) {
-    named_relation *t = random_pick<table_ref*>(expr.fc.reflist)->t;
-    r += t->ident() + "." + col->name;
-    if (col+1 != sl.end())
-      r += ", ";
-  }
+  r += sl.str();
 
   r += " " + expr.str();
   return r;
 }
 
-query_spec::query_spec(scope &s) : expr(s) {
-  named_relation *t = random_pick<table_ref*>(expr.fc.reflist)->t;
-  for (auto col : t->columns) {
-    if (random()%1) sl.push_back(col);
-  }
-  if (! sl.size())
-    sl.push_back(random_pick<column>(t->columns));
-  
+query_spec::query_spec(scope &s) : expr(s), sl(this) {
   set_quantifier = (random() % 5) ? "" : "distinct ";
-  for(auto &c : sl) {
-    if (c.type == "anyarray")
-      set_quantifier = "";
-  }
 }

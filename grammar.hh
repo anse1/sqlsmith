@@ -38,12 +38,18 @@ struct table_expression : public prod {
   }
 };
 
+struct select_list : public prod {
+  struct query_spec *query;
+  relation derived_table;
+  select_list(struct query_spec *q);
+  std::string str();
+};
+
 struct query_spec : public prod {
   std::string set_quantifier;
   table_expression expr;
-  relation derived_table;
-  std::vector<column> &sl = derived_table.columns;
-  
+  select_list sl;
+
   std::string str();
   query_spec(scope &s);
 };

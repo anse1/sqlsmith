@@ -10,6 +10,7 @@ struct column {
   std::string name;
   std::string type;
   column(std::string name) : name(name) { }
+  column(std::string name, std::string type) : name(name), type(type) { }
 };
 
 struct relation {
