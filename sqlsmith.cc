@@ -14,20 +14,16 @@ struct prod {
 };
 
 struct from_clause : public prod {
-  vector<table> reflist;
+  vector<table*> reflist;
   string to_str() {
     string r("");
     if (! reflist.size())
       return r;
-    r += "\n    from " + reflist[0].schema + "." + reflist[0].name;
+    r += "\n    from " + reflist[0]->schema + "." + reflist[0]->name;
     return r;
   }
   from_clause(scope &s) {
-    if (random()%5) {
-      reflist.push_back(*random_pick<table*>(s.tables));
-    } else {
-      reflist.push_back(*random_pick<table*>(s.tables));
-    }
+    reflist.push_back(random_pick<table*>(s.tables));
   }
 };
 
@@ -41,8 +37,9 @@ struct table_expression : public prod {
 
 struct query_spec : public prod {
   string set_quantifier;
-  vector<column> sl;
   table_expression expr;
+  table derived_table;
+  vector<column> &sl = derived_table.columns;
   
   string to_str() {
     string r("select ");
@@ -61,10 +58,9 @@ struct query_spec : public prod {
 
   query_spec(scope &s) : expr(s){
     do {
-      table t = random_pick<table>(expr.fc.reflist);
-      sl.push_back(random_pick<column>(t.columns));
+      table *t = random_pick<table*>(expr.fc.reflist);
+      sl.push_back(random_pick<column>(t->columns));
     } while(random()%3);
-
 
     set_quantifier = (random() % 5) ? "" : "distinct ";
     for(auto &c : sl) {

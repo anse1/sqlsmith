@@ -21,6 +21,7 @@ struct table {
   table(std::string catalog, std::string name, std::string schema)
     : catalog(catalog), name(name), schema(schema)
   { }
+  table() { }
 };
 
 struct scope {
