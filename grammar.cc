@@ -11,12 +11,12 @@ using namespace std;
 
 table_ref *table_ref::factory(scope &s) {
   table_ref *r;
-  if (random()%5)
+  if (random()%4)
     r = new table_or_query_name(s);
-  else if (random()%3)
-    r = new table_subquery(s);
-  else
+  else if (random()%2)
     r = new joined_table(s);
+  else
+    r = new table_subquery(s);
   return r;
 }
 
