@@ -32,9 +32,12 @@ struct joined_table : table_ref {
   joined_table(scope &s);
   std::string type;
   std::string condition;
-  named_relation *lhs;
-  named_relation *rhs;
-  virtual ~joined_table() { }
+  table_ref *lhs;
+  table_ref *rhs;
+  virtual ~joined_table() {
+    delete lhs;
+    delete rhs;
+  }
 };
 
 struct from_clause : public prod {

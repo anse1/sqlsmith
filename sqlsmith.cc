@@ -22,13 +22,18 @@ int main()
       schema.fill_scope(scope);
       work w(c);
       w.commit();
-      
+
       while (1) {
-	work w(c);
-	query_spec gen(scope);
-	cout << gen.str() << endl;
-	result r = w.exec(gen.str() + ";");
-	w.commit();
+	try {
+	  work w(c);
+	  w.exec("set statement_timeout to '2s';");
+	  query_spec gen(scope);
+	  cout << gen.str() << endl;
+	  result r = w.exec(gen.str() + ";");
+	  w.commit();
+	} catch (const pqxx::sql_error &e) {
+	  cout << e.what() << endl;
+	}
       }
     }
   catch (const std::exception &e)

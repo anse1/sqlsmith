@@ -48,35 +48,39 @@ table_subquery::~table_subquery() {
 
 joined_table::joined_table(scope &s) {
  retry:
-  lhs = random_pick<named_relation*>(s.tables);
-  rhs = random_pick<named_relation*>(s.tables);
-  while (lhs == rhs)
-    rhs = random_pick<named_relation*>(s.tables);
+  lhs = new table_or_query_name(s);
+  rhs = new table_or_query_name(s);
+  while (lhs->t == rhs->t) {
+    delete rhs; rhs = new table_or_query_name(s);
+  }
     
-  t = random()&1 ? lhs : rhs;
+  t = random()&1 ? lhs->t : rhs->t;
 
   condition = "";
 
   /* try to find a better condition */
 
-  column c1 = random_pick<column>(lhs->columns);
+  column c1 = random_pick<column>(lhs->t->columns);
   if (c1.type == "ARRAY") goto retry;
   
-  for (auto c2 : rhs->columns) {
+  for (auto c2 : rhs->t->columns) {
     if (c1.type == c2.type) {
       condition +=
-	lhs->ident() + "." + c1.name + " -- type: " + c1.type + "\n"
-	" = " + rhs->ident() + "." + c2.name + " -- type: " + c2.type + "\n";
+	lhs->t->ident() + "." + c1.name + " -- type: " + c1.type + "\n"
+	" = " + rhs->t->ident() + "." + c2.name + " -- type: " + c2.type + "\n";
       break;
     }
   }
-  if (condition == "")
+  if (condition == "") {
+    delete rhs;
+    delete lhs;
     goto retry;
+  }
 }
 
 std::string joined_table::str() {
   string r("");
-  r += lhs->ident() + " join " + rhs->ident()
+  r += lhs->t->ident() + " join " + rhs->t->ident()
     + " on (" + condition + ")";
   return r;
 }
