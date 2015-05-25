@@ -61,7 +61,9 @@ joined_table::joined_table(scope &s) {
   /* try to find a better condition */
 
   column c1 = random_pick<column>(lhs->t->columns);
-  if (c1.type == "ARRAY") goto retry;
+  if (c1.type == "ARRAY") {
+    delete rhs; delete lhs; goto retry;
+  }
   
   for (auto c2 : rhs->t->columns) {
     if (c1.type == c2.type) {
