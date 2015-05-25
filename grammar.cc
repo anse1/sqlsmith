@@ -62,7 +62,23 @@ from_clause::from_clause(scope &s) {
 
 value_expression* value_expression::factory(query_spec *q)
 {
-  return new const_expression();
+  value_expression *r;
+
+  if (0==random()%3)
+    r = new const_expression();
+  else
+    r = new column_reference(q);
+  return r;
+}
+
+column_reference::column_reference(query_spec *q)
+{
+  table_ref *ref = random_pick<table_ref*>(q->expr.fc.reflist);
+  named_relation *r = ref->t;
+  reference += r->ident() + ".";
+  column c = random_pick<column>(r->columns);
+  type = c.type;
+  reference += c.name;
 }
 
 select_list::select_list(query_spec *q)

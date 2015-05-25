@@ -50,6 +50,13 @@ struct const_expression: public value_expression {
   std::string str() { return std::string("42"); }
 };
 
+struct column_reference: public value_expression {
+  std::string type;
+  column_reference(struct query_spec *q);
+  std::string str() { return reference; }
+  std::string reference;
+};
+
 struct select_list : public prod {
   struct query_spec *query;
   std::vector<value_expression*> value_exprs;
