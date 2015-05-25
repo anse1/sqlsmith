@@ -27,6 +27,16 @@ struct table_subquery : public table_ref {
   virtual ~table_subquery();
 };
 
+struct joined_table : table_ref {
+  std::string str();  
+  joined_table(scope &s);
+  std::string type;
+  std::string condition;
+  named_relation *lhs;
+  named_relation *rhs;
+  virtual ~joined_table() { }
+};
+
 struct from_clause : public prod {
   std::vector<table_ref*> reflist;
   std::string str();
