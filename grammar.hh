@@ -44,14 +44,12 @@ struct value_expression: public prod {
   static struct value_expression *factory(struct query_spec *q);
 };
 
-struct const_expression: public value_expression {
-  std::string type;
+struct const_expression: value_expression {
   const_expression() { type = "integer"; }
   std::string str() { return std::string("42"); }
 };
 
-struct column_reference: public value_expression {
-  std::string type;
+struct column_reference: value_expression {
   column_reference(struct query_spec *q);
   std::string str() { return reference; }
   std::string reference;
