@@ -23,12 +23,21 @@ struct table {
   { }
 };
 
+struct scope {
+  struct scope *parent;
+  std::vector<table*> tables;
+};
+
 struct schema {
   std::vector<table> tables;
   void summary() {
     std::cout << "Found " << tables.size() <<
       " user table(s) in information schema." << std::endl;
   };
+  void fill_scope(struct scope &s) {
+    for (auto &t : tables)
+      s.tables.push_back(&t);
+  }
 };
 
 struct schema_pqxx : public schema {

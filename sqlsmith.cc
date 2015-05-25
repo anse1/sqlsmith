@@ -13,16 +13,6 @@ struct prod {
   virtual string to_str() = 0;
 };
 
-struct table_scope {
-  struct table_scope *parent;
-  vector<table*> tables;
-};
-
-struct column_scope {
-  struct column_scope *parent;
-  vector<column*> columns;
-};
-
 struct from_clause : public prod {
   vector<table> reflist;
   string to_str() {
@@ -32,18 +22,18 @@ struct from_clause : public prod {
     r += "\n    from " + reflist[0].schema + "." + reflist[0].name;
     return r;
   }
-  from_clause() {
+  from_clause(scope &s) {
     if (random()%5) {
-      reflist.push_back(random_pick<table>(schema.tables));
+      reflist.push_back(*random_pick<table*>(s.tables));
     } else {
-      reflist.push_back(random_pick<table>(schema.tables));
+      reflist.push_back(*random_pick<table*>(s.tables));
     }
   }
 };
 
 struct table_expression : public prod {
   from_clause fc;
-
+  table_expression(scope &s) : fc(s) { } ; 
   string to_str() {
     return fc.to_str();
   }
@@ -69,7 +59,7 @@ struct query_spec : public prod {
     return r;
   }
 
-  query_spec() {
+  query_spec(scope &s) : expr(s){
     do {
       table t = random_pick<table>(expr.fc.reflist);
       sl.push_back(random_pick<column>(t.columns));
@@ -90,11 +80,14 @@ int main()
     {
       connection c;
       schema.summary();
+      scope scope;
+      schema.fill_scope(scope);
       work w(c);
       w.commit();
+      
       while (1) {
 	work w(c);
-	query_spec gen;
+	query_spec gen(scope);
 	cout << gen.to_str() << endl;
 	result r = w.exec(gen.to_str());
 	w.commit();
