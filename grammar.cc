@@ -59,15 +59,15 @@ joined_table::joined_table(scope &s) {
   /* try to find a better condition */
 
   column c1 = random_pick<column>(lhs->t->columns);
-  if (c1.type == "ARRAY") {
+  if (c1.type == "ARRAY"
+      || c1.type == "anyarray") {
     delete rhs; delete lhs; goto retry;
   }
   
   for (auto c2 : rhs->t->columns) {
     if (c1.type == c2.type) {
       condition +=
-	lhs->t->ident() + "." + c1.name + " -- type: " + c1.type + "\n"
-	" = " + rhs->t->ident() + "." + c2.name + " -- type: " + c2.type + "\n";
+	lhs->t->ident() + "." + c1.name + " = " + rhs->t->ident() + "." + c2.name + " ";
       break;
     }
   }
