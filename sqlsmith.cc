@@ -27,13 +27,15 @@ int main()
 	  work w(c);
 	  w.exec("set statement_timeout to '2s';");
 	  query_spec gen(scope);
-	  cout << gen.str() << endl;
+	  std::ostringstream s;
+	  gen.out(s);
+	  cout << s.str() << endl;
 	  try {
-	    result r = w.exec(gen.str() + ";");
+	    result r = w.exec(s.str() + ";");
 	    w.commit();
 	  } catch (const pqxx::sql_error &e) {
 	    cerr << e.what() << endl;
-	    cerr << gen.str() << endl;
+	    cerr << s.str() << endl;
 	  }
       }
     }

@@ -24,10 +24,10 @@ table_or_query_name::table_or_query_name(scope &s) {
   t = random_pick<named_relation*>(s.tables);
 }
 
-string table_or_query_name::str() {
+void table_or_query_name::out(std::ostream &out) {
   string r("");
   r += t->ident();
-  return r;
+  out << r;
 }
 
 int table_subquery::instances;
@@ -89,25 +89,24 @@ joined_table::joined_table(scope &s) {
   }
 }
 
-std::string joined_table::str() {
-  string r("");
-  r += lhs->str() + " " + type + " join " + rhs->str()
-    + " on (" + condition + ")";
-  return r;
+void joined_table::out(std::ostream &out) {
+  lhs->out(out);
+  out << " " << type << " join ";
+  rhs->out(out);
+  out << " on (" << condition << ")";
 }
 
-string table_subquery::str() {
-  ostringstream r;
-  r << "(" << query->str() << ") as " << t->name;
-  return r.str();
+void table_subquery::out(std::ostream &out) {
+  out << "(";
+  query->out(out);
+  out << ") as " << t->name;
 }
 
-string from_clause::str() {
-  string r("");
+void from_clause::out(std::ostream &out) {
   if (! reflist.size())
-    return r;
-  r += "\n    from " + reflist[0]->str();
-  return r;
+    return;
+  out << "\n    from ";
+  reflist[0]->out(out);
 }
 
 from_clause::from_clause(scope &s) {
@@ -150,27 +149,24 @@ select_list::select_list(query_spec *q)
   } while (random()%5);
 }
 
-std::string select_list::str()
+void select_list::out(std::ostream &out)
 {
   int i = 0;
-  std::string r("");
-  for (auto expr : value_exprs) {
-    r += expr->str() + " as " + derived_table.columns[i].name + ",";
+  for (auto expr = value_exprs.begin(); expr != value_exprs.end(); expr++) {
+    (*expr)->out(out);
+    out << " as " << derived_table.columns[i].name;
     i++;
+    if (expr+1 != value_exprs.end())
+      out << ", ";
   }
-  r.pop_back();
-  return r;
 }
 
-string query_spec::str() {
-  string r("select ");
-  r += set_quantifier + " ";
-
-  r += sl.str();
-
-  r += " " + expr.str();
-  r += limit_clause;
-  return r;
+void query_spec::out(std::ostream &out) {
+  out << "select " << set_quantifier << " ";
+  sl.out(out);
+  out << " ";
+  expr.out(out);
+  out << limit_clause;
 }
 
 query_spec::query_spec(scope &s) : expr(s), sl(this) {

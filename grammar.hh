@@ -1,10 +1,11 @@
 #ifndef GRAMMAR_HH
 #define GRAMMAR_HH
 
+#include <ostream>
 #include "relmodel.hh"
 
 struct prod {
-  virtual std::string str() = 0;
+  virtual void out(std::ostream &out) = 0;
 };
 
 struct table_ref : public prod {
@@ -14,13 +15,13 @@ struct table_ref : public prod {
 };
 
 struct table_or_query_name : public table_ref {
-  std::string str();
+  virtual void out(std::ostream &out);
   table_or_query_name(scope &s);
   virtual ~table_or_query_name() { }
 };
 
 struct table_subquery : public table_ref {
-  std::string str();
+  virtual void out(std::ostream &out);
   struct query_spec *query;
   table_subquery(scope &s);
   static int instances;
@@ -28,7 +29,7 @@ struct table_subquery : public table_ref {
 };
 
 struct joined_table : table_ref {
-  std::string str();  
+  virtual void out(std::ostream &out);  
   joined_table(scope &s);
   std::string type;
   std::string condition;
@@ -42,7 +43,7 @@ struct joined_table : table_ref {
 
 struct from_clause : public prod {
   std::vector<table_ref*> reflist;
-  std::string str();
+  virtual void out(std::ostream &out);
   from_clause(scope &s);
   ~from_clause() { for (auto p : reflist) delete p; }
 };
@@ -50,27 +51,27 @@ struct from_clause : public prod {
 struct table_expression : public prod {
   from_clause fc;
   table_expression(scope &s) : fc(s) { } ; 
-  std::string str() {
-    return fc.str();
+  virtual void out(std::ostream &out) {
+    fc.out(out);
   }
 };
 
 struct value_expression: public prod {
   std::string type;
-  virtual std::string str() = 0;
+  virtual void out(std::ostream &out) = 0;
   virtual ~value_expression() { }
   static struct value_expression *factory(struct query_spec *q);
 };
 
 struct const_expression: value_expression {
   const_expression() { type = "integer"; }
-  std::string str() { return std::string("42"); }
+  virtual void out(std::ostream &out) { out << "42"; }
   virtual ~const_expression() { }
 };
 
 struct column_reference: value_expression {
   column_reference(struct query_spec *q);
-  std::string str() { return reference; }
+  virtual void out(std::ostream &out) { out << reference; }
   std::string reference;
   virtual ~column_reference() { }
 };
@@ -81,7 +82,7 @@ struct select_list : public prod {
   relation derived_table;
   int columns = 0;
   select_list(struct query_spec *q);
-  std::string str();
+  virtual void out(std::ostream &out);
   ~select_list() { for (auto p : value_exprs) delete p; }
 };
 
@@ -90,7 +91,7 @@ struct query_spec : public prod {
   table_expression expr;
   select_list sl;
   std::string limit_clause;
-  std::string str();
+  virtual void out(std::ostream &out);
   query_spec(scope &s);
   virtual ~query_spec() { }
 };
