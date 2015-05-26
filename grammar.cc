@@ -173,10 +173,12 @@ void query_spec::out(std::ostream &out) {
   sl.out(out);
   out << " ";
   fc.out(out);
+  out << " where ";
+  search.out(out);
   out << limit_clause;
 }
 
-query_spec::query_spec(scope &s) : fc(s), sl(this) {
+query_spec::query_spec(scope &s) : fc(s), sl(this), search(this) {
   
   vector<column> &cols = sl.derived_table.columns;
 
