@@ -12,12 +12,16 @@ struct table_ref : public prod {
   named_relation *t;
   static table_ref *factory(scope &s);
   virtual ~table_ref() { }
+  virtual std::string ident() { return t->ident(); }
 };
 
 struct table_or_query_name : public table_ref {
   virtual void out(std::ostream &out);
   table_or_query_name(scope &s);
   virtual ~table_or_query_name() { }
+  static int sequence;
+  virtual std::string ident() { return alias; }
+  std::string alias;
 };
 
 struct table_subquery : public table_ref {
@@ -33,6 +37,8 @@ struct joined_table : table_ref {
   joined_table(scope &s);
   std::string type;
   std::string condition;
+  std::string alias;
+  virtual std::string ident() { return alias; }
   table_ref *lhs;
   table_ref *rhs;
   virtual ~joined_table() {

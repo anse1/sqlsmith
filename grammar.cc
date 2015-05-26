@@ -20,14 +20,18 @@ table_ref *table_ref::factory(scope &s) {
   return r;
 }
 
+int table_or_query_name::sequence = 0;
 table_or_query_name::table_or_query_name(scope &s) {
   t = random_pick<named_relation*>(s.tables);
+  ostringstream o;
+  o << "rel" << sequence++;
+  alias = o.str();
 }
 
 void table_or_query_name::out(std::ostream &out) {
   string r("");
   r += t->ident();
-  out << r;
+  out << r << " as " << ident();
 }
 
 int table_subquery::instances;
@@ -67,7 +71,7 @@ joined_table::joined_table(scope &s) {
   for (auto c2 : rhs->t->columns) {
     if (c1.type == c2.type) {
       condition +=
-	lhs->t->ident() + "." + c1.name + " = " + rhs->t->ident() + "." + c2.name + " ";
+	lhs->ident() + "." + c1.name + " = " + rhs->ident() + "." + c2.name + " ";
       break;
     }
   }
@@ -79,13 +83,16 @@ joined_table::joined_table(scope &s) {
 
   if (random()&1) {
     type = "inner";
-    t = random()&1 ? lhs->t : rhs->t;
+    t = lhs->t;
+    alias = lhs->ident();
   } else if (random()&1) {
     type = "left";
     t = lhs->t;
+    alias = lhs->ident();
   } else {
     type = "right";
     t = rhs->t;
+    alias = rhs->ident();
   }
 }
 
@@ -131,8 +138,8 @@ value_expression* value_expression::factory(query_spec *q)
 column_reference::column_reference(query_spec *q)
 {
   table_ref *ref = random_pick<table_ref*>(q->expr.fc.reflist);
-  named_relation *r = ref->t;
-  reference += r->ident() + ".";
+  relation *r = ref->t;
+  reference += ref->ident() + ".";
   column c = random_pick<column>(r->columns);
   type = c.type;
   reference += c.name;
