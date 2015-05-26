@@ -125,7 +125,7 @@ value_expr* value_expr::factory(query_spec *q)
 {
   value_expr *r;
 
-  if (0==random()%3)
+  if (0==random()%11)
     r = new const_expr();
   else
     r = new column_reference(q);
@@ -143,6 +143,27 @@ column_reference::column_reference(query_spec *q)
   column c = random_pick<column>(r->columns);
   type = c.type;
   reference += c.name;
+}
+
+comparison_op::comparison_op(struct query_spec *q) : bool_expr(q)
+{
+  retry:
+  lhs = value_expr::factory(q);
+  rhs = value_expr::factory(q);
+
+  vector<op> &ops = schema.operators;
+
+  auto candidates =
+    find_if(ops.begin(), ops.end(),
+	    [this] (op o) {
+	      return o.left == lhs->type
+	             && o.right == rhs->type
+	             && o.result == "boolean"; });
+
+  if (candidates == ops.end()) {
+    delete lhs; delete rhs; goto retry;
+  }
+  oper = *candidates;
 }
 
 select_list::select_list(query_spec *q)

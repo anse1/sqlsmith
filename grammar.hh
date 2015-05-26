@@ -75,16 +75,24 @@ struct column_reference: value_expr {
 };
 
 struct bool_expr : value_expr {
-  std::string type;
-  bool_expr(struct query_spec *q) { type = "bool"; }
   virtual void out(std::ostream &out) { out << "true"; }
   virtual ~bool_expr() { }
+  bool_expr(struct query_spec *q) { type = "bool"; }
 };
 
 struct comparison_op : bool_expr {
-  
+  value_expr *lhs;
+  value_expr *rhs;
+  op oper;
+  comparison_op(struct query_spec *q);
+  virtual ~comparison_op() {
+    delete lhs; delete rhs;
+  };
+  virtual void out(std::ostream &o) {
+    lhs->out(o); o << oper.name; rhs->out(o);
+  }
 };
-
+  
 struct select_list : public prod {
   struct query_spec *query;
   std::vector<value_expr*> value_exprs;
@@ -99,7 +107,7 @@ struct query_spec : public prod {
   std::string set_quantifier;
   from_clause fc;
   select_list sl;
-  bool_expr search;
+  comparison_op search;
   std::string limit_clause;
   virtual void out(std::ostream &out);
   query_spec(scope &s);

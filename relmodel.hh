@@ -46,6 +46,7 @@ struct op {
   std::string result;
   op(std::string n,std::string l,std::string r, std::string res)
     : name(n), left(l), right(r), result(res) { }
+  op() { }
 };
 
 struct schema {
