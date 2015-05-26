@@ -121,7 +121,7 @@ from_clause::from_clause(scope &s) {
 }
 
 
-value_expr* value_expression::factory(query_spec *q)
+value_expr* value_expr::factory(query_spec *q)
 {
   value_expr *r;
 
@@ -148,7 +148,7 @@ column_reference::column_reference(query_spec *q)
 select_list::select_list(query_spec *q)
 {
   do {
-    value_expr *e = value_expression::factory(q);
+    value_expr *e = value_expr::factory(q);
     value_exprs.push_back(e);
     ostringstream name;
     name << "c" << columns++;

@@ -61,7 +61,7 @@ struct value_expr: public prod {
   static struct value_expr *factory(struct query_spec *q);
 };
 
-struct const_expr: value_expression {
+struct const_expr: value_expr {
   const_expr() { type = "integer"; }
   virtual void out(std::ostream &out) { out << "42"; }
   virtual ~const_expr() { }
