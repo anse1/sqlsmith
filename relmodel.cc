@@ -39,6 +39,17 @@ schema_pqxx::schema_pqxx() {
       t->columns.push_back(c);
     }
   }
+
+  r = w.exec("select oprname, oprleft::regtype,"
+		    "oprright::regtype, oprresult::regtype "
+		    "from pg_catalog.pg_operator;");
+  for (auto row : r) {
+    op o(row[0].as<string>(),
+	 row[1].as<string>(),
+	 row[2].as<string>(),
+	 row[3].as<string>());
+    operators.push_back(o);
+  }
 }
 
 schema_pqxx schema;

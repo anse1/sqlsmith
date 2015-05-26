@@ -153,7 +153,7 @@ select_list::select_list(query_spec *q)
     ostringstream name;
     name << "c" << columns++;
     derived_table.columns.push_back(column(name.str(), e->type));
-  } while (random()%5);
+  } while (random()%7);
 }
 
 void select_list::out(std::ostream &out)

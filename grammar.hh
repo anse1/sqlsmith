@@ -81,6 +81,10 @@ struct bool_expr : value_expr {
   virtual ~bool_expr() { }
 };
 
+struct comparison_op : bool_expr {
+  
+};
+
 struct select_list : public prod {
   struct query_spec *query;
   std::vector<value_expr*> value_exprs;

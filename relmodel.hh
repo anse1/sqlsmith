@@ -39,8 +39,18 @@ struct scope {
   std::vector<named_relation*> tables;
 };
 
+struct op {
+  std::string name;
+  std::string left;
+  std::string right;
+  std::string result;
+  op(std::string n,std::string l,std::string r, std::string res)
+    : name(n), left(l), right(r), result(res) { }
+};
+
 struct schema {
   std::vector<table> tables;
+  std::vector<op> operators;
   void summary() {
     std::cout << "Found " << tables.size() <<
       " user table(s) in information schema." << std::endl;
