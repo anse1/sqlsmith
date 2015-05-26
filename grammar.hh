@@ -54,20 +54,20 @@ struct from_clause : public prod {
   ~from_clause() { for (auto p : reflist) delete p; }
 };
 
-struct value_expression: public prod {
+struct value_expr: public prod {
   std::string type;
   virtual void out(std::ostream &out) = 0;
-  virtual ~value_expression() { }
-  static struct value_expression *factory(struct query_spec *q);
+  virtual ~value_expr() { }
+  static struct value_expr *factory(struct query_spec *q);
 };
 
-struct const_expression: value_expression {
-  const_expression() { type = "integer"; }
+struct const_expr: value_expression {
+  const_expr() { type = "integer"; }
   virtual void out(std::ostream &out) { out << "42"; }
-  virtual ~const_expression() { }
+  virtual ~const_expr() { }
 };
 
-struct column_reference: value_expression {
+struct column_reference: value_expr {
   column_reference(struct query_spec *q);
   virtual void out(std::ostream &out) { out << reference; }
   std::string reference;
@@ -76,7 +76,7 @@ struct column_reference: value_expression {
 
 struct select_list : public prod {
   struct query_spec *query;
-  std::vector<value_expression*> value_exprs;
+  std::vector<value_expr*> value_exprs;
   relation derived_table;
   int columns = 0;
   select_list(struct query_spec *q);

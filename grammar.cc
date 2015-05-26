@@ -121,17 +121,17 @@ from_clause::from_clause(scope &s) {
 }
 
 
-value_expression* value_expression::factory(query_spec *q)
+value_expr* value_expression::factory(query_spec *q)
 {
-  value_expression *r;
+  value_expr *r;
 
   if (0==random()%3)
-    r = new const_expression();
+    r = new const_expr();
   else
     r = new column_reference(q);
 
   if (! r->type.size())
-    throw logic_error("generated expression with unknown type");
+    throw logic_error("generated expr with unknown type");
   return r;
 }
 
@@ -148,7 +148,7 @@ column_reference::column_reference(query_spec *q)
 select_list::select_list(query_spec *q)
 {
   do {
-    value_expression *e = value_expression::factory(q);
+    value_expr *e = value_expression::factory(q);
     value_exprs.push_back(e);
     ostringstream name;
     name << "c" << columns++;
