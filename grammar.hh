@@ -63,7 +63,7 @@ struct value_expr: public prod {
 
 struct const_expr: value_expr {
   const_expr() { type = "integer"; }
-  virtual void out(std::ostream &out) { out << "42"; }
+  virtual void out(std::ostream &out) { out << random()%43; }
   virtual ~const_expr() { }
 };
 

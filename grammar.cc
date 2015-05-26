@@ -125,7 +125,7 @@ value_expr* value_expr::factory(query_spec *q)
 {
   value_expr *r;
 
-  if (0==random()%11)
+  if (0==random()%42)
     r = new const_expr();
   else
     r = new column_reference(q);
