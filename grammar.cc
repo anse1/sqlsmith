@@ -137,7 +137,7 @@ value_expression* value_expression::factory(query_spec *q)
 
 column_reference::column_reference(query_spec *q)
 {
-  table_ref *ref = random_pick<table_ref*>(q->expr.fc.reflist);
+  table_ref *ref = random_pick<table_ref*>(q->fc.reflist);
   relation *r = ref->t;
   reference += ref->ident() + ".";
   column c = random_pick<column>(r->columns);
@@ -172,11 +172,11 @@ void query_spec::out(std::ostream &out) {
   out << "select " << set_quantifier << " ";
   sl.out(out);
   out << " ";
-  expr.out(out);
+  fc.out(out);
   out << limit_clause;
 }
 
-query_spec::query_spec(scope &s) : expr(s), sl(this) {
+query_spec::query_spec(scope &s) : fc(s), sl(this) {
   
   vector<column> &cols = sl.derived_table.columns;
 

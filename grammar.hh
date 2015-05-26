@@ -54,14 +54,6 @@ struct from_clause : public prod {
   ~from_clause() { for (auto p : reflist) delete p; }
 };
 
-struct table_expression : public prod {
-  from_clause fc;
-  table_expression(scope &s) : fc(s) { } ; 
-  virtual void out(std::ostream &out) {
-    fc.out(out);
-  }
-};
-
 struct value_expression: public prod {
   std::string type;
   virtual void out(std::ostream &out) = 0;
@@ -94,7 +86,7 @@ struct select_list : public prod {
 
 struct query_spec : public prod {
   std::string set_quantifier;
-  table_expression expr;
+  from_clause fc;
   select_list sl;
   std::string limit_clause;
   virtual void out(std::ostream &out);
