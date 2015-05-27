@@ -83,13 +83,13 @@ struct bool_expr : value_expr {
 struct comparison_op : bool_expr {
   value_expr *lhs;
   value_expr *rhs;
-  op oper;
+  op *oper;
   comparison_op(struct query_spec *q);
   virtual ~comparison_op() {
     delete lhs; delete rhs;
   };
   virtual void out(std::ostream &o) {
-    lhs->out(o); o << oper.name; rhs->out(o);
+    lhs->out(o); o << oper->name; rhs->out(o);
   }
 };
   

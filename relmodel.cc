@@ -48,7 +48,7 @@ schema_pqxx::schema_pqxx() {
 	 row[1].as<string>(),
 	 row[2].as<string>(),
 	 row[3].as<string>());
-    operators.push_back(o);
+    register_operator(o);
   }
 }
 

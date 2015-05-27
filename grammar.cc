@@ -60,8 +60,6 @@ joined_table::joined_table(scope &s) {
     
   condition = "";
 
-  /* try to find a better condition */
-
   column c1 = random_pick<column>(lhs->t->columns);
   if (c1.type == "ARRAY"
       || c1.type == "anyarray") {
@@ -151,19 +149,13 @@ comparison_op::comparison_op(struct query_spec *q) : bool_expr(q)
   lhs = value_expr::factory(q);
   rhs = value_expr::factory(q);
 
-  vector<op> &ops = schema.operators;
-
-  auto candidates =
-    find_if(ops.begin(), ops.end(),
-	    [this] (op o) {
-	      return o.left == lhs->type
-	             && o.right == rhs->type
-	             && o.result == "boolean"; });
-
-  if (candidates == ops.end()) {
+  auto op_iter =
+    schema.find_operator(lhs->type, rhs->type, string("boolean"));
+  
+  if (op_iter == schema.index.end()) {
     delete lhs; delete rhs; goto retry;
   }
-  oper = *candidates;
+  oper = &op_iter->second;
 }
 
 select_list::select_list(query_spec *q)
