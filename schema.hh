@@ -8,6 +8,7 @@
 #include <numeric>
 
 #include "relmodel.hh"
+#include "random.hh"
 
 struct schema {
   std::vector<table> tables;
@@ -30,7 +31,11 @@ struct schema {
     index.insert(std::pair<typekey,op>(t,o));
   }
   virtual op_iterator find_operator(std::string left, std::string right, std::string res) {
-    return index.find(typekey(left, right, res));
+    auto cons = index.equal_range(typekey(left, right, res));
+    if (cons.first == cons.second)
+      return index.end();
+    else
+      return random_pick<>(cons.first, cons.second);
   }
 };
 
