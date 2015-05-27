@@ -5,9 +5,9 @@
 #include "random.hh"
 #include "relmodel.hh"
 #include "grammar.hh"
+#include "schema.hh"
 
 using namespace std;
-
 
 table_ref *table_ref::factory(scope &s) {
   table_ref *r;

@@ -6,6 +6,7 @@
 #include "random.hh"
 #include "grammar.hh"
 #include "relmodel.hh"
+#include "schema.hh"
 
 using namespace std;
 using namespace pqxx;
