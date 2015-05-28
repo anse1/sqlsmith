@@ -11,10 +11,14 @@
 using namespace std;
 using namespace pqxx;
 
-
+extern "C" {
+#include <unistd.h>
+}
 
 int main()
 {
+  srand(getpid()*time(0));
+  srandom(getpid()*time(0));
   try
     {
       connection c;
