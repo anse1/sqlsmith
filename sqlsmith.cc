@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <numeric>
 #include <chrono>
-
+#include <regex>
 
 #include "random.hh"
 #include "grammar.hh"
@@ -18,6 +18,8 @@ using namespace std::chrono;
 extern "C" {
 #include <unistd.h>
 }
+
+regex timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
 
 int main()
 {
@@ -34,8 +36,9 @@ int main()
 
       {
 	work w(c);
-	w.exec("set statement_timeout to '2s';");
+	w.exec("set statement_timeout to '1s';");
 	w.exec("set client_min_messages to 'ERROR';");
+	w.exec("set lc_messages to 'C';");
 	w.commit();
       }
       int query_count = 0;
@@ -66,7 +69,7 @@ int main()
 	    cerr << ".";
 	  } catch (const pqxx::sql_error &e) {
 	    errors[e.what()]++;
-	    cerr << "e";
+	    cerr << (regex_match(e.what(), timeout) ? "t" : "e");
 	  }
 
 	  if (0 == query_count%1000) {
