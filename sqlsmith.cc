@@ -28,19 +28,39 @@ int main()
       work w(c);
       w.commit();
 
+      {
+	work w(c);
+	w.exec("set statement_timeout to '2s';");
+	w.exec("set client_min_messages to 'ERROR';");
+	w.commit();
+      }
+      int query_count = 0;
+      std::map<std::string, long> errors;
       while (1) {
 	  work w(c);
-	  w.exec("set statement_timeout to '2s';");
+	  cerr << ".";
 	  query_spec gen(scope);
 	  std::ostringstream s;
 	  gen.out(s);
 	  cout << s.str() << endl;
+	  query_count++;
 	  try {
 	    result r = w.exec(s.str() + ";");
 	    w.commit();
+	    cerr << ".";
 	  } catch (const pqxx::sql_error &e) {
-	    cerr << e.what() << endl;
-	    cerr << s.str() << endl;
+	    errors[e.what()]++;
+	    cerr << "e";
+	  }
+
+	  if (0 == query_count%1000) {
+	    cerr << endl << "queries generated: " << query_count << endl;
+	    int error_count = 0;
+	    for (auto e : errors) {
+	      cerr << e.second << "\t" << e.first;
+	      error_count += e.second;
+	    }
+	    cerr << "error rate: " << (float)error_count/query_count << endl;
 	  }
       }
     }
