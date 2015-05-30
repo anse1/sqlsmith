@@ -141,6 +141,11 @@ column_reference::column_reference(query_spec *q)
   reference += c.name;
 }
 
+shared_ptr<bool_expr> bool_expr::factory(struct query_spec *q)
+{
+  return make_shared<comparison_op>(q);
+}
+
 comparison_op::comparison_op(struct query_spec *q) : bool_expr(q)
 {
   retry:
@@ -185,11 +190,11 @@ void query_spec::out(std::ostream &out) {
   out << " ";
   fc.out(out);
   out << " where ";
-  search.out(out);
+  search->out(out);
   out << limit_clause;
 }
 
-query_spec::query_spec(scope &s) : fc(s), sl(this), search(this) {
+query_spec::query_spec(scope &s) : fc(s), sl(this) {
   
   vector<column> &cols = sl.derived_table.columns;
 
@@ -198,6 +203,8 @@ query_spec::query_spec(scope &s) : fc(s), sl(this), search(this) {
     set_quantifier = (random() % 5) ? "" : "distinct ";
   }
 
+  search = bool_expr::factory(this);
+  
   if (0 == random()%3) {
     ostringstream cons;
     cons << " fetch first " << random()%100 + random()%100 << " rows only ";
