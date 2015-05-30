@@ -84,8 +84,30 @@ struct bool_expr : value_expr {
 
 struct truth_value : bool_expr {
   virtual ~truth_value() { }
-  virtual void out(std::ostream &out) { out << "true"; }
-  truth_value(struct query_spec *q) : bool_expr(q) { }
+  const char *op;
+  virtual void out(std::ostream &out) { out << op; }
+  truth_value(struct query_spec *q) : bool_expr(q) {
+    op = ((random()&1) ? "true" : "false");
+  }
+};
+
+struct bool_term : bool_expr {
+  virtual ~bool_term() { }
+  shared_ptr<bool_expr> lhs, rhs;
+  const char *op;
+  virtual void out(std::ostream &out) {
+    out << "( ";
+    lhs->out(out);
+    out << " ) " << op << " ( ";
+    rhs->out(out);
+    out << " )";
+  }
+  bool_term(struct query_spec *q) : bool_expr(q)
+  {
+    op = ((random()&1) ? "or" : "and");
+    lhs = bool_expr::factory(q);
+    rhs = bool_expr::factory(q);
+  }
 };
 
 struct comparison_op : bool_expr {

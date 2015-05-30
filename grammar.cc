@@ -143,7 +143,12 @@ column_reference::column_reference(query_spec *q)
 
 shared_ptr<bool_expr> bool_expr::factory(struct query_spec *q)
 {
-  return make_shared<comparison_op>(q);
+  if(random()%2)
+    return make_shared<comparison_op>(q);
+  else if(random()%2)
+    return make_shared<bool_term>(q);
+  else
+    return make_shared<truth_value>(q);
 }
 
 comparison_op::comparison_op(struct query_spec *q) : bool_expr(q)
