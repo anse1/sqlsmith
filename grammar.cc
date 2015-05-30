@@ -211,3 +211,5 @@ query_spec::query_spec(scope &s) : fc(s), sl(this) {
     limit_clause = cons.str();
   }
 }
+
+long prepare_stmt::seq;

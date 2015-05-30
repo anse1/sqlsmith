@@ -153,5 +153,16 @@ struct query_spec : public prod {
   virtual ~query_spec() { }
 };
 
+struct prepare_stmt : public prod {
+  query_spec q;
+  static long seq;
+  long id;
+  virtual void out(std::ostream &out) {
+    out << "prepare prep" << id << " as " << q;
+  }
+  prepare_stmt(scope &s) : q(s) {
+    id = seq++;
+  }
+};
 
 #endif
