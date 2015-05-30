@@ -10,6 +10,8 @@
 #include "relmodel.hh"
 #include "schema.hh"
 
+#include "config.h"
+
 using namespace std;
 using namespace pqxx;
 
@@ -25,6 +27,9 @@ int main()
 {
   srand(getpid()*time(0));
   srandom(getpid()*time(0));
+
+  cerr << "sqlsmith " << GITREV << endl;
+
   try
     {
       connection c;

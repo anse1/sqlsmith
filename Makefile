@@ -1,6 +1,11 @@
 
-sqlsmith: sqlsmith.cc random.cc relmodel.cc schema.cc grammar.cc 
-	g++ -g -std=c++11 -Wall $+ -lpqxx -lpq -o sqlsmith
+config.h: .git/*
+	echo -n '#define GITREV "' > $@
+	echo -n "$$(git describe --dirty --tags --always)" >> $@
+	echo '"' >> $@
+
+sqlsmith: *.cc config.h
+	g++ -g -std=c++11 -Wall *.cc -lpqxx -lpq -o sqlsmith
 
 clean:
-	rm -f sqlsmith
+	rm -f sqlsmith config.h
