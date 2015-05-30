@@ -117,14 +117,14 @@ from_clause::from_clause(scope &s) {
 }
 
 
-value_expr* value_expr::factory(query_spec *q)
+shared_ptr<value_expr> value_expr::factory(query_spec *q)
 {
-  value_expr *r;
+  shared_ptr<value_expr> r;
 
   if (0==random()%42)
-    r = new const_expr();
+    r = make_shared<const_expr>();
   else
-    r = new column_reference(q);
+    r = make_shared<column_reference>(q);
 
   if (! r->type.size())
     throw logic_error("generated expr with unknown type");
@@ -150,16 +150,16 @@ comparison_op::comparison_op(struct query_spec *q) : bool_expr(q)
   auto op_iter =
     schema.find_operator(lhs->type, rhs->type, string("boolean"));
   
-  if (op_iter == schema.index.end()) {
-    delete lhs; delete rhs; goto retry;
-  }
+  if (op_iter == schema.index.end())
+    goto retry;
+
   oper = &op_iter->second;
 }
 
 select_list::select_list(query_spec *q)
 {
   do {
-    value_expr *e = value_expr::factory(q);
+    shared_ptr<value_expr> e = value_expr::factory(q);
     value_exprs.push_back(e);
     ostringstream name;
     name << "c" << columns++;

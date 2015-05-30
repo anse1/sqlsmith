@@ -6,11 +6,13 @@
 #include <cstdlib>
 #include <numeric>
 
+using std::string;
+
 struct column {
-  std::string name;
-  std::string type;
-  column(std::string name) : name(name) { }
-  column(std::string name, std::string type) : name(name), type(type) { }
+  string name;
+  string type;
+  column(string name) : name(name) { }
+  column(string name, string type) : name(name), type(type) { }
 };
 
 struct relation {
@@ -18,19 +20,19 @@ struct relation {
 };
 
 struct named_relation : public relation {
-  std::string name;
-  virtual std::string ident() { return name; }
+  string name;
+  virtual string ident() { return name; }
   virtual ~named_relation() { };
 };
 
 struct table : public named_relation {
-  std::string catalog;
-  std::string name;
-  std::string schema;
-  table(std::string catalog, std::string name, std::string schema)
+  string catalog;
+  string name;
+  string schema;
+  table(string catalog, string name, string schema)
     : catalog(catalog), name(name), schema(schema) { }
   table() { }
-  virtual std::string ident() { return schema + "." + name; }
+  virtual string ident() { return schema + "." + name; }
   virtual ~table() { };
 };
 
@@ -40,11 +42,11 @@ struct scope {
 };
 
 struct op {
-  std::string name;
-  std::string left;
-  std::string right;
-  std::string result;
-  op(std::string n,std::string l,std::string r, std::string res)
+  string name;
+  string left;
+  string right;
+  string result;
+  op(string n,string l,string r, string res)
     : name(n), left(l), right(r), result(res) { }
   op() { }
 };

@@ -60,7 +60,7 @@ struct value_expr: public prod {
   std::string type;
   virtual void out(std::ostream &out) = 0;
   virtual ~value_expr() { }
-  static struct value_expr *factory(struct query_spec *q);
+  static shared_ptr<value_expr> factory(struct query_spec *q);
 };
 
 struct const_expr: value_expr {
@@ -83,13 +83,11 @@ struct bool_expr : value_expr {
 };
 
 struct comparison_op : bool_expr {
-  value_expr *lhs;
-  value_expr *rhs;
+  shared_ptr<value_expr> lhs;
+  shared_ptr<value_expr> rhs;
   op *oper;
   comparison_op(struct query_spec *q);
-  virtual ~comparison_op() {
-    delete lhs; delete rhs;
-  };
+  virtual ~comparison_op() { };
   virtual void out(std::ostream &o) {
     lhs->out(o); o << oper->name; rhs->out(o);
   }
@@ -97,12 +95,12 @@ struct comparison_op : bool_expr {
   
 struct select_list : public prod {
   struct query_spec *query;
-  std::vector<value_expr*> value_exprs;
+  std::vector<shared_ptr<value_expr> > value_exprs;
   relation derived_table;
   int columns = 0;
   select_list(struct query_spec *q);
   virtual void out(std::ostream &out);
-  ~select_list() { for (auto p : value_exprs) delete p; }
+  ~select_list() { }
 };
 
 struct query_spec : public prod {
