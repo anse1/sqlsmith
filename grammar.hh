@@ -12,6 +12,8 @@ struct prod {
   virtual void out(std::ostream &out) = 0;
 };
 
+std::ostream& operator<<(std::ostream& s, struct prod& p);
+
 struct table_ref : public prod {
   named_relation *t;
   static shared_ptr<table_ref> factory(scope &s);
@@ -96,11 +98,7 @@ struct bool_term : bool_expr {
   shared_ptr<bool_expr> lhs, rhs;
   const char *op;
   virtual void out(std::ostream &out) {
-    out << "( ";
-    lhs->out(out);
-    out << " ) " << op << " ( ";
-    rhs->out(out);
-    out << " )";
+    out << "( " << *lhs << " ) " << op << " ( " << *rhs << " )";
   }
   bool_term(struct query_spec *q) : bool_expr(q)
   {
@@ -117,7 +115,7 @@ struct comparison_op : bool_expr {
   comparison_op(struct query_spec *q);
   virtual ~comparison_op() { };
   virtual void out(std::ostream &o) {
-    lhs->out(o); o << oper->name; rhs->out(o);
+    o << *lhs << oper->name << *rhs;
   }
 };
   

@@ -9,6 +9,11 @@
 
 using namespace std;
 
+std::ostream& operator<<(std::ostream& s, prod& p)
+{
+  p.out(s); return s;
+}
+
 shared_ptr<table_ref> table_ref::factory(scope &s) {
   shared_ptr<table_ref> r;
   if (random()%4)
@@ -93,23 +98,18 @@ joined_table::joined_table(scope &s) {
 }
 
 void joined_table::out(std::ostream &out) {
-  lhs->out(out);
-  out << " " << type << " join ";
-  rhs->out(out);
-  out << " on (" << condition << ")";
+  out << *lhs << " " << type << " join ";
+  out << *rhs << " on (" << condition << ")";
 }
 
 void table_subquery::out(std::ostream &out) {
-  out << "(";
-  query->out(out);
-  out << ") as " << t->name;
+  out << "(" << *query << ") as " << t->name;
 }
 
 void from_clause::out(std::ostream &out) {
   if (! reflist.size())
     return;
-  out << "\n    from ";
-  reflist[0]->out(out);
+  out << "\n    from " << *reflist[0];
 }
 
 from_clause::from_clause(scope &s) {
@@ -181,8 +181,7 @@ void select_list::out(std::ostream &out)
 {
   int i = 0;
   for (auto expr = value_exprs.begin(); expr != value_exprs.end(); expr++) {
-    (*expr)->out(out);
-    out << " as " << derived_table.columns[i].name;
+    out << **expr << " as " << derived_table.columns[i].name;
     i++;
     if (expr+1 != value_exprs.end())
       out << ", ";
@@ -191,11 +190,7 @@ void select_list::out(std::ostream &out)
 
 void query_spec::out(std::ostream &out) {
   out << "select " << set_quantifier << " ";
-  sl.out(out);
-  out << " ";
-  fc.out(out);
-  out << " where ";
-  search->out(out);
+  out << sl << " " << fc << " where " << *search << " ";
   out << limit_clause;
 }
 
