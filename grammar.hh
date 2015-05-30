@@ -93,6 +93,19 @@ struct truth_value : bool_expr {
   }
 };
 
+struct null_predicate : bool_expr {
+  virtual ~null_predicate() { }
+  const char *negate;
+  shared_ptr<value_expr> expr;
+  null_predicate(struct query_spec *q) : bool_expr(q) {
+    negate = ((random()&1) ? "not " : "");
+    expr = value_expr::factory(q);
+  }
+  virtual void out(std::ostream &out) {
+    out << *expr << " is " << negate << "NULL";
+  }
+};
+
 struct bool_term : bool_expr {
   virtual ~bool_term() { }
   shared_ptr<bool_expr> lhs, rhs;

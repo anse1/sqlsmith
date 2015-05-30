@@ -34,9 +34,7 @@ table_or_query_name::table_or_query_name(scope &s) {
 }
 
 void table_or_query_name::out(std::ostream &out) {
-  string r("");
-  r += t->ident();
-  out << r << " as " << ident();
+  out << t->ident() << " as " << ident();
 }
 
 int table_subquery::instances;
@@ -62,7 +60,7 @@ joined_table::joined_table(scope &s) {
   while (lhs->t == rhs->t) {
     rhs = table_ref::factory(s);
   }
-    
+
   condition = "";
 
   column c1 = random_pick<column>(lhs->t->columns);
@@ -70,7 +68,7 @@ joined_table::joined_table(scope &s) {
       || c1.type == "anyarray") {
     goto retry;
   }
-  
+
   for (auto c2 : rhs->t->columns) {
     if (c1.type == c2.type) {
       condition +=
@@ -98,8 +96,8 @@ joined_table::joined_table(scope &s) {
 }
 
 void joined_table::out(std::ostream &out) {
-  out << *lhs << " " << type << " join ";
-  out << *rhs << " on (" << condition << ")";
+  out << *lhs << " " << type << " join "
+      << *rhs << " on (" << condition << ")";
 }
 
 void table_subquery::out(std::ostream &out) {
@@ -145,10 +143,12 @@ shared_ptr<bool_expr> bool_expr::factory(struct query_spec *q)
 {
   if(random()%2)
     return make_shared<comparison_op>(q);
-  else if(random()%2)
+  else if (random()%2)
     return make_shared<bool_term>(q);
-  else
+  else if (random()%2)
     return make_shared<truth_value>(q);
+  else
+    return make_shared<null_predicate>(q);
 }
 
 comparison_op::comparison_op(struct query_spec *q) : bool_expr(q)
@@ -159,7 +159,7 @@ comparison_op::comparison_op(struct query_spec *q) : bool_expr(q)
 
   auto op_iter =
     schema.find_operator(lhs->type, rhs->type, string("boolean"));
-  
+
   if (op_iter == schema.index.end())
     goto retry;
 
@@ -189,13 +189,13 @@ void select_list::out(std::ostream &out)
 }
 
 void query_spec::out(std::ostream &out) {
-  out << "select " << set_quantifier << " ";
-  out << sl << " " << fc << " where " << *search << " ";
-  out << limit_clause;
+  out << "select " << set_quantifier << " "
+      << sl << " " << fc << " where " << *search << " "
+      << limit_clause;
 }
 
 query_spec::query_spec(scope &s) : fc(s), sl(this) {
-  
+
   vector<column> &cols = sl.derived_table.columns;
 
   if (!count_if(cols.begin(), cols.end(),
@@ -204,7 +204,7 @@ query_spec::query_spec(scope &s) : fc(s), sl(this) {
   }
 
   search = bool_expr::factory(this);
-  
+
   if (0 == random()%3) {
     ostringstream cons;
     cons << " fetch first " << random()%100 + random()%100 << " rows only ";
