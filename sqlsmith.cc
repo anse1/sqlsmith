@@ -53,7 +53,6 @@ int main()
       std::map<std::string, long> errors;
       while (1) {
 	  work w(c);
-	  cerr << ".";
 
 	  auto g0 = high_resolution_clock::now();
 	  //	  prepare_stmt gen(scope);
@@ -66,6 +65,8 @@ int main()
 	  
 	  cout << s.str() << endl;
 	  query_count++;
+	  if (79 == query_count%80)
+	    cerr << endl;
 	  try {
 	    auto q0 = high_resolution_clock::now();
 	    result r = w.exec(s.str() + ";");
@@ -80,7 +81,6 @@ int main()
 	    errors[line]++;
 	    cerr << (regex_match(e.what(), timeout) ? "t" : "e");
 	  }
-
 	  if (0 == query_count%1000) {
 	    cerr << endl << "queries: " << query_count;
  	    cerr << " (" << 1000.0*query_count/gen_time.count() << " gen/s, ";
