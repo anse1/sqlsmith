@@ -1,6 +1,5 @@
 #include <iostream>
 #include <pqxx/pqxx>
-#include <cstdlib>
 #include <numeric>
 #include <chrono>
 #include <regex>
@@ -25,11 +24,9 @@ regex timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
 
 int main()
 {
-  srand(getpid()*time(0));
-  srandom(getpid()*time(0));
-
   cerr << "sqlsmith " << GITREV << endl;
 
+  smith::rng.seed(getpid());
   try
     {
       connection c;
@@ -86,10 +83,19 @@ int main()
  	    cerr << " (" << 1000.0*query_count/gen_time.count() << " gen/s, ";
  	    cerr << 1000.0*query_count/query_time.count() << " exec/s)" << endl;
 	    int error_count = 0;
+	    vector<pair<std::string, long> > report;
 	    for (auto e : errors) {
-	      cerr << e.second << "\t" << e.first << endl;
-	      error_count += e.second;
+	      report.push_back(e);
 	    }
+	    stable_sort(report.begin(), report.end(),
+			[](const pair<std::string, long> &a,
+			   const pair<std::string, long> &b)
+			{ return a.second > b.second; });
+	    for (auto e : report) {
+	      error_count += e.second;
+	      cerr << e.second << "\t" << e.first << endl;
+	    }
+	    
 	    cerr << "error rate: " << (float)error_count/query_count << endl;
 	  }
       }

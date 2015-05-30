@@ -1,4 +1,3 @@
-#include <cstdlib>
 #include <numeric>
 #include <algorithm>
 
@@ -16,12 +15,12 @@ std::ostream& operator<<(std::ostream& s, prod& p)
 
 shared_ptr<table_ref> table_ref::factory(scope &s) {
   shared_ptr<table_ref> r;
-  if (random()%4)
-    r = make_shared<table_or_query_name>(s);
-  else if (random()%2)
+  if (d(9) == 1)
     r = make_shared<joined_table>(s);
-  else
+  else if (d(9) == 1)
     r = make_shared<table_subquery>(s);
+  else
+    r = make_shared<table_or_query_name>(s);
   return r;
 }
 
@@ -80,11 +79,11 @@ joined_table::joined_table(scope &s) {
     goto retry;
   }
 
-  if (random()&1) {
+  if (d(6)<4) {
     type = "inner";
     t = lhs->t;
     alias = lhs->ident();
-  } else if (random()&1) {
+  } else if (d(6)<4) {
     type = "left";
     t = lhs->t;
     alias = lhs->ident();
@@ -119,7 +118,7 @@ shared_ptr<value_expr> value_expr::factory(query_spec *q)
 {
   shared_ptr<value_expr> r;
 
-  if (0==random()%42)
+  if (1 == d(42))
     r = make_shared<const_expr>();
   else
     r = make_shared<column_reference>(q);
@@ -141,13 +140,13 @@ column_reference::column_reference(query_spec *q)
 
 shared_ptr<bool_expr> bool_expr::factory(struct query_spec *q)
 {
-  if(random()%2)
+  if(d(6) < 4)
     return make_shared<comparison_op>(q);
-  else if (random()%2)
+  else if (d(6) < 4)
     return make_shared<bool_term>(q);
-  else if (random()%2)
+  else if (d(6) < 4)
     return make_shared<truth_value>(q);
-  else if (random()%2)
+  else if (d(6) < 4)
     return make_shared<null_predicate>(q);
   else
     return make_shared<distinct_pred>(q);
@@ -185,7 +184,7 @@ select_list::select_list(query_spec *q)
     ostringstream name;
     name << "c" << columns++;
     derived_table.columns.push_back(column(name.str(), e->type));
-  } while (random()%7);
+  } while (d(6) > 1);
 }
 
 void select_list::out(std::ostream &out)
@@ -211,14 +210,14 @@ query_spec::query_spec(scope &s) : fc(s), sl(this) {
 
   if (!count_if(cols.begin(), cols.end(),
 		[] (column c) { return c.type == "anyarray"; })) {
-    set_quantifier = (random() % 5) ? "" : "distinct ";
+    set_quantifier = (d(6) == 1) ? "" : "distinct ";
   }
 
   search = bool_expr::factory(this);
 
-  if (0 == random()%3) {
+  if (d(6) > 2) {
     ostringstream cons;
-    cons << " fetch first " << random()%100 + random()%100 << " rows only ";
+    cons << " fetch first " << d(100) + d(100) << " rows only ";
     limit_clause = cons.str();
   }
 }

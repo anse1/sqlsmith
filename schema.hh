@@ -4,7 +4,6 @@
 #include <string>
 #include <iostream>
 #include <pqxx/pqxx>
-#include <cstdlib>
 #include <numeric>
 
 #include "relmodel.hh"

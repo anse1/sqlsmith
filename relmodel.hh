@@ -3,7 +3,6 @@
 #include <string>
 #include <iostream>
 #include <pqxx/pqxx>
-#include <cstdlib>
 #include <numeric>
 
 using std::string;
