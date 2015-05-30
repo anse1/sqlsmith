@@ -2,6 +2,8 @@
 #include <pqxx/pqxx>
 #include <cstdlib>
 #include <numeric>
+#include <chrono>
+
 
 #include "random.hh"
 #include "grammar.hh"
@@ -10,6 +12,8 @@
 
 using namespace std;
 using namespace pqxx;
+
+using namespace std::chrono;
 
 extern "C" {
 #include <unistd.h>
@@ -35,17 +39,29 @@ int main()
 	w.commit();
       }
       int query_count = 0;
+      milliseconds query_time(0);
+      milliseconds gen_time(0);
+
       std::map<std::string, long> errors;
       while (1) {
 	  work w(c);
 	  cerr << ".";
+
+	  auto g0 = high_resolution_clock::now();
 	  query_spec gen(scope);
 	  std::ostringstream s;
 	  gen.out(s);
+
+	  auto g1 = high_resolution_clock::now();
+	  gen_time += duration_cast<milliseconds>(g1-g0);
+	  
 	  cout << s.str() << endl;
 	  query_count++;
 	  try {
+	    auto q0 = high_resolution_clock::now();
 	    result r = w.exec(s.str() + ";");
+	    auto q1 = high_resolution_clock::now();
+	    query_time +=  duration_cast<milliseconds>(q1-q0);
 	    w.commit();
 	    cerr << ".";
 	  } catch (const pqxx::sql_error &e) {
@@ -54,7 +70,9 @@ int main()
 	  }
 
 	  if (0 == query_count%1000) {
-	    cerr << endl << "queries generated: " << query_count << endl;
+	    cerr << endl << "queries: " << query_count;
+ 	    cerr << " (" << 1000.0*query_count/gen_time.count() << " gen/s, ";
+ 	    cerr << 1000.0*query_count/query_time.count() << " exec/s)" << endl;
 	    int error_count = 0;
 	    for (auto e : errors) {
 	      cerr << e.second << "\t" << e.first;
