@@ -5,6 +5,7 @@
 #include "relmodel.hh"
 
 struct prod {
+  struct prod *parent;
   virtual void out(std::ostream &out) = 0;
 };
 
