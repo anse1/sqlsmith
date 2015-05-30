@@ -121,6 +121,16 @@ struct bool_term : bool_expr {
   }
 };
 
+struct distinct_pred : bool_expr {
+  shared_ptr<value_expr> lhs;
+  shared_ptr<value_expr> rhs;
+  distinct_pred(struct query_spec *q);
+  virtual ~distinct_pred() { };
+  virtual void out(std::ostream &o) {
+    o << *lhs << " is distinct from " << *rhs;
+  }
+};
+
 struct comparison_op : bool_expr {
   shared_ptr<value_expr> lhs;
   shared_ptr<value_expr> rhs;

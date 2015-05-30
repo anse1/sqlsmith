@@ -147,8 +147,19 @@ shared_ptr<bool_expr> bool_expr::factory(struct query_spec *q)
     return make_shared<bool_term>(q);
   else if (random()%2)
     return make_shared<truth_value>(q);
-  else
+  else if (random()%2)
     return make_shared<null_predicate>(q);
+  else
+    return make_shared<distinct_pred>(q);
+}
+
+distinct_pred::distinct_pred(struct query_spec *q) : bool_expr(q)
+{
+  lhs = make_shared<column_reference>(q);
+ retry:
+  rhs = make_shared<column_reference>(q);
+  if (lhs->type != rhs->type)
+    goto retry;
 }
 
 comparison_op::comparison_op(struct query_spec *q) : bool_expr(q)
