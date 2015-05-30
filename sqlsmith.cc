@@ -41,9 +41,9 @@ int main()
 
       {
 	work w(c);
-	w.exec("set statement_timeout to '1s';");
-	w.exec("set client_min_messages to 'ERROR';");
-	w.exec("set lc_messages to 'C';");
+	w.exec("set statement_timeout to '1s';"
+	       "set client_min_messages to 'ERROR';"
+	       "set lc_messages to 'C';");
 	w.commit();
       }
       int query_count = 0;
@@ -71,10 +71,13 @@ int main()
 	    result r = w.exec(s.str() + ";");
 	    auto q1 = high_resolution_clock::now();
 	    query_time +=  duration_cast<milliseconds>(q1-q0);
-	    w.commit();
+	    w.abort();
 	    cerr << ".";
 	  } catch (const pqxx::sql_error &e) {
-	    errors[e.what()]++;
+	    istringstream err(e.what());
+	    string line;
+	    getline(err, line);
+	    errors[line]++;
 	    cerr << (regex_match(e.what(), timeout) ? "t" : "e");
 	  }
 
@@ -84,7 +87,7 @@ int main()
  	    cerr << 1000.0*query_count/query_time.count() << " exec/s)" << endl;
 	    int error_count = 0;
 	    for (auto e : errors) {
-	      cerr << e.second << "\t" << e.first;
+	      cerr << e.second << "\t" << e.first << endl;
 	      error_count += e.second;
 	    }
 	    cerr << "error rate: " << (float)error_count/query_count << endl;

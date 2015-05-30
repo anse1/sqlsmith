@@ -1,1 +1,4 @@
 SQLsmith is a tool that can generate random SQL queries.
+
+While its paragon is Csmith, the current state of implementation only
+supports generating read-only queries against PostgreSQL databases.
