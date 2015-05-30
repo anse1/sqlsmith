@@ -9,14 +9,14 @@
 
 using namespace std;
 
-table_ref *table_ref::factory(scope &s) {
-  table_ref *r;
+shared_ptr<table_ref> table_ref::factory(scope &s) {
+  shared_ptr<table_ref> r;
   if (random()%4)
-    r = new table_or_query_name(s);
+    r = make_shared<table_or_query_name>(s);
   else if (random()%2)
-    r = new joined_table(s);
+    r = make_shared<joined_table>(s);
   else
-    r = new table_subquery(s);
+    r = make_shared<table_subquery>(s);
   return r;
 }
 
@@ -55,7 +55,7 @@ joined_table::joined_table(scope &s) {
   lhs = table_ref::factory(s);
   rhs = table_ref::factory(s);
   while (lhs->t == rhs->t) {
-    delete rhs; rhs = table_ref::factory(s);
+    rhs = table_ref::factory(s);
   }
     
   condition = "";
@@ -63,7 +63,7 @@ joined_table::joined_table(scope &s) {
   column c1 = random_pick<column>(lhs->t->columns);
   if (c1.type == "ARRAY"
       || c1.type == "anyarray") {
-    delete rhs; delete lhs; goto retry;
+    goto retry;
   }
   
   for (auto c2 : rhs->t->columns) {
@@ -74,8 +74,6 @@ joined_table::joined_table(scope &s) {
     }
   }
   if (condition == "") {
-    delete rhs;
-    delete lhs;
     goto retry;
   }
 
@@ -135,7 +133,7 @@ value_expr* value_expr::factory(query_spec *q)
 
 column_reference::column_reference(query_spec *q)
 {
-  table_ref *ref = random_pick<table_ref*>(q->fc.reflist);
+  shared_ptr<table_ref> ref = random_pick<shared_ptr<table_ref> >(q->fc.reflist);
   relation *r = ref->t;
   reference += ref->ident() + ".";
   column c = random_pick<column>(r->columns);

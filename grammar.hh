@@ -3,6 +3,9 @@
 
 #include <ostream>
 #include "relmodel.hh"
+#include <memory>
+
+using std::shared_ptr;
 
 struct prod {
   struct prod *parent;
@@ -11,7 +14,7 @@ struct prod {
 
 struct table_ref : public prod {
   named_relation *t;
-  static table_ref *factory(scope &s);
+  static shared_ptr<table_ref> factory(scope &s);
   virtual ~table_ref() { }
   virtual std::string ident() { return t->ident(); }
 };
@@ -40,19 +43,17 @@ struct joined_table : table_ref {
   std::string condition;
   std::string alias;
   virtual std::string ident() { return alias; }
-  table_ref *lhs;
-  table_ref *rhs;
+  shared_ptr<table_ref> lhs;
+  shared_ptr<table_ref> rhs;
   virtual ~joined_table() {
-    delete lhs;
-    delete rhs;
   }
 };
 
 struct from_clause : public prod {
-  std::vector<table_ref*> reflist;
+  std::vector<shared_ptr<table_ref> > reflist;
   virtual void out(std::ostream &out);
   from_clause(scope &s);
-  ~from_clause() { for (auto p : reflist) delete p; }
+  ~from_clause() { }
 };
 
 struct value_expr: public prod {
