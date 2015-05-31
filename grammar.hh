@@ -90,7 +90,7 @@ struct value_expr: prod {
 
 struct const_expr: value_expr {
   const_expr(prod *p) : value_expr(p) { type = "integer"; }
-  virtual void out(std::ostream &out) { out << random()%43; }
+  virtual void out(std::ostream &out) { out << d42(); }
   virtual ~const_expr() { }
 };
 
@@ -112,7 +112,7 @@ struct truth_value : bool_expr {
   const char *op;
   virtual void out(std::ostream &out) { out << op; }
   truth_value(prod *p, query_spec *q) : bool_expr(p, q) {
-    op = ((random()&1) ? "true" : "false");
+    op = ( (d6() < 4) ? "true" : "false");
   }
 };
 
@@ -121,7 +121,7 @@ struct null_predicate : bool_expr {
   const char *negate;
   shared_ptr<value_expr> expr;
   null_predicate(prod *p, query_spec *q) : bool_expr(p, q) {
-    negate = ((random()&1) ? "not " : "");
+    negate = ((d6()<4) ? "not " : "");
     expr = value_expr::factory(this, q);
   }
   virtual void out(std::ostream &out) {
@@ -142,7 +142,7 @@ struct bool_term : bool_expr {
   }
   bool_term(prod *p, query_spec *q) : bool_expr(p, q)
   {
-    op = ((random()&1) ? "or" : "and");
+    op = ((d6()<4) ? "or" : "and");
     lhs = bool_expr::factory(this, q);
     rhs = bool_expr::factory(this, q);
   }
