@@ -141,7 +141,7 @@ int main()
 	    }
 	    cerr << "error rate: " << (float)error_count/query_count << endl;
 
-	    v.report();
+// 	    v.report();
 	  }
       }
     }
