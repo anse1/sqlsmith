@@ -39,12 +39,11 @@ void table_or_query_name::out(std::ostream &out) {
 int table_subquery::instances;
 
 table_subquery::table_subquery(scope &s) {
-  query = new query_spec(s);
-  t = new named_relation();
-  t->columns = query->sl.derived_table.columns;
   ostringstream r;
   r << "subq_" << instances++;
-  t->name = r.str();
+  query = new query_spec(s);
+  t = new named_relation(r.str());
+  t->columns = query->sl.derived_table.columns;
 }
 
 table_subquery::~table_subquery() {

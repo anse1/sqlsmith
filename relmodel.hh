@@ -18,19 +18,18 @@ struct relation {
   std::vector<column> columns;
 };
 
-struct named_relation : public relation {
+struct named_relation : relation {
   string name;
   virtual string ident() { return name; }
-  virtual ~named_relation() { };
+  virtual ~named_relation() { }
+  named_relation(string n) : name(n) { }
 };
 
-struct table : public named_relation {
+struct table : named_relation {
   string catalog;
-  string name;
   string schema;
   table(string catalog, string name, string schema)
-    : catalog(catalog), name(name), schema(schema) { }
-  table() { }
+    : named_relation(name), catalog(catalog), schema(schema) { }
   virtual string ident() { return schema + "." + name; }
   virtual ~table() { };
 };
