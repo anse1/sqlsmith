@@ -8,39 +8,41 @@
 using std::shared_ptr;
 
 struct prod {
-  struct prod *parent;
+  struct prod *pprod;
+  prod(prod *parent) : pprod(parent) { }
   virtual void out(std::ostream &out) = 0;
 };
 
 std::ostream& operator<<(std::ostream& s, struct prod& p);
 
-struct table_ref : public prod {
+struct table_ref : prod {
   named_relation *t;
-  static shared_ptr<table_ref> factory(scope &s);
+  static shared_ptr<table_ref> factory(prod *p, scope &s);
+  table_ref(prod *p) : prod(p) { }
   virtual ~table_ref() { }
   virtual std::string ident() { return t->ident(); }
 };
 
-struct table_or_query_name : public table_ref {
+struct table_or_query_name : table_ref {
   virtual void out(std::ostream &out);
-  table_or_query_name(scope &s);
+  table_or_query_name(prod *p, scope &s);
   virtual ~table_or_query_name() { }
   static int sequence;
   virtual std::string ident() { return alias; }
   std::string alias;
 };
 
-struct table_subquery : public table_ref {
+struct table_subquery : table_ref {
   virtual void out(std::ostream &out);
   struct query_spec *query;
-  table_subquery(scope &s);
+  table_subquery(prod *p, scope &s);
   static int instances;
   virtual ~table_subquery();
 };
 
 struct joined_table : table_ref {
   virtual void out(std::ostream &out);  
-  joined_table(scope &s);
+  joined_table(prod *p, scope &s);
   std::string type;
   std::string condition;
   std::string alias;
@@ -51,28 +53,29 @@ struct joined_table : table_ref {
   }
 };
 
-struct from_clause : public prod {
+struct from_clause : prod {
   std::vector<shared_ptr<table_ref> > reflist;
   virtual void out(std::ostream &out);
-  from_clause(scope &s);
+  from_clause(prod *p, scope &s);
   ~from_clause() { }
 };
 
-struct value_expr: public prod {
+struct value_expr: prod {
   std::string type;
   virtual void out(std::ostream &out) = 0;
   virtual ~value_expr() { }
-  static shared_ptr<value_expr> factory(struct query_spec *q);
+  value_expr(prod *p) : prod(p) { }
+  static shared_ptr<value_expr> factory(prod *p, query_spec *q);
 };
 
 struct const_expr: value_expr {
-  const_expr() { type = "integer"; }
+  const_expr(prod *p) : value_expr(p) { type = "integer"; }
   virtual void out(std::ostream &out) { out << random()%43; }
   virtual ~const_expr() { }
 };
 
 struct column_reference: value_expr {
-  column_reference(struct query_spec *q);
+  column_reference(prod *p, query_spec *q);
   virtual void out(std::ostream &out) { out << reference; }
   std::string reference;
   virtual ~column_reference() { }
@@ -80,15 +83,15 @@ struct column_reference: value_expr {
 
 struct bool_expr : value_expr {
   virtual ~bool_expr() { }
-  bool_expr(struct query_spec *q) { type = "bool"; }
-  static shared_ptr<bool_expr> factory(struct query_spec *q);
+  bool_expr(prod *p, query_spec *q) : value_expr(p) { type = "bool"; }
+  static shared_ptr<bool_expr> factory(prod *p, query_spec *q);
 };
 
 struct truth_value : bool_expr {
   virtual ~truth_value() { }
   const char *op;
   virtual void out(std::ostream &out) { out << op; }
-  truth_value(struct query_spec *q) : bool_expr(q) {
+  truth_value(prod *p, query_spec *q) : bool_expr(p, q) {
     op = ((random()&1) ? "true" : "false");
   }
 };
@@ -97,9 +100,9 @@ struct null_predicate : bool_expr {
   virtual ~null_predicate() { }
   const char *negate;
   shared_ptr<value_expr> expr;
-  null_predicate(struct query_spec *q) : bool_expr(q) {
+  null_predicate(prod *p, query_spec *q) : bool_expr(p, q) {
     negate = ((random()&1) ? "not " : "");
-    expr = value_expr::factory(q);
+    expr = value_expr::factory(this, q);
   }
   virtual void out(std::ostream &out) {
     out << *expr << " is " << negate << "NULL";
@@ -113,18 +116,18 @@ struct bool_term : bool_expr {
   virtual void out(std::ostream &out) {
     out << "( " << *lhs << " ) " << op << " ( " << *rhs << " )";
   }
-  bool_term(struct query_spec *q) : bool_expr(q)
+  bool_term(prod *p, query_spec *q) : bool_expr(p, q)
   {
     op = ((random()&1) ? "or" : "and");
-    lhs = bool_expr::factory(q);
-    rhs = bool_expr::factory(q);
+    lhs = bool_expr::factory(this, q);
+    rhs = bool_expr::factory(this, q);
   }
 };
 
 struct distinct_pred : bool_expr {
   shared_ptr<value_expr> lhs;
   shared_ptr<value_expr> rhs;
-  distinct_pred(struct query_spec *q);
+  distinct_pred(prod *p, query_spec *q);
   virtual ~distinct_pred() { };
   virtual void out(std::ostream &o) {
     o << *lhs << " is distinct from " << *rhs;
@@ -135,42 +138,42 @@ struct comparison_op : bool_expr {
   shared_ptr<value_expr> lhs;
   shared_ptr<value_expr> rhs;
   op *oper;
-  comparison_op(struct query_spec *q);
+  comparison_op(prod *p, query_spec *q);
   virtual ~comparison_op() { };
   virtual void out(std::ostream &o) {
     o << *lhs << oper->name << *rhs;
   }
 };
   
-struct select_list : public prod {
+struct select_list : prod {
   struct query_spec *query;
   std::vector<shared_ptr<value_expr> > value_exprs;
   relation derived_table;
   int columns = 0;
-  select_list(struct query_spec *q);
+  select_list(query_spec *q);
   virtual void out(std::ostream &out);
   ~select_list() { }
 };
 
-struct query_spec : public prod {
+struct query_spec : prod {
   std::string set_quantifier;
   from_clause fc;
   select_list sl;
   shared_ptr<bool_expr> search;
   std::string limit_clause;
   virtual void out(std::ostream &out);
-  query_spec(scope &s);
+  query_spec(prod *p, scope &s);
   virtual ~query_spec() { }
 };
 
-struct prepare_stmt : public prod {
+struct prepare_stmt : prod {
   query_spec q;
   static long seq;
   long id;
   virtual void out(std::ostream &out) {
     out << "prepare prep" << id << " as " << q;
   }
-  prepare_stmt(scope &s) : q(s) {
+  prepare_stmt(prod *p, scope &s) : prod(p), q(p, s) {
     id = seq++;
   }
 };
