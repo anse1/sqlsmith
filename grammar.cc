@@ -207,10 +207,11 @@ query_spec::query_spec(scope &s) : fc(s), sl(this) {
 
   vector<column> &cols = sl.derived_table.columns;
 
-  if (!count_if(cols.begin(), cols.end(),
-		[] (column c) { return c.type == "anyarray"; })) {
-    set_quantifier = (d(6) == 1) ? "" : "distinct ";
-  }
+//   if (!count_if(cols.begin(), cols.end(),
+// 		[] (column c) { return c.type == "anyarray"; })) {
+//     set_quantifier = (d(6) == 1) ? "" : "distinct ";
+//   }
+  set_quantifier = "";
 
   search = bool_expr::factory(this);
 
