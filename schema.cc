@@ -26,7 +26,7 @@ schema_pqxx::schema_pqxx() {
 
   for (auto t = tables.begin(); t != tables.end(); ++t) {
     string q("select column_name, "
-	     "data_type"
+	     "udt_name"
 	     " from information_schema.columns where");
     q += " table_catalog = " + w.quote(t->catalog);
     q += " and table_schema = " + w.quote(t->schema);
