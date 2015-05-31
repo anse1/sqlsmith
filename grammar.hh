@@ -9,7 +9,10 @@ using std::shared_ptr;
 
 struct prod {
   struct prod *pprod;
-  prod(prod *parent) : pprod(parent) { }
+  int level;
+  prod(prod *parent) : pprod(parent) {
+    level = parent ? parent->level + 1 : 0;
+  }
   virtual void out(std::ostream &out) = 0;
 };
 
