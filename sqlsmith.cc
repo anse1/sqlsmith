@@ -23,19 +23,33 @@ extern "C" {
 regex timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
 
 struct stats_visitor : prod_visitor {
-  int nodes = 0;
+  float nodes = 0;
   int maxlevel = 0;
-  int sum_of_maxlevels = 0;
+  float sum_of_maxlevels = 0;
+  map<const char*, long> production_stats;
   virtual void visit(struct prod *p) {
     nodes++;
     if (p->level > maxlevel)
       maxlevel = p->level;
+    production_stats[typeid(*p).name()]++;
   }
   void flush() {
     sum_of_maxlevels += maxlevel;
     maxlevel = 0;
   }
-  virtual ~stats_visitor() { }
+  void report() {
+    cerr << "production statistics" << endl;
+    vector<pair<const char *, long> > report;
+    for (auto p : production_stats)
+      report.push_back(p);
+    stable_sort(report.begin(), report.end(),
+		[](const pair<std::string, long> &a,
+		   const pair<std::string, long> &b)
+		{ return a.second > b.second; });
+    for (auto p : report) {
+      cerr << p.second << "\t" << p.first << endl;
+    }
+  }
 };
 
 
@@ -118,8 +132,9 @@ int main()
 	      error_count += e.second;
 	      cerr << e.second << "\t" << e.first << endl;
 	    }
-	    
 	    cerr << "error rate: " << (float)error_count/query_count << endl;
+
+	    v.report();
 	  }
       }
     }
