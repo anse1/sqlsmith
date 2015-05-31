@@ -65,6 +65,9 @@ joined_table::joined_table(prod *p, scope &s) : table_ref(p) {
 
   condition = "";
 
+  if (!lhs->t->columns.size())
+    goto retry;
+
   column c1 = random_pick<column>(lhs->t->columns);
 
   for (auto c2 : rhs->t->columns) {
@@ -115,16 +118,14 @@ from_clause::from_clause(prod *p, scope &s) : prod(p) {
 
 shared_ptr<value_expr> value_expr::factory(prod *p, query_spec *q)
 {
-  shared_ptr<value_expr> r;
-
-  if (1 == d42())
-    r = make_shared<const_expr>(p);
-  else
-    r = make_shared<column_reference>(p,q);
-
-  if (! r->type.size())
-    throw logic_error("generated expr with unknown type");
-  return r;
+  try {
+    if (1 == d42())
+      return make_shared<const_expr>(p);
+    else
+      return make_shared<column_reference>(p,q);
+  } catch (runtime_error &e) {
+    return factory(p,q);
+  }
 }
 
 column_reference::column_reference(prod *p, query_spec *q) : value_expr(p)
@@ -132,6 +133,8 @@ column_reference::column_reference(prod *p, query_spec *q) : value_expr(p)
   shared_ptr<table_ref> ref = random_pick<shared_ptr<table_ref> >(q->fc.reflist);
   relation *r = ref->t;
   reference += ref->ident() + ".";
+  if (!r->columns.size())
+    throw runtime_error("Cannot find column candidate");
   column c = random_pick<column>(r->columns);
   type = c.type;
   reference += c.name;
