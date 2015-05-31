@@ -43,7 +43,7 @@ struct table_or_query_name : table_ref {
 
 struct table_subquery : table_ref {
   virtual void out(std::ostream &out);
-  struct query_spec *query;
+  shared_ptr<query_spec> query;
   table_subquery(prod *p, scope &s);
   static int instances;
   virtual ~table_subquery();

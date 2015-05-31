@@ -41,13 +41,12 @@ int table_subquery::instances;
 table_subquery::table_subquery(prod *p, scope &s) : table_ref(p) {
   ostringstream r;
   r << "subq_" << instances++;
-  query = new query_spec(p, s);
+  query = make_shared<query_spec>(p, s);
   t = new named_relation(r.str());
   t->columns = query->sl.derived_table.columns;
 }
 
 table_subquery::~table_subquery() {
-  delete query;
   delete t;
 }
 
