@@ -43,7 +43,7 @@ struct table_or_query_name : table_ref {
 
 struct table_subquery : table_ref {
   virtual void out(std::ostream &out);
-  shared_ptr<query_spec> query;
+  shared_ptr<struct query_spec> query;
   table_subquery(prod *p, scope &s);
   static int instances;
   virtual ~table_subquery();
@@ -133,6 +133,14 @@ struct null_predicate : bool_expr {
   }
 };
 
+struct exists_predicate : bool_expr {
+  shared_ptr<struct query_spec> subquery;
+  virtual ~exists_predicate() { }
+  exists_predicate(prod *p, struct query_spec *q);
+  virtual void out(std::ostream &out);
+  virtual void accept(prod_visitor *v);
+};
+
 struct bool_binop : bool_expr {
   shared_ptr<value_expr> lhs, rhs;
   bool_binop(prod *p, query_spec *q) : bool_expr(p, q) { }
@@ -193,6 +201,7 @@ struct query_spec : prod {
   std::string set_quantifier;
   from_clause fc;
   select_list sl;
+  scope query_scope;
   shared_ptr<bool_expr> search;
   std::string limit_clause;
   virtual void out(std::ostream &out);

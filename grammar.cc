@@ -144,10 +144,28 @@ shared_ptr<bool_expr> bool_expr::factory(prod *p, query_spec *q)
   else if (d6() < 4)
     return make_shared<bool_term>(p,q);
   else if (d6() < 4)
+    return make_shared<null_predicate>(p,q);
+  else if (d6() < 4)
     return make_shared<truth_value>(p,q);
   else
-    return make_shared<null_predicate>(p,q);
+    return make_shared<exists_predicate>(p,q);
 //     return make_shared<distinct_pred>(q);
+}
+
+exists_predicate::exists_predicate(prod *p, query_spec *q) : bool_expr(p, q)
+{
+  subquery = make_shared<query_spec>(p, q->query_scope);
+}
+
+void exists_predicate::accept(prod_visitor *v)
+{
+  v->visit(this);
+  subquery->accept(v);
+}
+
+void exists_predicate::out(std::ostream &out)
+{
+  out << "EXISTS (" << *subquery << ")";
 }
 
 distinct_pred::distinct_pred(prod *p, query_spec *q) : bool_binop(p, q)
@@ -202,7 +220,9 @@ void query_spec::out(std::ostream &out) {
       << limit_clause;
 }
 
-query_spec::query_spec(prod *p, scope &s) : prod(p), fc(this, s), sl(this)  {
+query_spec::query_spec(prod *p, scope &s) :
+  prod(p), fc(this, s), sl(this), query_scope(s)
+{
 
   vector<column> &cols = sl.derived_table.columns;
 

@@ -20,7 +20,8 @@ extern "C" {
 #include <unistd.h>
 }
 
-regex timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
+regex e_timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
+regex e_syntax("ERROR:  syntax error at or near(\n|.)*");
 
 struct stats_visitor : prod_visitor {
   float nodes = 0;
@@ -112,7 +113,12 @@ int main()
 	    string line;
 	    getline(err, line);
 	    errors[line]++;
-	    cerr << (regex_match(e.what(), timeout) ? "t" : "e");
+	    if (regex_match(e.what(), e_timeout))
+	      cerr << "t";
+	    else if (regex_match(e.what(), e_syntax))
+	      cerr << "s";
+	    else
+	      cerr << "e";
 	  }
 	  if (0 == query_count%1000) {
 	    cerr << endl << "queries: " << query_count
