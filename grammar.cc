@@ -51,6 +51,11 @@ table_subquery::~table_subquery() {
   delete t;
 }
 
+void table_subquery::accept(prod_visitor *v) {
+  query->accept(v);
+  v->visit(this);
+}
+
 joined_table::joined_table(prod *p, scope &s) : table_ref(p) {
  retry:
   lhs = table_ref::factory(this, s);
