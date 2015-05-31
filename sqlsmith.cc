@@ -22,6 +22,23 @@ extern "C" {
 
 regex timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
 
+struct stats_visitor : prod_visitor {
+  int nodes = 0;
+  int maxlevel = 0;
+  int sum_of_maxlevels = 0;
+  virtual void visit(struct prod *p) {
+    nodes++;
+    if (p->level > maxlevel)
+      maxlevel = p->level;
+  }
+  void flush() {
+    sum_of_maxlevels += maxlevel;
+    maxlevel = 0;
+  }
+  virtual ~stats_visitor() { }
+};
+
+
 int main()
 {
   cerr << "sqlsmith " << GITREV << endl;
@@ -48,6 +65,7 @@ int main()
       milliseconds gen_time(0);
 
       std::map<std::string, long> errors;
+      stats_visitor v;
       while (1) {
 	  work w(c);
 
@@ -57,6 +75,9 @@ int main()
 	  std::ostringstream s;
 	  gen.out(s);
 
+	  gen.accept(&v);
+	  v.flush();
+	  
 	  auto g1 = high_resolution_clock::now();
 	  gen_time += duration_cast<milliseconds>(g1-g0);
 	  
@@ -79,9 +100,11 @@ int main()
 	    cerr << (regex_match(e.what(), timeout) ? "t" : "e");
 	  }
 	  if (0 == query_count%1000) {
-	    cerr << endl << "queries: " << query_count;
- 	    cerr << " (" << 1000.0*query_count/gen_time.count() << " gen/s, ";
- 	    cerr << 1000.0*query_count/query_time.count() << " exec/s)" << endl;
+	    cerr << endl << "queries: " << query_count
+		 << " (" << 1000.0*query_count/gen_time.count() << " gen/s, "
+		 << 1000.0*query_count/query_time.count() << " exec/s)" << endl;
+ 	    cerr << "avg. height: " << v.sum_of_maxlevels/query_count
+		 << " avg. number of nodes: " << v.nodes/query_count << endl;
 	    int error_count = 0;
 	    vector<pair<std::string, long> > report;
 	    for (auto e : errors) {
