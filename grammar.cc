@@ -67,10 +67,6 @@ joined_table::joined_table(prod *p, scope &s) : table_ref(p) {
   condition = "";
 
   column c1 = random_pick<column>(lhs->t->columns);
-  if (c1.type == "ARRAY"
-      || c1.type == "anyarray") {
-    goto retry;
-  }
 
   for (auto c2 : rhs->t->columns) {
     if (c1.type == c2.type) {
