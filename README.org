@@ -1,4 +1,22 @@
-SQLsmith is a tool that can generate random SQL queries.
+*SQLsmith*
 
-While its paragon is Csmith, the current state of implementation only
-supports generating read-only queries against PostgreSQL databases.
+* Description
+SQLsmith is a tool that can generate random SQL queries.  Its paragon
+is Csmith, which proved valuable for quality assurance in C compilers.
+
+SQLsmith is still in an early protyping phase and hasn't exposed any
+bugs in RDBMS products yet.
+
+* Dependencies:
+- C++11
+- libpqxx
+
+* Usage
+There are no options yet and you have to pass the connection
+credentials via libpq environment variables.  It does send the
+generated queries to the server and to stdout.  It also emits some
+progress indication to stderr.
+
+cd sqlsmith
+make
+PGPORT=5432 PGDATABASE=regress ./sqlsmith > /dev/null
