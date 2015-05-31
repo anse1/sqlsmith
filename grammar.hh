@@ -133,54 +133,45 @@ struct null_predicate : bool_expr {
   }
 };
 
-struct bool_term : bool_expr {
+struct bool_binop : bool_expr {
+  shared_ptr<value_expr> lhs, rhs;
+  bool_binop(prod *p, query_spec *q) : bool_expr(p, q) { }
+  virtual void out(std::ostream &out) = 0;
+  virtual void accept(prod_visitor *v) {
+    v->visit(this);
+    lhs->accept(v);
+    rhs->accept(v);
+  }
+};
+
+struct bool_term : bool_binop {
   virtual ~bool_term() { }
-  shared_ptr<bool_expr> lhs, rhs;
   const char *op;
   virtual void out(std::ostream &out) {
     out << "( " << *lhs << " ) " << op << " ( " << *rhs << " )";
   }
-  bool_term(prod *p, query_spec *q) : bool_expr(p, q)
+  bool_term(prod *p, query_spec *q) : bool_binop(p, q)
   {
     op = ((d6()<4) ? "or" : "and");
     lhs = bool_expr::factory(this, q);
     rhs = bool_expr::factory(this, q);
   }
-  virtual void accept(prod_visitor *v) {
-    v->visit(this);
-    lhs->accept(v);
-    rhs->accept(v);
-  }
 };
 
-struct distinct_pred : bool_expr {
-  shared_ptr<value_expr> lhs;
-  shared_ptr<value_expr> rhs;
+struct distinct_pred : bool_binop {
   distinct_pred(prod *p, query_spec *q);
   virtual ~distinct_pred() { };
   virtual void out(std::ostream &o) {
     o << *lhs << " is distinct from " << *rhs;
   }
-  virtual void accept(prod_visitor *v) {
-    v->visit(this);
-    lhs->accept(v);
-    rhs->accept(v);
-  }
 };
 
-struct comparison_op : bool_expr {
-  shared_ptr<value_expr> lhs;
-  shared_ptr<value_expr> rhs;
+struct comparison_op : bool_binop {
   op *oper;
   comparison_op(prod *p, query_spec *q);
   virtual ~comparison_op() { };
   virtual void out(std::ostream &o) {
     o << *lhs << oper->name << *rhs;
-  }
-  virtual void accept(prod_visitor *v) {
-    v->visit(this);
-    lhs->accept(v);
-    rhs->accept(v);
   }
 };
   

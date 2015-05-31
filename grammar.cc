@@ -151,7 +151,7 @@ shared_ptr<bool_expr> bool_expr::factory(prod *p, query_spec *q)
 //     return make_shared<distinct_pred>(q);
 }
 
-distinct_pred::distinct_pred(prod *p, query_spec *q) : bool_expr(p, q)
+distinct_pred::distinct_pred(prod *p, query_spec *q) : bool_binop(p, q)
 {
   lhs = make_shared<column_reference>(p,q);
  retry:
@@ -160,7 +160,7 @@ distinct_pred::distinct_pred(prod *p, query_spec *q) : bool_expr(p, q)
     goto retry;
 }
 
-comparison_op::comparison_op(prod *p, query_spec *q) : bool_expr(p, q)
+comparison_op::comparison_op(prod *p, query_spec *q) : bool_binop(p, q)
 {
   retry:
   lhs = value_expr::factory(this, q);
