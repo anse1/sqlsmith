@@ -20,9 +20,6 @@ I random_pick(I beg, I end) {
     return beg;
 }
 
-inline int d(int n) {
-    std::uniform_int_distribution<> pick(1, n);
-    return pick(smith::rng);
-}
+int d6(), d9(), d12(), d20(), d42(), d100();
 
 #endif

@@ -1,5 +1,6 @@
 #include <numeric>
 #include <algorithm>
+#include <stdexcept>
 
 #include "random.hh"
 #include "relmodel.hh"
@@ -14,14 +15,13 @@ std::ostream& operator<<(std::ostream& s, prod& p)
 }
 
 shared_ptr<table_ref> table_ref::factory(prod *p, scope &s) {
-  shared_ptr<table_ref> r;
-  if (d(9) == 1)
-    r = make_shared<joined_table>(p, s);
-  else if (d(9) == 1)
-    r = make_shared<table_subquery>(p, s);
-  else
-    r = make_shared<table_or_query_name>(p, s);
-  return r;
+  if (p->level < d6()) {
+    if (d6() <= 3)
+      return make_shared<table_subquery>(p, s);
+    else
+      return make_shared<joined_table>(p, s);
+  }
+  return make_shared<table_or_query_name>(p, s);
 }
 
 int table_or_query_name::sequence = 0;
@@ -83,11 +83,11 @@ joined_table::joined_table(prod *p, scope &s) : table_ref(p) {
     goto retry;
   }
 
-  if (d(6)<4) {
+  if (d6()<4) {
     type = "inner";
     t = lhs->t;
     alias = lhs->ident();
-  } else if (d(6)<4) {
+  } else if (d6()<4) {
     type = "left";
     t = lhs->t;
     alias = lhs->ident();
@@ -122,7 +122,7 @@ shared_ptr<value_expr> value_expr::factory(prod *p, query_spec *q)
 {
   shared_ptr<value_expr> r;
 
-  if (1 == d(42))
+  if (1 == d42())
     r = make_shared<const_expr>(p);
   else
     r = make_shared<column_reference>(p,q);
@@ -144,11 +144,11 @@ column_reference::column_reference(prod *p, query_spec *q) : value_expr(p)
 
 shared_ptr<bool_expr> bool_expr::factory(prod *p, query_spec *q)
 {
-  if(d(6) < 4)
+  if(d6() < 4)
     return make_shared<comparison_op>(p,q);
-  else if (d(6) < 4)
+  else if (d6() < 4)
     return make_shared<bool_term>(p,q);
-  else if (d(6) < 4)
+  else if (d6() < 4)
     return make_shared<truth_value>(p,q);
   else
     return make_shared<null_predicate>(p,q);
@@ -187,7 +187,7 @@ select_list::select_list(query_spec *q) : prod(q)
     ostringstream name;
     name << "c" << columns++;
     derived_table.columns.push_back(column(name.str(), e->type));
-  } while (d(6) > 1);
+  } while (d6() > 1);
 }
 
 void select_list::out(std::ostream &out)
@@ -213,15 +213,15 @@ query_spec::query_spec(prod *p, scope &s) : prod(p), fc(this, s), sl(this)  {
 
 //   if (!count_if(cols.begin(), cols.end(),
 // 		[] (column c) { return c.type == "anyarray"; })) {
-//     set_quantifier = (d(6) == 1) ? "" : "distinct ";
+//     set_quantifier = (d<>) == 1) ? "" : "distinct ";
 //   }
   set_quantifier = "";
 
   search = bool_expr::factory(this, this);
 
-  if (d(6) > 2) {
+  if (d6() > 2) {
     ostringstream cons;
-    cons << " fetch first " << d(100) + d(100) << " rows only ";
+    cons << " fetch first " << d100() + d100() << " rows only ";
     limit_clause = cons.str();
   }
 }

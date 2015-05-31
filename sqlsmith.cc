@@ -89,16 +89,17 @@ int main()
 	  std::ostringstream s;
 	  gen.out(s);
 
-	  gen.accept(&v);
-	  v.flush();
-	  
 	  auto g1 = high_resolution_clock::now();
 	  gen_time += duration_cast<milliseconds>(g1-g0);
 	  
 	  cout << s.str() << endl;
 	  query_count++;
-	  if (79 == query_count%80)
+	  if (79 == query_count%80) {
 	    cerr << endl;
+	  }
+	  gen.accept(&v);
+	  v.flush();
+
 	  try {
 	    auto q0 = high_resolution_clock::now();
 	    result r = w.exec(s.str() + ";");
