@@ -145,10 +145,9 @@ shared_ptr<bool_expr> bool_expr::factory(struct query_spec *q)
     return make_shared<bool_term>(q);
   else if (d(6) < 4)
     return make_shared<truth_value>(q);
-  else if (d(6) < 4)
-    return make_shared<null_predicate>(q);
   else
-    return make_shared<distinct_pred>(q);
+    return make_shared<null_predicate>(q);
+//     return make_shared<distinct_pred>(q);
 }
 
 distinct_pred::distinct_pred(struct query_spec *q) : bool_expr(q)
