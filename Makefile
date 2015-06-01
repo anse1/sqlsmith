@@ -5,7 +5,7 @@ config.h: .git/*
 	echo '"' >> $@
 
 sqlsmith: *.cc config.h
-	clang++ -O3 -g -std=c++11 -Wall *.cc -lpqxx -lpq -o sqlsmith
+	g++ -O3 -g -std=c++11 -Wall *.cc -lpqxx -lpq -o sqlsmith
 
 clean:
 	rm -f sqlsmith config.h

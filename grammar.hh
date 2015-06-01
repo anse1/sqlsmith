@@ -211,7 +211,7 @@ struct query_spec : prod {
   std::string limit_clause;
   virtual void out(std::ostream &out);
   query_spec(prod *p, struct scope *s);
-  virtual ~query_spec() { }
+  virtual ~query_spec() { delete scope; }
   virtual void accept(prod_visitor *v) {
     v->visit(this);
     select_list->accept(v);
