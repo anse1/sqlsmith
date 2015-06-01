@@ -6,6 +6,7 @@
 #include <numeric>
 
 using std::string;
+using std::vector;
 
 struct column {
   string name;
@@ -15,7 +16,8 @@ struct column {
 };
 
 struct relation {
-  std::vector<column> columns;
+  vector<column> cols;
+  virtual vector<column> &columns() { return cols; }
 };
 
 struct named_relation : relation {
@@ -23,6 +25,13 @@ struct named_relation : relation {
   virtual string ident() { return name; }
   virtual ~named_relation() { }
   named_relation(string n) : name(n) { }
+};
+
+struct aliased_relation : named_relation {
+  relation *rel;
+  virtual ~aliased_relation() { }
+  aliased_relation(string n, relation* r) : named_relation(n), rel(r) { }
+  virtual vector<column>& columns() { return rel->columns(); }
 };
 
 struct table : named_relation {
@@ -36,7 +45,9 @@ struct table : named_relation {
 
 struct scope {
   struct scope *parent;
-  std::vector<named_relation*> tables;
+  vector<named_relation*> tables;  // available to table_ref productions
+  vector<named_relation*> refs; // available to column_ref productions
+  scope(struct scope *parent = 0) : parent(parent) { }
 };
 
 struct op {

@@ -14,9 +14,16 @@ struct prod_visitor {
 
 struct prod {
   struct prod *pprod;
+  struct scope *scope;
   int level;
   prod(prod *parent) : pprod(parent) {
-    level = parent ? parent->level + 1 : 0;
+    if (parent) {
+      level = parent->level + 1;
+      scope = parent->scope;
+    } else {
+      scope = 0;
+      level = 0;
+    }
   }
   virtual void out(std::ostream &out) = 0;
   virtual void accept(prod_visitor *v) { v->visit(this); }
@@ -25,26 +32,23 @@ struct prod {
 std::ostream& operator<<(std::ostream& s, struct prod& p);
 
 struct table_ref : prod {
-  named_relation *t;
-  static shared_ptr<table_ref> factory(prod *p, scope &s);
+  vector<shared_ptr<aliased_relation> > refs;
+  static shared_ptr<table_ref> factory(prod *p);
   table_ref(prod *p) : prod(p) { }
   virtual ~table_ref() { }
-  virtual std::string ident() { return t->ident(); }
 };
 
 struct table_or_query_name : table_ref {
   virtual void out(std::ostream &out);
-  table_or_query_name(prod *p, scope &s);
+  table_or_query_name(prod *p);
   virtual ~table_or_query_name() { }
   static int sequence;
-  virtual std::string ident() { return alias; }
-  std::string alias;
 };
 
 struct table_subquery : table_ref {
   virtual void out(std::ostream &out);
   shared_ptr<struct query_spec> query;
-  table_subquery(prod *p, scope &s);
+  table_subquery(prod *p);
   static int instances;
   virtual ~table_subquery();
   virtual void accept(prod_visitor *v);
@@ -52,7 +56,7 @@ struct table_subquery : table_ref {
 
 struct joined_table : table_ref {
   virtual void out(std::ostream &out);  
-  joined_table(prod *p, scope &s);
+  joined_table(prod *p);
   std::string type;
   std::string condition;
   std::string alias;
@@ -71,7 +75,7 @@ struct joined_table : table_ref {
 struct from_clause : prod {
   std::vector<shared_ptr<table_ref> > reflist;
   virtual void out(std::ostream &out);
-  from_clause(prod *p, scope &s);
+  from_clause(prod *p);
   ~from_clause() { }
   virtual void accept(prod_visitor *v) {
     v->visit(this);
@@ -85,7 +89,7 @@ struct value_expr: prod {
   virtual void out(std::ostream &out) = 0;
   virtual ~value_expr() { }
   value_expr(prod *p) : prod(p) { }
-  static shared_ptr<value_expr> factory(prod *p, query_spec *q);
+  static shared_ptr<value_expr> factory(prod *p);
 };
 
 struct const_expr: value_expr {
@@ -95,7 +99,7 @@ struct const_expr: value_expr {
 };
 
 struct column_reference: value_expr {
-  column_reference(prod *p, query_spec *q);
+  column_reference(prod *p);
   virtual void out(std::ostream &out) { out << reference; }
   std::string reference;
   virtual ~column_reference() { }
@@ -103,15 +107,15 @@ struct column_reference: value_expr {
 
 struct bool_expr : value_expr {
   virtual ~bool_expr() { }
-  bool_expr(prod *p, query_spec *q) : value_expr(p) { type = "bool"; }
-  static shared_ptr<bool_expr> factory(prod *p, query_spec *q);
+  bool_expr(prod *p) : value_expr(p) { type = "bool"; }
+  static shared_ptr<bool_expr> factory(prod *p);
 };
 
 struct truth_value : bool_expr {
   virtual ~truth_value() { }
   const char *op;
   virtual void out(std::ostream &out) { out << op; }
-  truth_value(prod *p, query_spec *q) : bool_expr(p, q) {
+  truth_value(prod *p) : bool_expr(p) {
     op = ( (d6() < 4) ? "true" : "false");
   }
 };
@@ -120,9 +124,9 @@ struct null_predicate : bool_expr {
   virtual ~null_predicate() { }
   const char *negate;
   shared_ptr<value_expr> expr;
-  null_predicate(prod *p, query_spec *q) : bool_expr(p, q) {
+  null_predicate(prod *p) : bool_expr(p) {
     negate = ((d6()<4) ? "not " : "");
-    expr = value_expr::factory(this, q);
+    expr = value_expr::factory(this);
   }
   virtual void out(std::ostream &out) {
     out << *expr << " is " << negate << "NULL";
@@ -136,14 +140,14 @@ struct null_predicate : bool_expr {
 struct exists_predicate : bool_expr {
   shared_ptr<struct query_spec> subquery;
   virtual ~exists_predicate() { }
-  exists_predicate(prod *p, struct query_spec *q);
+  exists_predicate(prod *p);
   virtual void out(std::ostream &out);
   virtual void accept(prod_visitor *v);
 };
 
 struct bool_binop : bool_expr {
   shared_ptr<value_expr> lhs, rhs;
-  bool_binop(prod *p, query_spec *q) : bool_expr(p, q) { }
+  bool_binop(prod *p) : bool_expr(p) { }
   virtual void out(std::ostream &out) = 0;
   virtual void accept(prod_visitor *v) {
     v->visit(this);
@@ -158,16 +162,16 @@ struct bool_term : bool_binop {
   virtual void out(std::ostream &out) {
     out << "( " << *lhs << " ) " << op << " ( " << *rhs << " )";
   }
-  bool_term(prod *p, query_spec *q) : bool_binop(p, q)
+  bool_term(prod *p) : bool_binop(p)
   {
     op = ((d6()<4) ? "or" : "and");
-    lhs = bool_expr::factory(this, q);
-    rhs = bool_expr::factory(this, q);
+    lhs = bool_expr::factory(this);
+    rhs = bool_expr::factory(this);
   }
 };
 
 struct distinct_pred : bool_binop {
-  distinct_pred(prod *p, query_spec *q);
+  distinct_pred(prod *p);
   virtual ~distinct_pred() { };
   virtual void out(std::ostream &o) {
     o << *lhs << " is distinct from " << *rhs;
@@ -176,7 +180,7 @@ struct distinct_pred : bool_binop {
 
 struct comparison_op : bool_binop {
   op *oper;
-  comparison_op(prod *p, query_spec *q);
+  comparison_op(prod *p);
   virtual ~comparison_op() { };
   virtual void out(std::ostream &o) {
     o << *lhs << oper->name << *rhs;
@@ -199,18 +203,17 @@ struct select_list : prod {
 
 struct query_spec : prod {
   std::string set_quantifier;
-  from_clause fc;
-  select_list sl;
-  scope query_scope;
+  shared_ptr<struct from_clause> from_clause;
+  shared_ptr<struct select_list> select_list;
   shared_ptr<bool_expr> search;
   std::string limit_clause;
   virtual void out(std::ostream &out);
-  query_spec(prod *p, scope &s);
+  query_spec(prod *p, struct scope *s);
   virtual ~query_spec() { }
   virtual void accept(prod_visitor *v) {
     v->visit(this);
-    sl.accept(v);
-    fc.accept(v);
+    select_list->accept(v);
+    from_clause->accept(v);
     search->accept(v);
   }
 };
@@ -222,7 +225,7 @@ struct prepare_stmt : prod {
   virtual void out(std::ostream &out) {
     out << "prepare prep" << id << " as " << q;
   }
-  prepare_stmt(prod *p, scope &s) : prod(p), q(p, s) {
+  prepare_stmt(prod *p) : prod(p), q(p, scope) {
     id = seq++;
   }
   virtual void accept(prod_visitor *v) {

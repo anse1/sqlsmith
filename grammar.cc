@@ -14,66 +14,64 @@ std::ostream& operator<<(std::ostream& s, prod& p)
   p.out(s); return s;
 }
 
-shared_ptr<table_ref> table_ref::factory(prod *p, scope &s) {
+shared_ptr<table_ref> table_ref::factory(prod *p) {
   if (p->level < d6()) {
     if (d6() <= 3)
-      return make_shared<table_subquery>(p, s);
+      return make_shared<table_subquery>(p);
     else
-      return make_shared<joined_table>(p, s);
+      return make_shared<joined_table>(p);
   }
-  return make_shared<table_or_query_name>(p, s);
+  return make_shared<table_or_query_name>(p);
 }
 
 int table_or_query_name::sequence = 0;
-table_or_query_name::table_or_query_name(prod *p, scope &s) : table_ref(p) {
-  t = random_pick<named_relation*>(s.tables);
+table_or_query_name::table_or_query_name(prod *p) : table_ref(p) {
+  named_relation *r = random_pick<named_relation*>(scope->tables);
   ostringstream o;
   o << "rel" << sequence++;
-  alias = o.str();
+  refs.push_back(make_shared<aliased_relation>(o.str(), r));
 }
 
 void table_or_query_name::out(std::ostream &out) {
-  out << t->ident() << " as " << ident();
+  relation *r = refs[0]->rel;
+  named_relation *rel = dynamic_cast<named_relation*>(r);
+  out << rel->ident() << " as " << refs[0]->ident();
 }
 
 int table_subquery::instances;
 
-table_subquery::table_subquery(prod *p, scope &s) : table_ref(p) {
+table_subquery::table_subquery(prod *p) : table_ref(p) {
   ostringstream r;
   r << "subq_" << instances++;
-  query = make_shared<query_spec>(p, s);
-  t = new named_relation(r.str());
-  t->columns = query->sl.derived_table.columns;
+  query = make_shared<query_spec>(p, scope);
+  string alias = r.str();
+  relation *aliased_rel = &query->select_list->derived_table;
+  refs.push_back(make_shared<aliased_relation>(alias, aliased_rel));
 }
 
-table_subquery::~table_subquery() {
-  delete t;
-}
+table_subquery::~table_subquery() { }
 
 void table_subquery::accept(prod_visitor *v) {
   query->accept(v);
   v->visit(this);
 }
 
-joined_table::joined_table(prod *p, scope &s) : table_ref(p) {
+joined_table::joined_table(prod *p) : table_ref(p) {
  retry:
-  lhs = table_ref::factory(this, s);
-  rhs = table_ref::factory(this, s);
-  while (lhs->t == rhs->t) {
-    rhs = table_ref::factory(this, s);
-  }
+  lhs = table_ref::factory(this);
+  rhs = table_ref::factory(this);
 
   condition = "";
 
-  if (!lhs->t->columns.size())
+  if (!lhs->refs[0]->columns().size())
     goto retry;
 
-  column c1 = random_pick<column>(lhs->t->columns);
+  column c1 = random_pick<column>(lhs->refs[0]->columns());
 
-  for (auto c2 : rhs->t->columns) {
+  for (auto c2 : rhs->refs[0]->columns()) {
     if (c1.type == c2.type) {
       condition +=
-	lhs->ident() + "." + c1.name + " = " + rhs->ident() + "." + c2.name + " ";
+	lhs->refs[0]->ident() + "." + c1.name + " = " + rhs->refs[0]->ident() + "." + c2.name + " ";
       break;
     }
   }
@@ -83,17 +81,16 @@ joined_table::joined_table(prod *p, scope &s) : table_ref(p) {
 
   if (d6()<4) {
     type = "inner";
-    t = lhs->t;
-    alias = lhs->ident();
   } else if (d6()<4) {
     type = "left";
-    t = lhs->t;
-    alias = lhs->ident();
   } else {
     type = "right";
-    t = rhs->t;
-    alias = rhs->ident();
   }
+
+  for (auto ref: lhs->refs)
+    refs.push_back(ref);
+  for (auto ref: rhs->refs)
+    refs.push_back(ref);
 }
 
 void joined_table::out(std::ostream &out) {
@@ -102,7 +99,7 @@ void joined_table::out(std::ostream &out) {
 }
 
 void table_subquery::out(std::ostream &out) {
-  out << "(" << *query << ") as " << t->name;
+  out << "(" << *query << ") as " << refs[0]->ident();
 }
 
 void from_clause::out(std::ostream &out) {
@@ -111,53 +108,56 @@ void from_clause::out(std::ostream &out) {
   out << "\n    from " << *reflist[0];
 }
 
-from_clause::from_clause(prod *p, scope &s) : prod(p) {
-  reflist.push_back(table_ref::factory(this, s));
+from_clause::from_clause(prod *p) : prod(p) {
+  reflist.push_back(table_ref::factory(this));
 }
 
 
-shared_ptr<value_expr> value_expr::factory(prod *p, query_spec *q)
+shared_ptr<value_expr> value_expr::factory(prod *p)
 {
   try {
     if (1 == d42())
       return make_shared<const_expr>(p);
     else
-      return make_shared<column_reference>(p,q);
+      return make_shared<column_reference>(p);
   } catch (runtime_error &e) {
-    return factory(p,q);
+    return factory(p);
   }
 }
 
-column_reference::column_reference(prod *p, query_spec *q) : value_expr(p)
+column_reference::column_reference(prod *p) : value_expr(p)
 {
-  shared_ptr<table_ref> ref = random_pick<shared_ptr<table_ref> >(q->fc.reflist);
-  relation *r = ref->t;
-  reference += ref->ident() + ".";
-  if (!r->columns.size())
+  named_relation *r =
+    random_pick<named_relation*>(scope->refs);
+
+  if (!r)
+    throw runtime_error("Cannot find table reference candidate");
+  reference += r->ident() + ".";
+  if (!r->columns().size())
     throw runtime_error("Cannot find column candidate");
-  column c = random_pick<column>(r->columns);
+  column c = random_pick<column>(r->columns());
   type = c.type;
   reference += c.name;
 }
 
-shared_ptr<bool_expr> bool_expr::factory(prod *p, query_spec *q)
+shared_ptr<bool_expr> bool_expr::factory(prod *p)
 {
   if(d6() < 4)
-    return make_shared<comparison_op>(p,q);
+    return make_shared<comparison_op>(p);
   else if (d6() < 4)
-    return make_shared<bool_term>(p,q);
+    return make_shared<bool_term>(p);
   else if (d6() < 4)
-    return make_shared<null_predicate>(p,q);
+    return make_shared<null_predicate>(p);
   else if (d6() < 4)
-    return make_shared<truth_value>(p,q);
+    return make_shared<truth_value>(p);
   else
-    return make_shared<exists_predicate>(p,q);
+    return make_shared<exists_predicate>(p);
 //     return make_shared<distinct_pred>(q);
 }
 
-exists_predicate::exists_predicate(prod *p, query_spec *q) : bool_expr(p, q)
+exists_predicate::exists_predicate(prod *p) : bool_expr(p)
 {
-  subquery = make_shared<query_spec>(p, q->query_scope);
+  subquery = make_shared<query_spec>(p, scope);
 }
 
 void exists_predicate::accept(prod_visitor *v)
@@ -171,20 +171,20 @@ void exists_predicate::out(std::ostream &out)
   out << "EXISTS (" << *subquery << ")";
 }
 
-distinct_pred::distinct_pred(prod *p, query_spec *q) : bool_binop(p, q)
+distinct_pred::distinct_pred(prod *p) : bool_binop(p)
 {
-  lhs = make_shared<column_reference>(p,q);
+  lhs = make_shared<column_reference>(p);
  retry:
-  rhs = make_shared<column_reference>(p,q);
+  rhs = make_shared<column_reference>(p);
   if (lhs->type != rhs->type)
     goto retry;
 }
 
-comparison_op::comparison_op(prod *p, query_spec *q) : bool_binop(p, q)
+comparison_op::comparison_op(prod *p) : bool_binop(p)
 {
   retry:
-  lhs = value_expr::factory(this, q);
-  rhs = value_expr::factory(this, q);
+  lhs = value_expr::factory(this);
+  rhs = value_expr::factory(this);
 
   auto op_iter =
     schema.find_operator(lhs->type, rhs->type, string("boolean"));
@@ -198,11 +198,11 @@ comparison_op::comparison_op(prod *p, query_spec *q) : bool_binop(p, q)
 select_list::select_list(query_spec *q) : prod(q)
 {
   do {
-    shared_ptr<value_expr> e = value_expr::factory(this, q);
+    shared_ptr<value_expr> e = value_expr::factory(this);
     value_exprs.push_back(e);
     ostringstream name;
     name << "c" << columns++;
-    derived_table.columns.push_back(column(name.str(), e->type));
+    derived_table.columns().push_back(column(name.str(), e->type));
   } while (d6() > 1);
 }
 
@@ -210,7 +210,7 @@ void select_list::out(std::ostream &out)
 {
   int i = 0;
   for (auto expr = value_exprs.begin(); expr != value_exprs.end(); expr++) {
-    out << **expr << " as " << derived_table.columns[i].name;
+    out << **expr << " as " << derived_table.columns()[i].name;
     i++;
     if (expr+1 != value_exprs.end())
       out << ", ";
@@ -219,23 +219,27 @@ void select_list::out(std::ostream &out)
 
 void query_spec::out(std::ostream &out) {
   out << "select " << set_quantifier << " "
-      << sl << " " << fc << " where " << *search << " "
+      << *select_list << " " << *from_clause << " where " << *search << " "
       << limit_clause;
 }
 
-query_spec::query_spec(prod *p, scope &s) :
-  prod(p), fc(this, s), sl(this), query_scope(s)
+query_spec::query_spec(prod *p, struct scope *s) :
+  prod(p)
 {
-
-  vector<column> &cols = sl.derived_table.columns;
-
+  vector<column> &cols = select_list->derived_table.columns();
+  scope = new struct scope(s);
+  scope->tables = s->tables;
+  
+  from_clause = make_shared<struct from_clause>(this);
+  select_list = make_shared<struct select_list>(this);
+  
 //   if (!count_if(cols.begin(), cols.end(),
 // 		[] (column c) { return c.type == "anyarray"; })) {
 //     set_quantifier = (d<>) == 1) ? "" : "distinct ";
 //   }
   set_quantifier = "";
 
-  search = bool_expr::factory(this, this);
+  search = bool_expr::factory(this);
 
   if (d6() > 2) {
     ostringstream cons;

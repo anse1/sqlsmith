@@ -37,7 +37,7 @@ schema_pqxx::schema_pqxx() {
     for (auto row : r) {
       column c(row[0].as<string>());
       c.type = row[1].as<string>();
-      t->columns.push_back(c);
+      t->columns().push_back(c);
     }
   }
 

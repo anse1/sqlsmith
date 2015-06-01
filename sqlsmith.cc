@@ -86,7 +86,7 @@ int main()
 
 	  auto g0 = high_resolution_clock::now();
 	  //	  prepare_stmt gen(scope);
-	  query_spec gen(0, scope);
+	  query_spec gen(0, &scope);
 	  std::ostringstream s;
 	  gen.out(s);
 
