@@ -26,16 +26,14 @@ shared_ptr<table_ref> table_ref::factory(prod *p) {
 
 int table_or_query_name::sequence = 0;
 table_or_query_name::table_or_query_name(prod *p) : table_ref(p) {
-  named_relation *r = random_pick<named_relation*>(scope->tables);
+  t = random_pick<named_relation*>(scope->tables);
   ostringstream o;
   o << "rel" << sequence++;
-  refs.push_back(make_shared<aliased_relation>(o.str(), r));
+  refs.push_back(make_shared<aliased_relation>(o.str(), t));
 }
 
 void table_or_query_name::out(std::ostream &out) {
-  relation *r = refs[0]->rel;
-  named_relation *rel = dynamic_cast<named_relation*>(r);
-  out << rel->ident() << " as " << refs[0]->ident();
+  out << t->ident() << " as " << refs[0]->ident();
 }
 
 int table_subquery::instances;
@@ -110,6 +108,8 @@ void from_clause::out(std::ostream &out) {
 
 from_clause::from_clause(prod *p) : prod(p) {
   reflist.push_back(table_ref::factory(this));
+  for (auto r : reflist[0]->refs)
+    scope->refs.push_back(&*r);
 }
 
 

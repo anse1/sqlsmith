@@ -32,7 +32,7 @@ struct prod {
 std::ostream& operator<<(std::ostream& s, struct prod& p);
 
 struct table_ref : prod {
-  vector<shared_ptr<aliased_relation> > refs;
+  vector<shared_ptr<named_relation> > refs;
   static shared_ptr<table_ref> factory(prod *p);
   table_ref(prod *p) : prod(p) { }
   virtual ~table_ref() { }
@@ -43,6 +43,8 @@ struct table_or_query_name : table_ref {
   table_or_query_name(prod *p);
   virtual ~table_or_query_name() { }
   static int sequence;
+private:
+  named_relation *t;
 };
 
 struct table_subquery : table_ref {
