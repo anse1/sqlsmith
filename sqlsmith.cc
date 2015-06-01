@@ -124,8 +124,8 @@ int main()
 	    cerr << endl << "queries: " << query_count
 		 << " (" << 1000.0*query_count/gen_time.count() << " gen/s, "
 		 << 1000.0*query_count/query_time.count() << " exec/s)" << endl;
- 	    cerr << "avg. height: " << v.sum_of_maxlevels/query_count
-		 << " avg. number of nodes: " << v.nodes/query_count << endl;
+ 	    cerr << "AST stats (avg): height = " << v.sum_of_maxlevels/query_count
+		 << " nodes = " << v.nodes/query_count << endl;
 	    int error_count = 0;
 	    vector<pair<std::string, long> > report;
 	    for (auto e : errors) {
