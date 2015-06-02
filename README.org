@@ -1,31 +1,106 @@
-*SQLsmith*
+* SQLsmith
 
-* Description
+** Description
 SQLsmith is a tool that can generate random SQL queries.  Its paragon
 is [[https://embed.cs.utah.edu/csmith/][Csmith]], which proved valuable for quality assurance in C compilers.
 
 SQLsmith is still in an early protyping phase and hasn't exposed any
-bugs in RDBMS products yet.  The only supported RDBMS is Postgres at
-the moment.
+relevant bugs in RDBMS products yet.  The only supported RDBMS is
+Postgres at the moment.
 
-* Dependencies:
+It might be useful in its current stage for safely putting arbitrary
+databases under random load.
+
+** Dependencies:
 - C++11
 - libpqxx
 
-* Usage
+** Usage
 There are no options yet - you have to pass the connection credentials
 via libpq environment variables.  It does send the generated queries
-to the server and to stdout.  It also emits some progress indication
-to stderr.  Example invocation:
+to the server and to stdout (you don't usually want to see them).
+Example invocation:
 
 : cd sqlsmith
 : make sqlsmith
 : PGPORT=5432 PGDATABASE=regress ./sqlsmith > /dev/null
 
-* License
+SQLsmith also emits some progress indication to stderr.  It emits a
+symbol for each query sent to the server.  Currently the following
+ones are generated:
+
+| symbol | meaning      | details                                       |
+|--------+--------------+-----------------------------------------------|
+| .      | ok           | Query generated and executed with ok sqlstate |
+| s      | syntax error | These are bugs sqlsmith - please report       |
+| t      | timeout      | SQLsmith sets a statement timeout of 1s       |
+| e      | other error  |                                               |
+
+It also periodically emits error reports.  In the following example,
+these are mostly caused by the primitive type system.
+
+: queries: 39000 (202.399 gen/s, 298.942 exec/s)
+: AST stats (avg): height = 5.599 nodes = 37.8489
+: 82	ERROR:  invalid regular expression: quantifier operand invalid
+: 70	ERROR:  canceling statement due to statement timeout
+: 44	ERROR:  operator does not exist: point = point
+: 27	ERROR:  operator does not exist: xml = xml
+: 22	ERROR:  cannot compare arrays of different element types
+: 11	ERROR:  could not determine which collation to use for string comparison
+: 5	ERROR:  invalid regular expression: nfa has too many states
+: 4	ERROR:  cache lookup failed for index 2619
+: 4	ERROR:  invalid regular expression: brackets [] not balanced
+: 3	ERROR:  operator does not exist: polygon = polygon
+: 2	ERROR:  invalid regular expression: parentheses () not balanced
+: 1	ERROR:  invalid regular expression: invalid character range
+: error rate: 0.00705128
+
+The only one that looks interesting here is the cache lookup one.
+Taking a closer look at it reveals that it happens when you query the
+catalog view =pg_indexes= with =is not null= on the =indexdef= column:
+
+: self=# select indexdef from pg_catalog.pg_indexes where indexdef is not NULL;
+: FEHLER:  cache lookup failed for index 2619
+
+This is because the planner then puts =pg_get_indexdef(oid)= in a
+context where it sees non-index-oids, which causes it to croak:
+
+: self=# explain select indexdef from pg_catalog.pg_indexes where indexdef is not NULL;
+:                                      QUERY PLAN                                     
+: ------------------------------------------------------------------------------------
+:  Hash Join  (cost=17.60..30.65 rows=9 width=4)
+:    Hash Cond: (i.oid = x.indexrelid)
+:    ->  Seq Scan on pg_class i  (cost=0.00..12.52 rows=114 width=8)
+:          Filter: ((pg_get_indexdef(oid) IS NOT NULL) AND (relkind = 'i'::"char"))
+:    ->  Hash  (cost=17.31..17.31 rows=23 width=4)
+:          ->  Hash Join  (cost=12.52..17.31 rows=23 width=4)
+:                Hash Cond: (x.indrelid = c.oid)
+:                ->  Seq Scan on pg_index x  (cost=0.00..4.13 rows=113 width=8)
+:                ->  Hash  (cost=11.76..11.76 rows=61 width=8)
+:                      ->  Seq Scan on pg_class c  (cost=0.00..11.76 rows=61 width=8)
+:                            Filter: (relkind = ANY ('{r,m}'::"char"[]))
+
+Now this is more of a curiosity than a bug, but maybe someday SQLsmith
+finds a real one...
+
+** Problems
+
+*** TODO The type system is too primitive
+SQLsmith identifies types based on their "name".  This fails when it
+generates queries with anyarray or record.
+
+*** TODO Inefficient algorithms slow it down
+sqlsmith is currently spending most of its time comparing and copying
+std::strings around.  Also, the C++11x RNG scores high in perf.
+
+| revision      | queries/s |                 |
+|---------------+-----------+-----------------|
+| ee9c94f-dirty |       208 | [2015-06-02 Di] |
+
+** License
 
 See COPYING for using and distributing this code.
 
-* Authors
+** Authors
 
 Andreas Seltenreich <seltenreich@gmx.de>
