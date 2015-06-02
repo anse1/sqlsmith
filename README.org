@@ -19,7 +19,7 @@ to the server and to stdout.  It also emits some progress indication
 to stderr.  Example invocation:
 
 : cd sqlsmith
-: make
+: make sqlsmith
 : PGPORT=5432 PGDATABASE=regress ./sqlsmith > /dev/null
 
 * License
