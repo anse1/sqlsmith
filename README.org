@@ -56,8 +56,7 @@ these are mostly caused by the primitive type system.
 : error rate: 0.00705128
 
 The only one that looks interesting here is the cache lookup one.
-Taking a closer look at it reveals that it happens when you query the
-catalog view =pg_indexes= with =is not null= on the =indexdef= column:
+Taking a closer look at it reveals that it happens when you query a certain catalog view like this:
 
 : self=# select indexdef from pg_catalog.pg_indexes where indexdef is not NULL;
 : FEHLER:  cache lookup failed for index 2619
@@ -87,11 +86,11 @@ finds a real one...
 
 *** TODO The type system is too primitive
 SQLsmith identifies types based on their "name".  This fails when it
-generates queries with anyarray or record.
+generates queries with =anyarray= or =record=.
 
 *** TODO Inefficient algorithms slow it down
 sqlsmith is currently spending most of its time comparing and copying
-std::strings around.  Also, the C++11x RNG scores high in perf.
+=std::strings= around.  Also, the =C++11= RNG scores high in =perf=.
 
 | revision      | queries/s |                 |
 |---------------+-----------+-----------------|
