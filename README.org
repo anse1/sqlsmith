@@ -32,7 +32,7 @@ ones are generated:
 | symbol | meaning      | details                                       |
 |--------+--------------+-----------------------------------------------|
 | .      | ok           | Query generated and executed with ok sqlstate |
-| s      | syntax error | These are bugs sqlsmith - please report       |
+| s      | syntax error | These are bugs in sqlsmith - please report    |
 | t      | timeout      | SQLsmith sets a statement timeout of 1s       |
 | e      | other error  |                                               |
 
@@ -56,7 +56,8 @@ these are mostly caused by the primitive type system.
 : error rate: 0.00705128
 
 The only one that looks interesting here is the cache lookup one.
-Taking a closer look at it reveals that it happens when you query a certain catalog view like this:
+Taking a closer look at it reveals that it happens when you query a
+certain catalog view like this:
 
 : self=# select indexdef from pg_catalog.pg_indexes where indexdef is not NULL;
 : FEHLER:  cache lookup failed for index 2619
@@ -64,7 +65,6 @@ Taking a closer look at it reveals that it happens when you query a certain cata
 This is because the planner then puts =pg_get_indexdef(oid)= in a
 context where it sees non-index-oids, which causes it to croak:
 
-: self=# explain select indexdef from pg_catalog.pg_indexes where indexdef is not NULL;
 :                                      QUERY PLAN                                     
 : ------------------------------------------------------------------------------------
 :  Hash Join  (cost=17.60..30.65 rows=9 width=4)
