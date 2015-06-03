@@ -1,9 +1,7 @@
 #ifndef RELMODEL_HH
 #define RELMODEL_HH
 #include <string>
-#include <iostream>
-#include <pqxx/pqxx>
-#include <numeric>
+#include <vector>
 
 using std::string;
 using std::vector;
