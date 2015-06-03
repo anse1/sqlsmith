@@ -38,7 +38,8 @@ void table_or_query_name::out(std::ostream &out) {
 
 int table_subquery::instances;
 
-table_subquery::table_subquery(prod *p) : table_ref(p) {
+table_subquery::table_subquery(prod *p, bool lateral)
+  : table_ref(p), is_lateral(lateral) {
   ostringstream r;
   r << "subq_" << instances++;
   query = make_shared<query_spec>(p, scope);
@@ -97,19 +98,36 @@ void joined_table::out(std::ostream &out) {
 }
 
 void table_subquery::out(std::ostream &out) {
+  if (is_lateral)
+    out << "lateral";
   out << "(" << *query << ") as " << refs[0]->ident();
 }
 
 void from_clause::out(std::ostream &out) {
   if (! reflist.size())
     return;
-  out << "\n    from " << *reflist[0];
+  out << "\n    from ";
+
+  for (auto r = reflist.begin(); r < reflist.end(); r++) {
+    out << **r;
+    if (r + 1 != reflist.end())
+      out << ",";
+  }
 }
 
 from_clause::from_clause(prod *p) : prod(p) {
   reflist.push_back(table_ref::factory(this));
   for (auto r : reflist[0]->refs)
     scope->refs.push_back(&*r);
+
+  if (d6() < 5)
+    return;
+
+  // add a lateral subquery
+  reflist.push_back(make_shared<table_subquery>(p, true));
+  for (auto r : reflist[1]->refs)
+    scope->refs.push_back(&*r);
+
 }
 
 

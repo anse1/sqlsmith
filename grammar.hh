@@ -48,9 +48,10 @@ private:
 };
 
 struct table_subquery : table_ref {
+  bool is_lateral;
   virtual void out(std::ostream &out);
   shared_ptr<struct query_spec> query;
-  table_subquery(prod *p);
+  table_subquery(prod *p, bool lateral = false);
   static int instances;
   virtual ~table_subquery();
   virtual void accept(prod_visitor *v);
@@ -210,7 +211,7 @@ struct query_spec : prod {
   shared_ptr<bool_expr> search;
   std::string limit_clause;
   virtual void out(std::ostream &out);
-  query_spec(prod *p, struct scope *s, bool lateral = 1);
+  query_spec(prod *p, struct scope *s, bool lateral = 0);
   virtual ~query_spec() { delete scope; }
   virtual void accept(prod_visitor *v) {
     v->visit(this);
