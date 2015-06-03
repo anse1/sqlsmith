@@ -223,12 +223,15 @@ void query_spec::out(std::ostream &out) {
       << limit_clause;
 }
 
-query_spec::query_spec(prod *p, struct scope *s) :
+query_spec::query_spec(prod *p, struct scope *s, bool lateral) :
   prod(p)
 {
   vector<column> &cols = select_list->derived_table.columns();
   scope = new struct scope(s);
   scope->tables = s->tables;
+
+  if (lateral)
+    scope->refs = s->refs;
   
   from_clause = make_shared<struct from_clause>(this);
   select_list = make_shared<struct select_list>(this);

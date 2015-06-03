@@ -210,7 +210,7 @@ struct query_spec : prod {
   shared_ptr<bool_expr> search;
   std::string limit_clause;
   virtual void out(std::ostream &out);
-  query_spec(prod *p, struct scope *s);
+  query_spec(prod *p, struct scope *s, bool lateral = 1);
   virtual ~query_spec() { delete scope; }
   virtual void accept(prod_visitor *v) {
     v->visit(this);
