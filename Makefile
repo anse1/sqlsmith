@@ -9,10 +9,10 @@ config.h: .git/*
 	echo '"' >> $@
 
 sqlsmith: $(OBJECTS)
-	g++ -O3 -g -std=c++11 -Wall $+ -lpqxx -lpq -o $@
+	$(CXX) -O3 -g -std=c++11 -Wall $+ -lpqxx -lpq -lstdc++ -o $@
 
 %.o: %.cc config.h
-	g++ -O3 -g -std=c++11 -Wall -c $< -o $@
+	$(CXX) -O3 -g -std=c++11 -Wall -c $< -o $@
 
 grammar.o: grammar.cc *.hh
 relmodel.o: relmodel.cc *.hh
