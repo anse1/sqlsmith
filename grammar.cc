@@ -65,7 +65,7 @@ joined_table::joined_table(prod *p) : table_ref(p) {
   if (!lhs->refs[0]->columns().size())
     goto retry;
 
-  column c1 = random_pick<column>(lhs->refs[0]->columns());
+  column &c1 = random_pick<column>(lhs->refs[0]->columns());
 
   for (auto c2 : rhs->refs[0]->columns()) {
     if (c1.type == c2.type) {
@@ -151,7 +151,7 @@ column_reference::column_reference(prod *p) : value_expr(p)
   reference += r->ident() + ".";
   if (!r->columns().size())
     throw runtime_error("Cannot find column candidate");
-  column c = random_pick<column>(r->columns());
+  column &c = random_pick<column>(r->columns());
   type = c.type;
   reference += c.name;
 }
