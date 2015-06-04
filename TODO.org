@@ -44,13 +44,11 @@ implement operators in relmodel.cc join() project() union() select()
 ** TODO primitive cost model
 * Performance
 
-sqlsmith is currently spending most of its time comparing and copying
-=std::strings= around.  Also, the =C++11= RNG scores high in =perf=.
-
 | revision      | queries/s | nodes |
 |---------------+-----------+-------|
 | ee9c94f-dirty |       208 |     ? |
 | 4547909-dirty |       125 |    72 |
 | 7fa25c6-dirty |       156 |    54 |
 | 32a5d2a       |       188 |    54 |
+| 3a29a40       |       238 |    54 |
 
