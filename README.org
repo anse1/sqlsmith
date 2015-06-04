@@ -82,21 +82,6 @@ context where it sees non-index-oids, which causes it to croak:
 Now this is more of a curiosity than a bug, but maybe someday SQLsmith
 finds a real one...
 
-** Problems
-
-*** TODO The type system is too primitive
-SQLsmith identifies types based on their "name".  This fails when it
-generates queries with =anyarray= or =record=.
-
-*** TODO Inefficient algorithms slow it down
-sqlsmith is currently spending most of its time comparing and copying
-=std::strings= around.  Also, the =C++11= RNG scores high in =perf=.
-
-| revision      | queries/s | nodes |                 |
-|---------------+-----------+-------+-----------------|
-| ee9c94f-dirty |       208 | ?     | [2015-06-02 Di] |
-| 4547909-dirty |       125 | 72    | [2015-06-04 Do] |
-
 ** License
 
 See COPYING for using and distributing this code.

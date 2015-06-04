@@ -1,0 +1,52 @@
+* Driver
+** TODO [#C] multithreading
+- generate next query while blocking on postgres
+** TODO [#B] Log to a database					   :refactor:
+- refactor the console logging
+- make threaded in order to not block the main thing
+** TODO Command line arguments
+- conninfo for target
+- conninfo for logging-db
+- allow selecting/filtering schemas
+* grammar
+** DONE Add LATERAL
+** TODO Add functions						     :schema:
+** TODO Add aggregates						     :schema:
+** TODO Add GROUP BY
+** TODO Add window functions
+** TODO Add FILTER
+** TODO Add other DML
+** TODO [#A] Allow constraining productions by return type
+
+** TODO Generate data for literal use in queries
+** TODO Improve random generation
+- Add Attributes to rules so factories can pick candidates in a
+  weighted fashion.
+- This attribute could then also be used to blacklist productions for
+  incompatible RDBMs
+* schema
+** TODO DTRT with arrays
+* TODO support more RDMBSs
+- Should add more than postgresl early to avoid a point of no return
+- Allow blacklisting of productions for RDBMs with gaps wrt standards
+  conformance (probably depends on improved random generation)
+- Allow automatic detection of problematic productions via stats visitor
+* relmodel
+** tuples
+instead of hacking up tuples the productions maybe it's more sensible
+to implement operators in relmodel.cc
+join() project() union() select()
+** primitive semantic modeling
+- use sampling of witness tuples instead of whole data base
+** primitive cost model
+
+* Performance
+
+sqlsmith is currently spending most of its time comparing and copying
+=std::strings= around.  Also, the =C++11= RNG scores high in =perf=.
+
+| revision      | queries/s | nodes |                 |
+|---------------+-----------+-------+-----------------|
+| ee9c94f-dirty |       208 | ?     | [2015-06-02 Di] |
+| 4547909-dirty |       125 | 72    | [2015-06-04 Do] |
+
