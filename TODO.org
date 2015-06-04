@@ -10,6 +10,8 @@
 - conninfo for logging-db
 - allow selecting/filtering schemas
 ** grammar
+*** TODO [#A] Allow constraining productions by return type
+- needed for coalesce, function calls, etc
 *** TODO Allow productions to fail in factories
 - Make productions throw a smith::no_candidate : std::runtime_error
 - Catch it and randomly pick another one.
@@ -20,8 +22,6 @@
 *** TODO Add window functions
 *** TODO Add FILTER
 *** TODO Add other DML
-*** TODO [#A] Allow constraining productions by return type
-
 *** TODO Generate data for literal use in queries
 *** TODO Improve random generation
 - Add Attributes to rules so factories can pick candidates in a

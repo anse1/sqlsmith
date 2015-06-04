@@ -117,13 +117,13 @@ void from_clause::out(std::ostream &out) {
 
 from_clause::from_clause(prod *p) : prod(p) {
   reflist.push_back(table_ref::factory(this));
-  for (auto r : reflist[0]->refs)
+  for (auto r : reflist.back()->refs)
     scope->refs.push_back(&*r);
 
   while (d6() > 5) {
     // add a lateral subquery
     reflist.push_back(make_shared<table_subquery>(p, true));
-    for (auto r : reflist[1]->refs)
+    for (auto r : reflist.back()->refs)
       scope->refs.push_back(&*r);
   }
 }
