@@ -36,14 +36,12 @@
   conformance (probably depends on improved random generation)
 - Allow automatic detection of problematic productions via stats visitor
 * relmodel
-** tuples
-instead of hacking up tuples the productions maybe it's more sensible
-to implement operators in relmodel.cc
-join() project() union() select()
-** primitive semantic modeling
-- use sampling of witness tuples instead of whole data base
-** primitive cost model
-
+** TODO operations on Tuples
+instead of hacking up tuples inside productions it's more sensible to
+implement operators in relmodel.cc join() project() union() select()
+** TODO Introduce basic semantic modeling
+- use sampling of witness tuples instead of working on whole data base
+** TODO primitive cost model
 * Performance
 
 sqlsmith is currently spending most of its time comparing and copying
@@ -54,4 +52,5 @@ sqlsmith is currently spending most of its time comparing and copying
 | ee9c94f-dirty |       208 |     ? |
 | 4547909-dirty |       125 |    72 |
 | 7fa25c6-dirty |       156 |    54 |
+| 32a5d2a       |       188 |    54 |
 
