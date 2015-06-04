@@ -4,6 +4,7 @@
 #include <ostream>
 #include "relmodel.hh"
 #include <memory>
+#include "schema.hh"
 
 using std::shared_ptr;
 
@@ -96,7 +97,7 @@ struct value_expr: prod {
 };
 
 struct const_expr: value_expr {
-  const_expr(prod *p) : value_expr(p) { type = sqltype::get("integer"); }
+  const_expr(prod *p) : value_expr(p) { type = schema.inttype; }
   virtual void out(std::ostream &out) { out << d42(); }
   virtual ~const_expr() { }
 };
@@ -110,7 +111,7 @@ struct column_reference: value_expr {
 
 struct bool_expr : value_expr {
   virtual ~bool_expr() { }
-  bool_expr(prod *p) : value_expr(p) { type = sqltype::get("bool"); }
+  bool_expr(prod *p) : value_expr(p) { type = schema.booltype; }
   static shared_ptr<bool_expr> factory(prod *p);
 };
 

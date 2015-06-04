@@ -10,6 +10,9 @@
 #include "random.hh"
 
 struct schema {
+  sqltype *booltype;
+  sqltype *inttype;
+  
   std::vector<table> tables;
   std::vector<op> operators;
   typedef std::tuple<sqltype *,sqltype *,sqltype *> typekey;

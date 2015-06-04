@@ -203,7 +203,7 @@ comparison_op::comparison_op(prod *p) : bool_binop(p)
   rhs = value_expr::factory(this);
 
   auto op_iter =
-    schema.find_operator(lhs->type, rhs->type, sqltype::get("boolean"));
+    schema.find_operator(lhs->type, rhs->type, schema.booltype);
 
   if (op_iter == schema.index.end())
     goto retry;

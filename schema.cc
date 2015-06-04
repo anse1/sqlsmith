@@ -60,6 +60,8 @@ schema_pqxx::schema_pqxx() {
 
   cerr << "done." << endl;
 
+  booltype = sqltype::get("boolean");
+  inttype = sqltype::get("integer");
 }
 
 schema_pqxx schema;
