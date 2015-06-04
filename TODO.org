@@ -9,6 +9,10 @@
 - conninfo for logging-db
 - allow selecting/filtering schemas
 * grammar
+** TODO Allow productions to fail in factories
+- Make productions throw a smith::no_candidate : std::runtime_error
+- Catch it and randomly pick another one.
+- Maybe count errors and escalate at some point
 ** DONE Add LATERAL
 ** TODO Add functions						     :schema:
 ** TODO Add aggregates						     :schema:
