@@ -1,48 +1,48 @@
-* Driver
-** TODO [#C] multithreading
+* TODO-List
+** Driver
+*** TODO [#C] multithreading
 - generate next query while blocking on postgres
-** TODO [#B] Log to a database					   :refactor:
+*** TODO [#B] Log to a database 				   :refactor:
 - refactor the console logging
 - make threaded in order to not block the main thing
-** TODO Command line arguments
+*** TODO Command line arguments
 - conninfo for target
 - conninfo for logging-db
 - allow selecting/filtering schemas
-* grammar
-** TODO Allow productions to fail in factories
+** grammar
+*** TODO Allow productions to fail in factories
 - Make productions throw a smith::no_candidate : std::runtime_error
 - Catch it and randomly pick another one.
 - Maybe count errors and escalate at some point
-** DONE Add LATERAL
-** TODO Add functions						     :schema:
-** TODO Add aggregates						     :schema:
-** TODO Add GROUP BY
-** TODO Add window functions
-** TODO Add FILTER
-** TODO Add other DML
-** TODO [#A] Allow constraining productions by return type
+*** TODO Add functions 						     :schema:
+*** TODO Add aggregates 					     :schema:
+*** TODO Add GROUP BY
+*** TODO Add window functions
+*** TODO Add FILTER
+*** TODO Add other DML
+*** TODO [#A] Allow constraining productions by return type
 
-** TODO Generate data for literal use in queries
-** TODO Improve random generation
+*** TODO Generate data for literal use in queries
+*** TODO Improve random generation
 - Add Attributes to rules so factories can pick candidates in a
   weighted fashion.
 - This attribute could then also be used to blacklist productions for
   incompatible RDBMs
-* schema
-** TODO DTRT with arrays
-* TODO support more RDMBSs
+** schema
+*** TODO DTRT with arrays
+** TODO support more RDMBSs
 - Should add more than postgresl early to avoid a point of no return
 - Allow blacklisting of productions for RDBMs with gaps wrt standards
   conformance (probably depends on improved random generation)
 - Allow automatic detection of problematic productions via stats visitor
-* relmodel
-** TODO operations on Tuples
+** relmodel
+*** TODO operations on Tuples
 instead of hacking up tuples inside productions it's more sensible to
 implement operators in relmodel.cc join() project() union() select()
-** TODO Introduce basic semantic modeling
+*** TODO Introduce basic semantic modeling
 - use sampling of witness tuples instead of working on whole data base
-** TODO primitive cost model
-* Performance
+*** TODO primitive cost model
+** Performance
 
 | revision      | queries/s | nodes |
 |---------------+-----------+-------|
