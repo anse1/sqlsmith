@@ -11,7 +11,7 @@ using std::map;
 struct sqltype {
   string name;
   static map<string, struct sqltype*> typemap;
-  static struct sqltype *getbyname(string s);
+  static struct sqltype *get(string s);
   sqltype(string n) : name(n) { }
 };
 
@@ -20,7 +20,7 @@ struct column {
   sqltype *type;
   column(string name) : name(name) { }
   column(string name, string t) : name(name) {
-    type = sqltype::getbyname(t);
+    type = sqltype::get(t);
   }
   column(string name, sqltype *t) : name(name), type(t) {  }
 };
@@ -69,9 +69,9 @@ struct op {
     : name(n), left(l), right(r), result(res) { }
   op(string n, string l, string r, string res)
     : name(n) {
-    left = sqltype::getbyname(l);
-    right = sqltype::getbyname(r);
-    result = sqltype::getbyname(res);
+    left = sqltype::get(l);
+    right = sqltype::get(r);
+    result = sqltype::get(res);
   }
   op() { }
 };

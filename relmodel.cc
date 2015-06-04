@@ -2,7 +2,7 @@
 
 map<string, sqltype*> sqltype::typemap;
 
-sqltype * sqltype::getbyname(string n)
+sqltype * sqltype::get(string n)
 {
   auto &p = typemap[n];
   if (p)
