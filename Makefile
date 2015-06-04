@@ -12,14 +12,8 @@ config.h: .git/*
 sqlsmith: $(OBJECTS)
 	$(CXX) -O3 -g -std=c++11 -Wall $+ -lpqxx -lpq -lstdc++ -o $@
 
-%.o: %.cc config.h
+%.o: %.cc config.h *.hh
 	$(CXX) $(CXXFLAGS) -std=c++11 -Wall -c $< -o $@
-
-grammar.o: grammar.cc *.hh
-relmodel.o: relmodel.cc *.hh
-random.o: random.cc *.hh
-sqlsmith.o: sqlsmith.cc *.hh
-schema.o: schema.cc *.hh
 
 clean:
 	rm -f sqlsmith *.o config.h
