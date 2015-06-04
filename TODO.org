@@ -1,6 +1,7 @@
 * TODO-List
 ** Driver
-*** TODO [#C] multithreading
+*** DONE [#C] multithreading
+    CLOSED: [2015-06-04 Do 23:51]
 - generate next query while blocking on postgres
 *** TODO [#B] Log to a database 				   :refactor:
 - refactor the console logging
