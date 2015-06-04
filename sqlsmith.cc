@@ -69,7 +69,7 @@ void worker(vector<shared_ptr<query_spec> > *queue, scope *s, milliseconds *ms)
     mtx.lock();
     queue->push_back(result);
     *ms += duration_cast<milliseconds>(g1-g0);
-    while (queue->size() > 100) {
+    while (queue->size() > 500) {
       mtx.unlock();
       this_thread::sleep_for (chrono::milliseconds(100));
       mtx.lock();
@@ -106,6 +106,8 @@ int main()
 
       vector<shared_ptr<query_spec> > queue;
       std::thread t(&worker, &queue, &scope, &gen_time);
+      std::thread t2(&worker, &queue, &scope, &gen_time);
+      std::thread t3(&worker, &queue, &scope, &gen_time);
       std::map<std::string, long> errors;
       stats_visitor v;
       while (1) {
