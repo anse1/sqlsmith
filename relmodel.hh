@@ -2,15 +2,27 @@
 #define RELMODEL_HH
 #include <string>
 #include <vector>
+#include <map>
 
 using std::string;
 using std::vector;
+using std::map;
+
+struct sqltype {
+  string name;
+  static map<string, struct sqltype*> typemap;
+  static struct sqltype *getbyname(string s);
+  sqltype(string n) : name(n) { }
+};
 
 struct column {
   string name;
-  string type;
+  sqltype *type;
   column(string name) : name(name) { }
-  column(string name, string type) : name(name), type(type) { }
+  column(string name, string t) : name(name) {
+    type = sqltype::getbyname(t);
+  }
+  column(string name, sqltype *t) : name(name), type(t) {  }
 };
 
 struct relation {
@@ -50,11 +62,17 @@ struct scope {
 
 struct op {
   string name;
-  string left;
-  string right;
-  string result;
-  op(string n,string l,string r, string res)
+  sqltype *left;
+  sqltype *right;
+  sqltype *result;
+  op(string n,sqltype *l,sqltype *r, sqltype *res)
     : name(n), left(l), right(r), result(res) { }
+  op(string n, string l, string r, string res)
+    : name(n) {
+    left = sqltype::getbyname(l);
+    right = sqltype::getbyname(r);
+    result = sqltype::getbyname(res);
+  }
   op() { }
 };
 

@@ -49,8 +49,9 @@ join() project() union() select()
 sqlsmith is currently spending most of its time comparing and copying
 =std::strings= around.  Also, the =C++11= RNG scores high in =perf=.
 
-| revision      | queries/s | nodes |                 |
-|---------------+-----------+-------+-----------------|
-| ee9c94f-dirty |       208 | ?     | [2015-06-02 Di] |
-| 4547909-dirty |       125 | 72    | [2015-06-04 Do] |
+| revision      | queries/s | nodes |
+|---------------+-----------+-------|
+| ee9c94f-dirty |       208 |     ? |
+| 4547909-dirty |       125 |    72 |
+| 7fa25c6-dirty |       156 |    54 |
 

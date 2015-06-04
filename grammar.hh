@@ -88,7 +88,7 @@ struct from_clause : prod {
 };
 
 struct value_expr: prod {
-  std::string type;
+  sqltype *type;
   virtual void out(std::ostream &out) = 0;
   virtual ~value_expr() { }
   value_expr(prod *p) : prod(p) { }
@@ -96,7 +96,7 @@ struct value_expr: prod {
 };
 
 struct const_expr: value_expr {
-  const_expr(prod *p) : value_expr(p) { type = "integer"; }
+  const_expr(prod *p) : value_expr(p) { type = sqltype::getbyname("integer"); }
   virtual void out(std::ostream &out) { out << d42(); }
   virtual ~const_expr() { }
 };
@@ -110,7 +110,7 @@ struct column_reference: value_expr {
 
 struct bool_expr : value_expr {
   virtual ~bool_expr() { }
-  bool_expr(prod *p) : value_expr(p) { type = "bool"; }
+  bool_expr(prod *p) : value_expr(p) { type = sqltype::getbyname("bool"); }
   static shared_ptr<bool_expr> factory(prod *p);
 };
 

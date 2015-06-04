@@ -8,6 +8,7 @@ using namespace pqxx;
 schema_pqxx::schema_pqxx() {
   connection c;
   work w(c);
+  cerr << "Loading tables...";
   result r = w.exec("select table_catalog, "
 		    "table_name, "
 		    "table_schema from information_schema.tables;");
@@ -23,6 +24,9 @@ schema_pqxx::schema_pqxx() {
 			   row[1].as<string>(),
 			   schema));
   }
+  cerr << "done." << endl;
+
+  cerr << "Loading columns...";
 
   for (auto t = tables.begin(); t != tables.end(); ++t) {
     string q("select column_name, "
@@ -35,11 +39,13 @@ schema_pqxx::schema_pqxx() {
 
     r = w.exec(q);
     for (auto row : r) {
-      column c(row[0].as<string>());
-      c.type = row[1].as<string>();
+      column c(row[0].as<string>(), row[1].as<string>());
       t->columns().push_back(c);
     }
   }
+  cerr << "done." << endl;
+
+  cerr << "Loading operators...";
 
   r = w.exec("select oprname, oprleft::regtype,"
 		    "oprright::regtype, oprresult::regtype "
@@ -51,6 +57,9 @@ schema_pqxx::schema_pqxx() {
 	 row[3].as<string>());
     register_operator(o);
   }
+
+  cerr << "done." << endl;
+
 }
 
 schema_pqxx schema;

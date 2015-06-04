@@ -1,7 +1,8 @@
 all: sqlsmith
 
-SOURCES = $(wildcard *.cc)
-OBJECTS = $(patsubst %.cc,%.o,$(SOURCES))
+OBJECTS = relmodel.o schema.o random.o grammar.o sqlsmith.o
+
+CXXFLAGS = -O3 -g
 
 config.h: .git/*
 	echo -n '#define GITREV "' > $@
@@ -12,7 +13,7 @@ sqlsmith: $(OBJECTS)
 	$(CXX) -O3 -g -std=c++11 -Wall $+ -lpqxx -lpq -lstdc++ -o $@
 
 %.o: %.cc config.h
-	$(CXX) -O3 -g -std=c++11 -Wall -c $< -o $@
+	$(CXX) $(CXXFLAGS) -std=c++11 -Wall -c $< -o $@
 
 grammar.o: grammar.cc *.hh
 relmodel.o: relmodel.cc *.hh
