@@ -120,14 +120,12 @@ from_clause::from_clause(prod *p) : prod(p) {
   for (auto r : reflist[0]->refs)
     scope->refs.push_back(&*r);
 
-  if (d6() < 5)
-    return;
-
-  // add a lateral subquery
-  reflist.push_back(make_shared<table_subquery>(p, true));
-  for (auto r : reflist[1]->refs)
-    scope->refs.push_back(&*r);
-
+  while (d6() > 5) {
+    // add a lateral subquery
+    reflist.push_back(make_shared<table_subquery>(p, true));
+    for (auto r : reflist[1]->refs)
+      scope->refs.push_back(&*r);
+  }
 }
 
 
