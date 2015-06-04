@@ -5,7 +5,7 @@ OBJECTS = relmodel.o schema.o random.o grammar.o sqlsmith.o
 CXXFLAGS = -O3 -g
 
 CXX = g++
-LDFLAGS = -lpqxx -lpq -lstdc++
+LDFLAGS = -lpqxx -lpq -lstdc++ -lpthread
 
 # clang compiles sqlsmith faster, but produces slightly slower code
 # 225 vs 250 queries/s

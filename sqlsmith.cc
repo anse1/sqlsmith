@@ -4,6 +4,9 @@
 #include <chrono>
 #include <regex>
 
+#include <thread>
+#include <mutex>
+
 #include "random.hh"
 #include "grammar.hh"
 #include "relmodel.hh"
@@ -22,6 +25,8 @@ extern "C" {
 
 regex e_timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
 regex e_syntax("ERROR:  syntax error at or near(\n|.)*");
+
+mutex mtx;
 
 struct stats_visitor : prod_visitor {
   float nodes = 0;
@@ -53,6 +58,26 @@ struct stats_visitor : prod_visitor {
   }
 };
 
+void worker(vector<shared_ptr<query_spec> > *queue, scope *s, milliseconds *ms)
+{
+  shared_ptr<query_spec> result;
+  while (true) {
+    auto g0 = high_resolution_clock::now();
+    //	  prepare_stmt gen(scope);
+    result = make_shared<query_spec>((struct prod *)0, s);
+    auto g1 = high_resolution_clock::now();
+    mtx.lock();
+    queue->push_back(result);
+    *ms += duration_cast<milliseconds>(g1-g0);
+    while (queue->size() > 100) {
+      mtx.unlock();
+      this_thread::sleep_for (chrono::milliseconds(100));
+      mtx.lock();
+    }
+    mtx.unlock();
+  }
+}
+
 
 int main()
 {
@@ -79,20 +104,27 @@ int main()
       milliseconds query_time(0);
       milliseconds gen_time(0);
 
+      vector<shared_ptr<query_spec> > queue;
+      std::thread t(&worker, &queue, &scope, &gen_time);
       std::map<std::string, long> errors;
       stats_visitor v;
       while (1) {
 	  work w(c);
 
-	  auto g0 = high_resolution_clock::now();
-	  //	  prepare_stmt gen(scope);
-	  query_spec gen(0, &scope);
+	  mtx.lock();
+	  while (queue.size() == 0) {
+	    mtx.unlock();
+	    this_thread::sleep_for (std::chrono::milliseconds(10));
+	    mtx.lock();
+	  }
+	  
+	  shared_ptr<query_spec> stmt = queue.back();
+	  queue.pop_back();
+	  query_spec &gen = *stmt;
+	  mtx.unlock();
+	  
 	  std::ostringstream s;
 	  gen.out(s);
-
-	  auto g1 = high_resolution_clock::now();
-	  gen_time += duration_cast<milliseconds>(g1-g0);
-	  
 	  cout << s.str() << endl;
 	  query_count++;
 	  if (79 == query_count%80) {
