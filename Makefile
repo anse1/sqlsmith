@@ -11,7 +11,7 @@ LDFLAGS = -lpqxx -lpq -lstdc++ -lpthread
 # 225 vs 250 queries/s
 
 # CXX = clang++
-# LDFLAGS = -lpqxx -lpq -lc++
+# LDFLAGS = -lpqxx -lpq -lc++ -lpthread
 
 config.h: .git/*
 	echo -n '#define GITREV "' > $@
