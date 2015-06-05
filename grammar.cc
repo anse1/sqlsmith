@@ -21,7 +21,7 @@ shared_ptr<table_ref> table_ref::factory(prod *p) {
 
 int table_or_query_name::sequence = 0;
 table_or_query_name::table_or_query_name(prod *p) : table_ref(p) {
-  t = random_pick<named_relation*>(scope->tables);
+  t = random_pick(scope->tables);
   ostringstream o;
   o << "rel" << sequence++;
   refs.push_back(make_shared<aliased_relation>(o.str(), t));
@@ -57,14 +57,14 @@ joined_table::joined_table(prod *p) : table_ref(p) {
 
   condition = "";
 
-  named_relation *left_rel = &*random_pick<>(lhs->refs);
+  named_relation *left_rel = &*random_pick(lhs->refs);
   
   if (!left_rel->columns().size())
     goto retry;
 
-  named_relation *right_rel = &*random_pick<>(rhs->refs);
+  named_relation *right_rel = &*random_pick(rhs->refs);
 
-  column &c1 = random_pick<column>(left_rel->columns());
+  column &c1 = random_pick(left_rel->columns());
 
   for (auto c2 : right_rel->columns()) {
     if (c1.type == c2.type) {

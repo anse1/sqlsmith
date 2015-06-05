@@ -26,15 +26,14 @@ shared_ptr<value_expr> value_expr::factory(prod *p)
 
 column_reference::column_reference(prod *p) : value_expr(p)
 {
-  named_relation *r =
-    random_pick<named_relation*>(scope->refs);
+  named_relation *r = random_pick(scope->refs);
 
   if (!r)
     throw runtime_error("Cannot find table reference candidate");
   reference += r->ident() + ".";
   if (!r->columns().size())
     throw runtime_error("Cannot find column candidate");
-  column &c = random_pick<column>(r->columns());
+  column &c = random_pick(r->columns());
   type = c.type;
   reference += c.name;
 }
