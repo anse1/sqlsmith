@@ -57,15 +57,19 @@ joined_table::joined_table(prod *p) : table_ref(p) {
 
   condition = "";
 
-  if (!lhs->refs[0]->columns().size())
+  named_relation *left_rel = &*random_pick<>(lhs->refs);
+  
+  if (!left_rel->columns().size())
     goto retry;
 
-  column &c1 = random_pick<column>(lhs->refs[0]->columns());
+  named_relation *right_rel = &*random_pick<>(rhs->refs);
 
-  for (auto c2 : rhs->refs[0]->columns()) {
+  column &c1 = random_pick<column>(left_rel->columns());
+
+  for (auto c2 : right_rel->columns()) {
     if (c1.type == c2.type) {
       condition +=
-	lhs->refs[0]->ident() + "." + c1.name + " = " + rhs->refs[0]->ident() + "." + c2.name + " ";
+	left_rel->ident() + "." + c1.name + " = " + right_rel->ident() + "." + c2.name + " ";
       break;
     }
   }
