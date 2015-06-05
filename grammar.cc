@@ -9,11 +9,6 @@
 
 using namespace std;
 
-std::ostream& operator<<(std::ostream& s, prod& p)
-{
-  p.out(s); return s;
-}
-
 shared_ptr<table_ref> table_ref::factory(prod *p) {
   if (p->level < d6()) {
     if (d6() <= 3)

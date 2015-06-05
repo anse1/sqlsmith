@@ -25,6 +25,10 @@ struct prod {
   virtual void accept(prod_visitor *v) { v->visit(this); }
 };
 
-std::ostream& operator<<(std::ostream& s, struct prod& p);
+inline std::ostream& operator<<(std::ostream& s, prod& p)
+{
+  p.out(s); return s;
+}
+
 
 #endif
