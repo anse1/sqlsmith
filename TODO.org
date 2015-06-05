@@ -3,27 +3,34 @@
 *** DONE [#C] multithreading
     CLOSED: [2015-06-04 Do 23:51]
 - generate next query while blocking on postgres
-*** TODO [#B] Log to a database 				   :refactor:
+*** TODO [#A] Log to a database				      :refactor:args:
 - refactor the console logging
 - make threaded in order to not block the main thing
-*** TODO Command line arguments
+*** TODO [#A] Command line arguments
 - conninfo for target
 - conninfo for logging-db
 - allow selecting/filtering schemas
 ** grammar
 *** TODO [#A] Allow constraining productions by return type
 - needed for coalesce, function calls, etc
-*** TODO Allow productions to fail in factories
+*** TODO [#A] Allow productions to fail in factories
 - Make productions throw a smith::no_candidate : std::runtime_error
 - Catch it and randomly pick another one.
 - Maybe count errors and escalate at some point
 *** TODO Add functions 						     :schema:
 *** TODO Add aggregates 					     :schema:
+- in window functions
+- in group by
+- need to find a way to constrain column-referencing exprs to contain
+  an aggregate *somewhere*
+  expr->agg->expr agg->expr expr->agg
+  - maybe use needs_aggreate bool default argument to expr constructors
+
 *** TODO Add GROUP BY
 *** TODO Add window functions
 *** TODO Add FILTER
-*** TODO Add other DML
-*** TODO Generate data for literal use in queries
+*** TODO [#A] Add other DML
+*** TODO [#C] Generate data for literal use in queries
 *** TODO Improve random generation
 - Add Attributes to rules so factories can pick candidates in a
   weighted fashion.
@@ -31,18 +38,18 @@
   incompatible RDBMs
 ** schema
 *** TODO DTRT with arrays
-** TODO support more RDMBSs
+** TODO [#C] support more RDMBSs
 - Should add more than postgresl early to avoid a point of no return
 - Allow blacklisting of productions for RDBMs with gaps wrt standards
   conformance (probably depends on improved random generation)
 - Allow automatic detection of problematic productions via stats visitor
 ** relmodel
-*** TODO operations on Tuples
+*** TODO [#C] operations on Tuples
 instead of hacking up tuples inside productions it's more sensible to
 implement operators in relmodel.cc join() project() union() select()
-*** TODO Introduce basic semantic modeling
+*** TODO [#C] Introduce basic semantic modeling
 - use sampling of witness tuples instead of working on whole data base
-*** TODO primitive cost model
+*** TODO [#C] primitive cost model
 ** Performance
 
 | revision      | queries/s | nodes |
@@ -52,4 +59,5 @@ implement operators in relmodel.cc join() project() union() select()
 | 7fa25c6-dirty |       156 |    54 |
 | 32a5d2a       |       188 |    54 |
 | 3a29a40       |       238 |    54 |
+| 57101e2       |       193 |    54 |
 
