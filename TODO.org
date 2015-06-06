@@ -3,13 +3,20 @@
 *** DONE [#C] multithreading
     CLOSED: [2015-06-04 Do 23:51]
 - generate next query while blocking on postgres
-*** TODO [#A] Log to a database				      :refactor:args:
+*** DONE [#A] Log to a database				      :refactor:args:
+    CLOSED: [2015-06-06 Sa 10:40]
 - refactor the console logging
 - make threaded in order to not block the main thing
 *** TODO [#A] Command line arguments
 - conninfo for target
 - conninfo for logging-db
 - allow selecting/filtering schemas
+**** TODO Add --benchmark
+**** TODO Add --log-connstr=
+**** TODO Add --target-connstr=
+**** TODO Add --target-schemas=
+**** TODO Add --verbose
+**** TODO Add --version
 ** grammar
 *** TODO [#A] Allow constraining productions by return type
 - needed for coalesce, function calls, etc
