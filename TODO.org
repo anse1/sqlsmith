@@ -1,26 +1,10 @@
 * TODO-List
 ** Driver
-*** DONE [#C] multithreading
-    CLOSED: [2015-06-04 Do 23:51]
-- generate next query while blocking on postgres
-*** DONE [#A] Log to a database				      :refactor:args:
-    CLOSED: [2015-06-06 Sa 10:07]
-- refactor the console logging
-- make threaded in order to not block the main thing
-*** DONE [#A] Command line arguments
-*** DONE conninfo for logging-db
 *** TODO allow selecting/filtering schemas
 *** TODO Add --benchmark option to not execute generated queries
 
-**** TODO Add --benchmark
-**** DONE Add --log-to=connstr
-     CLOSED: [2015-06-06 Sa 12:21]
-**** DONE Add --target=connstr
-     CLOSED: [2015-06-06 Sa 12:21]
-**** TODO Add --target-schemas=
-**** DONE Add --verbose
-     CLOSED: [2015-06-06 Sa 12:21]
-**** TODO Add --version
+*** TODO Add --benchmark
+*** TODO Add --target-schemas=
 ** grammar
 *** TODO [#A] Allow constraining productions by return type
 - needed for coalesce, function calls, etc
