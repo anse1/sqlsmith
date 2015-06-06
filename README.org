@@ -16,18 +16,30 @@ databases under random load.
 - libpqxx
 
 ** Usage
-There are no options yet - you have to pass the connection credentials
-via libpq environment variables.  It does send the generated queries
-to the server and to stdout (you don't usually want to see them).
+
+sqlsmith connects to the target database to retrieve the schema for
+query generation and to send the generated queries to.  Currently,
+only read-only queries are generated.  Further, all generated
+statements are rolled back.
+
 Example invocation:
 
 : cd sqlsmith
 : make sqlsmith
-: PGPORT=5432 PGDATABASE=regress ./sqlsmith > /dev/null
+: ./sqlsmith --verbose --target="host=/tmp port=65432"
 
-SQLsmith also emits some progress indication to stderr.  It emits a
-symbol for each query sent to the server.  Currently the following
-ones are generated:
+The following options are currently supported:
+
+| --target=connstr | target database (default: libpq defaults)        |
+| --log-to=connstr | database for logging errors (default: don't log) |
+| --verbose        | emit progress output                             |
+| --version        | show version information                         |
+
+Sample output:
+
+=--verbose= makes sqlsmith emit some progress indication to stderr.  A
+symbol is output for each query sent to the server.  Currently the
+following ones are generated:
 
 | symbol | meaning      | details                                       |
 |--------+--------------+-----------------------------------------------|
