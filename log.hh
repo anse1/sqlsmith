@@ -35,6 +35,7 @@ struct pqxx_logger : stats_collecting_logger {
   long id;
   std::shared_ptr<pqxx::connection> c;
   pqxx_logger(std::string target, std::string conninfo);
+  virtual void generated(prod &query);
   virtual void error(prod &query, const pqxx::sql_error &e);
 };
 

@@ -115,14 +115,14 @@ void cerr_logger::error(prod &query, const sql_error &e)
     cerr << "e";
 }
 
-
 pqxx_logger::pqxx_logger(std::string target, std::string conninfo)
 {
   c = make_shared<pqxx::connection>(conninfo);
 
   work w(*c);
   c->prepare("instance",
-	     "insert into instance (rev, target, hostname) values ($1, $2, $3) returning id");
+	     "insert into instance (rev, target, hostname) "
+	     "values ($1, $2, $3) returning id");
 
   char hostname[1024];
   gethostname(hostname, sizeof(hostname));
@@ -130,10 +130,18 @@ pqxx_logger::pqxx_logger(std::string target, std::string conninfo)
   result r = w.prepared("instance")(GITREV)(target)(hostname).exec();
   
   id = r[0][0].as<long>(id);
-  w.commit();
 
   c->prepare("error",
-	     "insert into error (id, msg, query) values ($1, $2, $3)");
+	     "insert into error (id, msg, query) "
+	     "values (" + to_string(id) + ", $1, $2)");
+
+  w.exec("insert into stat (id) values (" + to_string(id) + ")");
+  c->prepare("stat",
+	     "update stat set generated=$1, level=$2, nodes=$3, updated=now() "
+	     "where id = " + to_string(id));
+
+  w.commit();
+
 }
 
 void pqxx_logger::error(prod &query, const sql_error &e)
@@ -141,6 +149,17 @@ void pqxx_logger::error(prod &query, const sql_error &e)
   work w(*c);
   ostringstream s;
   s << query;
-  w.prepared("error")(id)(e.what())(s.str()).exec();
+  w.prepared("error")(e.what())(s.str()).exec();
   w.commit();
 }
+
+void pqxx_logger::generated(prod &query)
+{
+  stats_collecting_logger::generated(query);
+  if (999 == (queries%1000)) {
+    work w(*c);
+    w.prepared("stat")(queries)(sum_height/queries)(sum_nodes/queries).exec();
+    w.commit();
+  }
+}
+
