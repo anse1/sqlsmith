@@ -30,10 +30,10 @@ Example invocation:
 
 The following options are currently supported:
 
-| --target=connstr | target database (default: libpq defaults)        |
-| --log-to=connstr | database for logging errors (default: don't log) |
-| --verbose        | emit progress output                             |
-| --version        | show version information                         |
+| =--target=connstr= | target database (default: libpq defaults)        |
+| =--log-to=connstr= | database for logging errors (default: don't log) |
+| =--verbose=        | emit progress output                             |
+| =--version=        | show version information                         |
 
 Sample output:
 
