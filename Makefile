@@ -1,6 +1,6 @@
 all: sqlsmith
 
-OBJECTS = relmodel.o schema.o random.o expr.o grammar.o sqlsmith.o
+OBJECTS = relmodel.o schema.o random.o expr.o grammar.o log.o sqlsmith.o
 
 CXXFLAGS = -O3 -g
 
