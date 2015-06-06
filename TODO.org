@@ -2,17 +2,26 @@
 ** Driver
 *** TODO allow selecting/filtering schemas
 *** TODO Add --benchmark option to not execute generated queries
-
-*** TODO Add --benchmark
 *** TODO Add --target-schemas=
 ** grammar
 *** TODO [#A] Allow constraining productions by return type
-- needed for coalesce, function calls, etc
+needed for
+- coalesce
+- function calls
+- nontrivial expressions
+- insert/update
+
+what productions need to be constrained?
+- obviously exprs
+- atomic value subselects => constraining the select list...
+
 *** TODO [#A] Allow productions to fail in factories
 - Make productions throw a smith::no_candidate : std::runtime_error
 - Catch it and randomly pick another one.
 - Maybe count errors and escalate at some point
 *** TODO Add functions 						     :schema:
+- convenient for pulling values out of nowhere (version(), now(), etc)
+- Should be some coverage wrt. fuzzing (to_char...)
 *** TODO Add aggregates 					     :schema:
 - in window functions
 - in group by
@@ -20,17 +29,19 @@
   an aggregate *somewhere*
   expr->agg->expr agg->expr expr->agg
   - maybe use needs_aggreate bool default argument to expr constructors
-
 *** TODO Add GROUP BY
 *** TODO Add window functions
 *** TODO Add FILTER
-*** TODO [#A] Add other DML
+*** TODO UPDATE
+*** TODO INSERT
+*** TODO DELETE
 *** TODO [#C] Generate data for literal use in queries
 *** TODO Improve random generation
 - Add Attributes to rules so factories can pick candidates in a
   weighted fashion.
 - This attribute could then also be used to blacklist productions for
   incompatible RDBMs
+*** TODO Transactions
 ** schema
 *** TODO DTRT with arrays
 ** TODO [#C] support more RDMBSs
