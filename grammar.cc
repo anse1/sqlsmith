@@ -105,7 +105,7 @@ void table_subquery::out(std::ostream &out) {
 void from_clause::out(std::ostream &out) {
   if (! reflist.size())
     return;
-  out << "\n    from ";
+  out << "from ";
 
   for (auto r = reflist.begin(); r < reflist.end(); r++) {
     out << **r;
