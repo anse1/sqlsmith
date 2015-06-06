@@ -110,19 +110,28 @@ void cerr_logger::error(prod &query, const sql_error &e)
 }
 
 
-pqxx_logger::pqxx_logger(std::string conninfo)
+pqxx_logger::pqxx_logger(std::string target, std::string conninfo)
 {
   c = make_shared<pqxx::connection>(conninfo);
-  c->prepare("error",
-	     "insert into error (rev, msg, query) values ('" GITREV
-	     "', $1, $2)");
 
+  work w(*c);
+  c->prepare("instance",
+	     "insert into instance (rev, target) values ($1, $2) returning id");
+
+  result r = w.prepared("instance")(GITREV)(target).exec();
+  
+  id = r[0][0].as<long>(id);
+  w.commit();
+
+  c->prepare("error",
+	     "insert into error (id, msg, query) values ($1, $2, $3)");
+  
 }
 void pqxx_logger::error(prod &query, const sql_error &e)
 {
   work w(*c);
-  std::ostringstream s;
+  ostringstream s;
   s << query;
-  w.prepared("error")(e.what())(s.str()).exec();
+  w.prepared("error")(id)(e.what())(s.str()).exec();
   w.commit();
 }

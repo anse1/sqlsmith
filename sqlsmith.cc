@@ -68,10 +68,10 @@ int main(int argc, char *argv[])
 
   if (options.count("help")) {
     cerr <<
-      "--log-to=connstr     log errors to database" << endl <<
-      "--target=connstr     database to send queries to" << endl <<
-      "--verbose            emit progress output" << endl <<
-      "--version            show version information" << endl;
+      "    --log-to=connstr     log errors to database" << endl <<
+      "    --target=connstr     database to send queries to" << endl <<
+      "    --verbose            emit progress output" << endl <<
+      "    --version            show version information" << endl;
     return 0;
   } else if (options.count("version")) {
     cerr << GITREV << endl;
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
       vector<shared_ptr<logger> > loggers;
 
       if (options.count("log-to"))
-	loggers.push_back(make_shared<pqxx_logger>(options["log-to"]));
+	loggers.push_back(make_shared<pqxx_logger>(options["target"], options["log-to"]));
 
       if (options.count("verbose"))
 	loggers.push_back(make_shared<cerr_logger>());

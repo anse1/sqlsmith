@@ -27,8 +27,9 @@ struct cerr_logger : logger {
 };
 
 struct pqxx_logger : logger {
+  long id;
   std::shared_ptr<pqxx::connection> c;
-  pqxx_logger(std::string conninfo);
+  pqxx_logger(std::string target, std::string conninfo);
   virtual void error(prod &query, const pqxx::sql_error &e);
 };
 
