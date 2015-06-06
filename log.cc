@@ -49,17 +49,24 @@ struct stats_visitor : prod_visitor {
   }
 };
 
+void stats_collecting_logger::generated(prod &query)
+{
+  queries++;
+  
+  stats_visitor v;
+  query.accept(&v);
+
+  sum_nodes += v.nodes;
+  sum_height += v.maxlevel;
+}
+
 static regex e_timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
 static regex e_syntax("ERROR:  syntax error at or near(\n|.)*");
 
-void cerr_logger::report(prod &p)
+void cerr_logger::generated(prod &p)
 {
-  stats_visitor s;
-  p.accept(&s);
-
-  sum_nodes += s.nodes;
-  sum_height += s.maxlevel;
-
+  stats_collecting_logger::generated(p);
+  
   if ((10*columns-1) == queries%(10*columns)) {
     cerr << endl << "queries: " << queries << endl;
 // 	 << " (" << 1000.0*query_count/gen_time.count() << " gen/s, "
@@ -91,8 +98,6 @@ void cerr_logger::report(prod &p)
 void cerr_logger::executed(prod &query)
 {
   cerr << ".";
-  report(query);
-  queries++;
 }
 
 void cerr_logger::error(prod &query, const sql_error &e)
@@ -108,9 +113,6 @@ void cerr_logger::error(prod &query, const sql_error &e)
     cerr << "s";
   else
     cerr << "e";
-
-  report(query);
-  queries++;
 }
 
 
@@ -132,8 +134,8 @@ pqxx_logger::pqxx_logger(std::string target, std::string conninfo)
 
   c->prepare("error",
 	     "insert into error (id, msg, query) values ($1, $2, $3)");
-  
 }
+
 void pqxx_logger::error(prod &query, const sql_error &e)
 {
   work w(*c);
