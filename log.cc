@@ -8,6 +8,10 @@
 #include <thread>
 #include <mutex>
 
+extern "C" {
+#include <unistd.h>
+}
+
 #include "random.hh"
 #include "grammar.hh"
 #include "relmodel.hh"
@@ -116,9 +120,12 @@ pqxx_logger::pqxx_logger(std::string target, std::string conninfo)
 
   work w(*c);
   c->prepare("instance",
-	     "insert into instance (rev, target) values ($1, $2) returning id");
+	     "insert into instance (rev, target, hostname) values ($1, $2, $3) returning id");
 
-  result r = w.prepared("instance")(GITREV)(target).exec();
+  char hostname[1024];
+  gethostname(hostname, sizeof(hostname));
+    
+  result r = w.prepared("instance")(GITREV)(target)(hostname).exec();
   
   id = r[0][0].as<long>(id);
   w.commit();

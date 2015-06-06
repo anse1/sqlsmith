@@ -4,6 +4,7 @@ create table instance (
     id bigserial primary key,
     rev text,
     target text,
+    hostname text,
 
     -- not referenced by sqlsmith:
     t timestamptz default now(),
