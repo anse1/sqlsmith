@@ -1,25 +1,14 @@
 #include <iostream>
 #include <pqxx/pqxx>
-#include <numeric>
-#include <chrono>
 #include <regex>
 #include <string>
-
-#include <thread>
-#include <mutex>
 
 extern "C" {
 #include <unistd.h>
 }
 
-#include "random.hh"
-#include "grammar.hh"
-#include "relmodel.hh"
-#include "schema.hh"
-
-#include "config.h"
-
 #include "log.hh"
+#include "config.h"
 
 using namespace std;
 using namespace pqxx;

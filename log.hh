@@ -3,9 +3,7 @@
 
 #include <exception>
 #include <pqxx/pqxx>
-#include <chrono>
 #include <string>
-#include <memory>
 
 #include "prod.hh"
 
