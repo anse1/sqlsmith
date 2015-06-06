@@ -4,6 +4,8 @@
 #include <exception>
 #include <pqxx/pqxx>
 #include <chrono>
+#include <string>
+#include <memory>
 
 #include "prod.hh"
 
@@ -23,5 +25,13 @@ struct cerr_logger : logger {
   virtual void error(prod &query, const pqxx::sql_error &e);
   void report(prod &p);
 };
-  
+
+struct pqxx_logger : logger {
+  std::shared_ptr<pqxx::connection> c;
+  pqxx_logger(std::string conninfo);
+  virtual void error(prod &query, const pqxx::sql_error &e);
+};
+
+
+
 #endif

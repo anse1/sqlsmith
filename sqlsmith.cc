@@ -6,6 +6,7 @@
 
 #include <thread>
 #include <mutex>
+#include <memory>
 
 #include "random.hh"
 #include "grammar.hh"
@@ -50,7 +51,6 @@ void worker(vector<shared_ptr<query_spec> > *queue, scope *s, milliseconds *ms)
 int main()
 {
   cerr << "sqlsmith " << GITREV << endl;
-
   smith::rng.seed(getpid());
   try
     {
@@ -61,7 +61,9 @@ int main()
       work w(c);
       w.commit();
 
-      cerr_logger log;
+      vector<shared_ptr<logger> > loggers;
+      loggers.push_back(make_shared<cerr_logger>());
+      loggers.push_back(make_shared<pqxx_logger>("host=/var/run/postgresql port=5432 dbname=smith"));
       
       {
 	work w(c);
@@ -75,8 +77,11 @@ int main()
 
       vector<shared_ptr<query_spec> > queue;
       std::thread t(&worker, &queue, &scope, &gen_time);
-      std::thread t2(&worker, &queue, &scope, &gen_time);
-      std::thread t3(&worker, &queue, &scope, &gen_time);
+//       std::thread t2(&worker, &queue, &scope, &gen_time);
+//       std::thread t3(&worker, &queue, &scope, &gen_time);
+
+
+
       while (1) {
 	  work w(c);
 
@@ -92,7 +97,8 @@ int main()
 	  query_spec &gen = *stmt;
 	  mtx.unlock();
 
-	  log.generated(gen);
+	  for (auto l : loggers)
+	    l->generated(gen);
 	  
 	  std::ostringstream s;
 	  gen.out(s);
@@ -102,10 +108,17 @@ int main()
 	    result r = w.exec(s.str() + ";");
 	    auto q1 = high_resolution_clock::now();
 	    query_time =  duration_cast<milliseconds>(q1-q0);
-	    log.executed(gen);
+	    for (auto l : loggers)
+	      l->executed(gen);
 	    w.abort();
 	  } catch (const pqxx::sql_error &e) {
-	    log.error(gen, e);
+	    for (auto l : loggers)
+	      try {
+		l->error(gen, e);
+	      } catch (std::runtime_error &e) {
+		cerr << endl << "log failed: " << typeid(*l).name() << ": "
+		     << e.what() << endl;
+	      }
 	  }
       }
     }

@@ -3,6 +3,7 @@
 #include <numeric>
 #include <chrono>
 #include <regex>
+#include <string>
 
 #include <thread>
 #include <mutex>
@@ -17,6 +18,7 @@
 #include "log.hh"
 
 using namespace std;
+using namespace pqxx;
 
 struct stats_visitor : prod_visitor {
   int nodes = 0;
@@ -89,7 +91,7 @@ void cerr_logger::executed(prod &query)
   queries++;
 }
 
-void cerr_logger::error(prod &query, const pqxx::sql_error &e)
+void cerr_logger::error(prod &query, const sql_error &e)
 {
   istringstream err(e.what());
   string line;
@@ -105,4 +107,22 @@ void cerr_logger::error(prod &query, const pqxx::sql_error &e)
 
   report(query);
   queries++;
+}
+
+
+pqxx_logger::pqxx_logger(std::string conninfo)
+{
+  c = make_shared<pqxx::connection>(conninfo);
+  c->prepare("error",
+	     "insert into error (rev, msg, query) values ('" GITREV
+	     "', $1, $2)");
+
+}
+void pqxx_logger::error(prod &query, const sql_error &e)
+{
+  work w(*c);
+  std::ostringstream s;
+  s << query;
+  w.prepared("error")(e.what())(s.str()).exec();
+  w.commit();
 }
