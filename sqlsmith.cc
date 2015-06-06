@@ -41,7 +41,7 @@ void worker(vector<shared_ptr<query_spec> > *queue, scope *s, milliseconds *ms)
     *ms += duration_cast<milliseconds>(g1-g0);
     while (queue->size() > 500) {
       mtx.unlock();
-      this_thread::sleep_for (chrono::milliseconds(100));
+      this_thread::sleep_for (milliseconds(100));
       mtx.lock();
     }
     mtx.unlock();
@@ -107,9 +107,9 @@ int main(int argc, char *argv[])
       milliseconds gen_time(0);
 
       vector<shared_ptr<query_spec> > queue;
-      std::thread t(&worker, &queue, &scope, &gen_time);
-      std::thread t2(&worker, &queue, &scope, &gen_time);
-      std::thread t3(&worker, &queue, &scope, &gen_time);
+      thread t(&worker, &queue, &scope, &gen_time);
+      thread t2(&worker, &queue, &scope, &gen_time);
+      thread t3(&worker, &queue, &scope, &gen_time);
 
       while (1) {
 	  work w(c);
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 	  mtx.lock();
 	  while (queue.size() == 0) {
 	    mtx.unlock();
-	    this_thread::sleep_for (std::chrono::milliseconds(10));
+	    this_thread::sleep_for (milliseconds(10));
 	    mtx.lock();
 	  }
 	  
@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
 	  for (auto l : loggers)
 	    l->generated(gen);
 	  
-	  std::ostringstream s;
+	  ostringstream s;
 	  gen.out(s);
 
 	  try {
@@ -140,18 +140,18 @@ int main(int argc, char *argv[])
 	    for (auto l : loggers)
 	      l->executed(gen);
 	    w.abort();
-	  } catch (const pqxx::sql_error &e) {
+	  } catch (const sql_error &e) {
 	    for (auto l : loggers)
 	      try {
 		l->error(gen, e);
-	      } catch (std::runtime_error &e) {
+	      } catch (runtime_error &e) {
 		cerr << endl << "log failed: " << typeid(*l).name() << ": "
 		     << e.what() << endl;
 	      }
 	  }
       }
     }
-  catch (const std::exception &e)
+  catch (const exception &e)
     {
       cerr << e.what() << endl;
       return 1;
