@@ -26,6 +26,7 @@ struct schema {
   void fill_scope(struct scope &s) {
     for (auto &t : tables)
       s.tables.push_back(&t);
+    s.schema = this;
   }
   virtual void register_operator(op& o) {
     operators.push_back(o);
@@ -42,7 +43,7 @@ struct schema {
 };
 
 struct schema_pqxx : public schema {
-  schema_pqxx();
+  schema_pqxx(std::string &conninfo);
 };
   
 extern schema_pqxx schema;

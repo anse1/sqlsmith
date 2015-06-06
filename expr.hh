@@ -12,7 +12,7 @@ struct value_expr: prod {
 };
 
 struct const_expr: value_expr {
-  const_expr(prod *p) : value_expr(p) { type = schema.inttype; }
+  const_expr(prod *p) : value_expr(p) { type = scope->schema->inttype; }
   virtual void out(std::ostream &out) { out << d42(); }
   virtual ~const_expr() { }
 };
@@ -26,7 +26,7 @@ struct column_reference: value_expr {
 
 struct bool_expr : value_expr {
   virtual ~bool_expr() { }
-  bool_expr(prod *p) : value_expr(p) { type = schema.booltype; }
+  bool_expr(prod *p) : value_expr(p) { type = scope->schema->booltype; }
   static shared_ptr<bool_expr> factory(prod *p);
 };
 

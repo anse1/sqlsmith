@@ -57,7 +57,11 @@ struct scope {
   struct scope *parent;
   vector<named_relation*> tables;  // available to table_ref productions
   vector<named_relation*> refs; // available to column_ref productions
-  scope(struct scope *parent = 0) : parent(parent) { }
+  struct schema *schema;
+  scope(struct scope *parent = 0) : parent(parent) {
+    if (parent)
+      schema = parent->schema;
+  }
 };
 
 struct op {

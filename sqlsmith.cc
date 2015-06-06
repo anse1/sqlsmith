@@ -48,22 +48,53 @@ void worker(vector<shared_ptr<query_spec> > *queue, scope *s, milliseconds *ms)
   }
 }
 
-int main()
+int main(int argc, char *argv[])
 {
   cerr << "sqlsmith " << GITREV << endl;
+
+  map<string,string> options;
+  regex optregex("--(help|log-to|verbose|target|version)(?:=((?:.|\n)*))?");
+  
+  for(char **opt = argv+1 ;opt < argv+argc; opt++) {
+    smatch match;
+    string s(*opt);
+    if (regex_match(s, match, optregex)) {
+      options[string(match[1])] = match[2];
+    } else {
+      cerr << "Cannot parse option: " << *opt << endl;
+      return 1;
+    }
+  }
+
+  if (options.count("help")) {
+    cerr <<
+      "--log-to=connstr     log errors to database" << endl <<
+      "--target=connstr     database to send queries to" << endl <<
+      "--verbose            emit progress output" << endl <<
+      "--version            show version information" << endl;
+    return 0;
+  } else if (options.count("version")) {
+    cerr << GITREV << endl;
+    return 0;
+  }
+  
   smith::rng.seed(getpid());
   try
     {
-      connection c;
-      schema.summary();
+      connection c(options["target"]);
+      schema_pqxx schema(options["target"]);
       scope scope;
       schema.fill_scope(scope);
       work w(c);
       w.commit();
 
       vector<shared_ptr<logger> > loggers;
-      loggers.push_back(make_shared<cerr_logger>());
-      loggers.push_back(make_shared<pqxx_logger>("host=/var/run/postgresql port=5432 dbname=smith"));
+
+      if (options.count("log-to"))
+	loggers.push_back(make_shared<pqxx_logger>(options["log-to"]));
+
+      if (options.count("verbose"))
+	loggers.push_back(make_shared<cerr_logger>());
       
       {
 	work w(c);
@@ -77,10 +108,8 @@ int main()
 
       vector<shared_ptr<query_spec> > queue;
       std::thread t(&worker, &queue, &scope, &gen_time);
-//       std::thread t2(&worker, &queue, &scope, &gen_time);
-//       std::thread t3(&worker, &queue, &scope, &gen_time);
-
-
+      std::thread t2(&worker, &queue, &scope, &gen_time);
+      std::thread t3(&worker, &queue, &scope, &gen_time);
 
       while (1) {
 	  work w(c);

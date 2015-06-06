@@ -5,8 +5,8 @@
 using namespace std;
 using namespace pqxx;
 
-schema_pqxx::schema_pqxx() {
-  connection c;
+schema_pqxx::schema_pqxx(std::string &conninfo) {
+  connection c(conninfo);
   work w(c);
   cerr << "Loading tables...";
   result r = w.exec("select table_catalog, "
@@ -64,4 +64,3 @@ schema_pqxx::schema_pqxx() {
   inttype = sqltype::get("integer");
 }
 
-schema_pqxx schema;
