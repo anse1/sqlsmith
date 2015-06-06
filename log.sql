@@ -55,3 +55,11 @@ create view instance_activity as
               order by max desc;
 
 comment on view instance_activity is 'time of last error message from instance';
+
+create view instance_speed as
+    select hostname,
+        generated/extract(epoch from (updated-t)) as "queries/s"
+    from stat natural join instance
+    where updated > now() - interval '1 minutes';
+
+comment on view instance_speed is 'query speed of recently active instances';
