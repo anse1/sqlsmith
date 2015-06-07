@@ -55,7 +55,7 @@ shared_ptr<bool_expr> bool_expr::factory(prod *p)
 
 exists_predicate::exists_predicate(prod *p) : bool_expr(p)
 {
-  subquery = make_shared<query_spec>(p, scope);
+  subquery = make_shared<query_spec>(this, scope);
 }
 
 void exists_predicate::accept(prod_visitor *v)
@@ -71,9 +71,9 @@ void exists_predicate::out(std::ostream &out)
 
 distinct_pred::distinct_pred(prod *p) : bool_binop(p)
 {
-  lhs = make_shared<column_reference>(p);
+  lhs = make_shared<column_reference>(this);
  retry:
-  rhs = make_shared<column_reference>(p);
+  rhs = make_shared<column_reference>(this);
   if (lhs->type != rhs->type)
     { retries++; goto retry; }
 }

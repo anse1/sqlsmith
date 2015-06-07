@@ -37,7 +37,7 @@ table_subquery::table_subquery(prod *p, bool lateral)
   : table_ref(p), is_lateral(lateral) {
   ostringstream r;
   r << "subq_" << instances++;
-  query = make_shared<query_spec>(p, scope);
+  query = make_shared<query_spec>(this, scope);
   string alias = r.str();
   relation *aliased_rel = &query->select_list->derived_table;
   refs.push_back(make_shared<aliased_relation>(alias, aliased_rel));
@@ -121,7 +121,7 @@ from_clause::from_clause(prod *p) : prod(p) {
 
   while (d6() > 5) {
     // add a lateral subquery
-    reflist.push_back(make_shared<table_subquery>(p, true));
+    reflist.push_back(make_shared<table_subquery>(this, true));
     for (auto r : reflist.back()->refs)
       scope->refs.push_back(&*r);
   }
