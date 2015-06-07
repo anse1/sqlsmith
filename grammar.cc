@@ -135,7 +135,7 @@ select_list::select_list(query_spec *q) : prod(q)
     ostringstream name;
     name << "c" << columns++;
     derived_table.columns().push_back(column(name.str(), e->type));
-  } while (d6() > 1);
+  } while (d6() > 2);
 }
 
 void select_list::out(std::ostream &out)

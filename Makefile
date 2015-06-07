@@ -1,6 +1,6 @@
 all: sqlsmith
 
-OBJECTS = relmodel.o schema.o random.o expr.o grammar.o log.o sqlsmith.o
+OBJECTS = relmodel.o schema.o random.o expr.o grammar.o log.o dump.o sqlsmith.o
 
 CXXFLAGS = -O3 -g
 
@@ -25,4 +25,7 @@ sqlsmith: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -std=c++11 -Wall -c $< -o $@
 
 clean:
-	rm -f sqlsmith *.o config.h
+	rm -f sqlsmith *.o config.h *.xml
+
+%.v: %.xml
+	xsltproc dump.xsl $< | dot -Tx11

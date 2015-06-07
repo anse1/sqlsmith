@@ -1,8 +1,6 @@
 #ifndef PROD_HH
 #define PROD_HH
 
-using std::shared_ptr;
-
 struct prod_visitor {
   virtual void visit(struct prod *p) = 0;
   virtual ~prod_visitor() { }

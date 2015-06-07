@@ -38,6 +38,4 @@ struct pqxx_logger : stats_collecting_logger {
   virtual void error(prod &query, const pqxx::sql_error &e);
 };
 
-
-
 #endif

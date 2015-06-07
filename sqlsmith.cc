@@ -16,6 +16,7 @@
 #include "config.h"
 
 #include "log.hh"
+#include "dump.hh"
 
 using namespace std;
 using namespace pqxx;
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
   cerr << "sqlsmith " << GITREV << endl;
 
   map<string,string> options;
-  regex optregex("--(help|log-to|verbose|target|version)(?:=((?:.|\n)*))?");
+  regex optregex("--(help|log-to|verbose|target|version|dump-all-graphs)(?:=((?:.|\n)*))?");
   
   for(char **opt = argv+1 ;opt < argv+argc; opt++) {
     smatch match;
@@ -70,6 +71,7 @@ int main(int argc, char *argv[])
     cerr <<
       "    --log-to=connstr     log errors to database" << endl <<
       "    --target=connstr     database to send queries to" << endl <<
+      "    --dump-all-graphs    dump generated ASTs" << endl <<
       "    --verbose            emit progress output" << endl <<
       "    --version            show version information" << endl;
     return 0;
@@ -95,6 +97,9 @@ int main(int argc, char *argv[])
 
       if (options.count("verbose"))
 	loggers.push_back(make_shared<cerr_logger>());
+
+      if (options.count("dump-all-graphs"))
+	loggers.push_back(make_shared<ast_logger>());
       
       {
 	work w(c);

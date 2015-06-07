@@ -3,6 +3,8 @@
 
 #include "prod.hh"
 
+using std::shared_ptr;
+
 struct value_expr: prod {
   sqltype *type;
   virtual void out(std::ostream &out) = 0;

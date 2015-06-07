@@ -1,3 +1,4 @@
 config.h
 *.o
 sqlsmith
+*.xml
