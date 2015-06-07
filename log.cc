@@ -16,12 +16,14 @@ using namespace pqxx;
 struct stats_visitor : prod_visitor {
   int nodes = 0;
   int maxlevel = 0;
+  long retries = 0;
   map<const char*, long> production_stats;
   virtual void visit(struct prod *p) {
     nodes++;
     if (p->level > maxlevel)
       maxlevel = p->level;
     production_stats[typeid(*p).name()]++;
+    retries += p->retries;
   }
   void report() {
     cerr << "production statistics" << endl;
@@ -47,6 +49,7 @@ void stats_collecting_logger::generated(prod &query)
 
   sum_nodes += v.nodes;
   sum_height += v.maxlevel;
+  sum_retries += v.retries;
 }
 
 static regex e_timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
@@ -127,6 +130,7 @@ pqxx_logger::pqxx_logger(std::string target, std::string conninfo)
   w.exec("insert into stat (id) values (" + to_string(id) + ")");
   c->prepare("stat",
 	     "update stat set generated=$1, level=$2, nodes=$3, updated=now() "
+	     ", retries = $4 "
 	     "where id = " + to_string(id));
 
   w.commit();
@@ -147,7 +151,7 @@ void pqxx_logger::generated(prod &query)
   stats_collecting_logger::generated(query);
   if (999 == (queries%1000)) {
     work w(*c);
-    w.prepared("stat")(queries)(sum_height/queries)(sum_nodes/queries).exec();
+    w.prepared("stat")(queries)(sum_height/queries)(sum_nodes/queries)(sum_retries/queries).exec();
     w.commit();
   }
 }

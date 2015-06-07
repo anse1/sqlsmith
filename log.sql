@@ -31,6 +31,7 @@ create table stat (
    generated bigint,    -- number of generated ASTs
    level float,         -- avg. height of ASTs
    nodes float,         -- avg. number of nodes in ASTs
+   retries float,       -- avg. number of retries needed for ASTs
    updated timestamptz
 );
 

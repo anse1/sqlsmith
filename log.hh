@@ -17,6 +17,7 @@ struct stats_collecting_logger : logger {
   long queries = 0;
   float sum_nodes = 0;
   float sum_height = 0;
+  float sum_retries = 0;
   virtual void generated(prod &query);
 };
 

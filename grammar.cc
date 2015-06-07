@@ -60,7 +60,7 @@ joined_table::joined_table(prod *p) : table_ref(p) {
   named_relation *left_rel = &*random_pick(lhs->refs);
   
   if (!left_rel->columns().size())
-    goto retry;
+    { retries++; goto retry; }
 
   named_relation *right_rel = &*random_pick(rhs->refs);
 
@@ -74,7 +74,7 @@ joined_table::joined_table(prod *p) : table_ref(p) {
     }
   }
   if (condition == "") {
-    goto retry;
+    retries++; goto retry;
   }
 
   if (d6()<4) {

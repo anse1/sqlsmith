@@ -12,6 +12,7 @@ struct prod {
   struct prod *pprod;
   struct scope *scope;
   int level;
+  long retries = 0;
   prod(prod *parent) : pprod(parent) {
     if (parent) {
       level = parent->level + 1;

@@ -75,7 +75,7 @@ distinct_pred::distinct_pred(prod *p) : bool_binop(p)
  retry:
   rhs = make_shared<column_reference>(p);
   if (lhs->type != rhs->type)
-    goto retry;
+    { retries++; goto retry; }
 }
 
 comparison_op::comparison_op(prod *p) : bool_binop(p)
@@ -88,7 +88,7 @@ comparison_op::comparison_op(prod *p) : bool_binop(p)
     scope->schema->find_operator(lhs->type, rhs->type, scope->schema->booltype);
 
   if (op_iter == scope->schema->index.end())
-    goto retry;
+    { retries++; goto retry; }
 
   oper = &op_iter->second;
 }
