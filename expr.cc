@@ -20,6 +20,7 @@ shared_ptr<value_expr> value_expr::factory(prod *p)
     else
       return make_shared<column_reference>(p);
   } catch (runtime_error &e) {
+    p->retries++;
     return factory(p);
   }
 }
