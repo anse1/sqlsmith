@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
   cerr << "sqlsmith " << GITREV << endl;
 
   map<string,string> options;
-  regex optregex("--(help|log-to|verbose|target|version|dump-all-graphs)(?:=((?:.|\n)*))?");
+  regex optregex("--(help|log-to|verbose|target|version|dump-all-graphs|seed)(?:=((?:.|\n)*))?");
   
   for(char **opt = argv+1 ;opt < argv+argc; opt++) {
     smatch match;
@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
     cerr <<
       "    --log-to=connstr     log errors to database" << endl <<
       "    --target=connstr     database to send queries to" << endl <<
+      "    --seed=int           seed RNG with specified int instead of PID" << endl <<
       "    --dump-all-graphs    dump generated ASTs" << endl <<
       "    --verbose            emit progress output" << endl <<
       "    --version            show version information" << endl;
@@ -79,8 +80,7 @@ int main(int argc, char *argv[])
     cerr << GITREV << endl;
     return 0;
   }
-  
-  smith::rng.seed(getpid());
+
   try
     {
       connection c(options["target"]);
@@ -108,6 +108,9 @@ int main(int argc, char *argv[])
 	       "set lc_messages to 'C';");
 	w.commit();
       }
+
+      smith::rng.seed(options.count("seed") ? stoi(options["seed"]) : getpid());
+
       milliseconds query_time(0);
       milliseconds gen_time(0);
 

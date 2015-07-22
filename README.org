@@ -34,6 +34,7 @@ The following options are currently supported:
 | =--log-to=connstr= | database for logging errors (default: don't log) |
 | =--verbose=        | emit progress output                             |
 | =--version=        | show version information                         |
+| =--seed=int=       | seed RNG with specified integer instead of PID   |
 
 Sample output:
 
