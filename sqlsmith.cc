@@ -79,61 +79,62 @@ int main(int argc, char *argv[])
       if (options.count("dump-all-graphs"))
 	loggers.push_back(make_shared<ast_logger>());
       
-      {
-	work w(c);
-	w.exec("set statement_timeout to '1s';"
-	       "set client_min_messages to 'ERROR';"
-	       "set lc_messages to 'C';");
-	w.commit();
-      }
-
       smith::rng.seed(options.count("seed") ? stoi(options["seed"]) : getpid());
 
       milliseconds query_time(0);
       milliseconds gen_time(0);
 
-      while (1) {
+      while (1)
+      {
+	try {
 	  work w(c);
+	  w.exec("set statement_timeout to '1s';"
+		 "set client_min_messages to 'ERROR';"
+		 "set lc_messages to 'C';");
+	  w.commit();
 
-	  
-	  auto g0 = high_resolution_clock::now();
-	  query_spec gen = query_spec((struct prod *)0, &scope);
-	  auto g1 = high_resolution_clock::now();
-	  gen_time += duration_cast<milliseconds>(g1-g0);
+	  while (1) {
+	    work w(c);
+	    auto g0 = high_resolution_clock::now();
+	    query_spec gen = query_spec((struct prod *)0, &scope);
+	    auto g1 = high_resolution_clock::now();
+	    gen_time += duration_cast<milliseconds>(g1-g0);
 
-	  for (auto l : loggers)
-	    l->generated(gen);
-	  
-	  ostringstream s;
-	  gen.out(s);
-
-	  try {
-	    auto q0 = high_resolution_clock::now();
-	    result r = w.exec(s.str() + ";");
-	    auto q1 = high_resolution_clock::now();
-	    query_time =  duration_cast<milliseconds>(q1-q0);
 	    for (auto l : loggers)
-	      l->executed(gen);
-	    w.abort();
-	  } catch (const pqxx::failure &e) {
-	    for (auto l : loggers)
-	      try {
-		l->error(gen, e);
-	      } catch (runtime_error &e) {
-		cerr << endl << "log failed: " << typeid(*l).name() << ": "
-		     << e.what() << endl;
+	      l->generated(gen);
+	  
+	    ostringstream s;
+	    gen.out(s);
+
+	    try {
+	      auto q0 = high_resolution_clock::now();
+	      result r = w.exec(s.str() + ";");
+	      auto q1 = high_resolution_clock::now();
+	      query_time =  duration_cast<milliseconds>(q1-q0);
+	      for (auto l : loggers)
+		l->executed(gen);
+	      w.abort();
+	    } catch (const pqxx::failure &e) {
+	      for (auto l : loggers)
+		try {
+		  l->error(gen, e);
+		} catch (runtime_error &e) {
+		  cerr << endl << "log failed: " << typeid(*l).name() << ": "
+		       << e.what() << endl;
+		}
+	      if ((dynamic_cast<const broken_connection *>(&e))) {
+		throw;
 	      }
-	    if ((dynamic_cast<const broken_connection *>(&e))) {
-	      /* Give the server some time to recover in case we just
-		 crashed it. */
-	      this_thread::sleep_for(milliseconds(1000));
 	    }
 	  }
+	}
+	catch (const broken_connection &e) {
+	  this_thread::sleep_for(milliseconds(1000));
+	}
       }
     }
-  catch (const exception &e)
-    {
-      cerr << e.what() << endl;
-      return 1;
-    }
+  catch (const exception &e) {
+    cerr << e.what() << endl;
+    return 1;
+  }
 }

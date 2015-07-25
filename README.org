@@ -42,12 +42,13 @@ Sample output:
 symbol is output for each query sent to the server.  Currently the
 following ones are generated:
 
-| symbol | meaning      | details                                       |
-|--------+--------------+-----------------------------------------------|
-| .      | ok           | Query generated and executed with ok sqlstate |
-| s      | syntax error | These are bugs in sqlsmith - please report    |
-| t      | timeout      | SQLsmith sets a statement timeout of 1s       |
-| e      | other error  |                                               |
+| symbol | meaning           | details                                       |
+|--------+-------------------+-----------------------------------------------|
+| .      | ok                | Query generated and executed with ok sqlstate |
+| s      | syntax error      | These are bugs in sqlsmith - please report    |
+| t      | timeout           | SQLsmith sets a statement timeout of 1s       |
+| c      | broken connection | These happen when a query crashes the server  |
+| e      | other error       |                                               |
 
 It also periodically emits error reports.  In the following example,
 these are mostly caused by the primitive type system.
