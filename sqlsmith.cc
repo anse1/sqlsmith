@@ -27,28 +27,6 @@ extern "C" {
 #include <unistd.h>
 }
 
-mutex mtx;
-
-void worker(vector<shared_ptr<query_spec> > *queue, scope *s, milliseconds *ms)
-{
-  shared_ptr<query_spec> result;
-  while (true) {
-    auto g0 = high_resolution_clock::now();
-    //	  prepare_stmt gen(scope);
-    result = make_shared<query_spec>((struct prod *)0, s);
-    auto g1 = high_resolution_clock::now();
-    mtx.lock();
-    queue->push_back(result);
-    *ms += duration_cast<milliseconds>(g1-g0);
-    while (queue->size() > 500) {
-      mtx.unlock();
-      this_thread::sleep_for (milliseconds(100));
-      mtx.lock();
-    }
-    mtx.unlock();
-  }
-}
-
 int main(int argc, char *argv[])
 {
   cerr << "sqlsmith " << GITREV << endl;
@@ -114,25 +92,14 @@ int main(int argc, char *argv[])
       milliseconds query_time(0);
       milliseconds gen_time(0);
 
-      vector<shared_ptr<query_spec> > queue;
-      thread t(&worker, &queue, &scope, &gen_time);
-      thread t2(&worker, &queue, &scope, &gen_time);
-      thread t3(&worker, &queue, &scope, &gen_time);
-
       while (1) {
 	  work w(c);
 
-	  mtx.lock();
-	  while (queue.size() == 0) {
-	    mtx.unlock();
-	    this_thread::sleep_for (milliseconds(10));
-	    mtx.lock();
-	  }
 	  
-	  shared_ptr<query_spec> stmt = queue.back();
-	  queue.pop_back();
-	  query_spec &gen = *stmt;
-	  mtx.unlock();
+	  auto g0 = high_resolution_clock::now();
+	  query_spec gen = query_spec((struct prod *)0, &scope);
+	  auto g1 = high_resolution_clock::now();
+	  gen_time += duration_cast<milliseconds>(g1-g0);
 
 	  for (auto l : loggers)
 	    l->generated(gen);
