@@ -92,7 +92,7 @@ void cerr_logger::executed(prod &query)
   cerr << ".";
 }
 
-void cerr_logger::error(prod &query, const sql_error &e)
+void cerr_logger::error(prod &query, const pqxx::failure &e)
 {
   istringstream err(e.what());
   string line;
@@ -103,6 +103,8 @@ void cerr_logger::error(prod &query, const sql_error &e)
     cerr << "t";
   else if (regex_match(e.what(), e_syntax))
     cerr << "s";
+  else if (dynamic_cast<const pqxx::broken_connection *>(&e))
+    cerr << "c";
   else
     cerr << "e";
 }
@@ -137,7 +139,7 @@ pqxx_logger::pqxx_logger(std::string target, std::string conninfo)
 
 }
 
-void pqxx_logger::error(prod &query, const sql_error &e)
+void pqxx_logger::error(prod &query, const pqxx::failure &e)
 {
   work w(*c);
   ostringstream s;

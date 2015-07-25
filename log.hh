@@ -10,7 +10,7 @@
 struct logger {
   virtual void generated(prod &query) { }
   virtual void executed(prod &query) { }
-  virtual void error(prod &query, const pqxx::sql_error &e) { }
+  virtual void error(prod &query, const pqxx::failure &e) { }
 };
 
 struct stats_collecting_logger : logger {
@@ -26,7 +26,7 @@ struct cerr_logger : stats_collecting_logger {
   std::map<std::string, long> errors;
   virtual void generated(prod &query);
   virtual void executed(prod &query);
-  virtual void error(prod &query, const pqxx::sql_error &e);
+  virtual void error(prod &query, const pqxx::failure &e);
   void report(prod &p);
 };
 
@@ -35,7 +35,7 @@ struct pqxx_logger : stats_collecting_logger {
   std::shared_ptr<pqxx::connection> c;
   pqxx_logger(std::string target, std::string conninfo);
   virtual void generated(prod &query);
-  virtual void error(prod &query, const pqxx::sql_error &e);
+  virtual void error(prod &query, const pqxx::failure &e);
 };
 
 #endif

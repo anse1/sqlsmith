@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 	    for (auto l : loggers)
 	      l->executed(gen);
 	    w.abort();
-	  } catch (const sql_error &e) {
+	  } catch (const pqxx::failure &e) {
 	    for (auto l : loggers)
 	      try {
 		l->error(gen, e);
@@ -123,6 +123,11 @@ int main(int argc, char *argv[])
 		cerr << endl << "log failed: " << typeid(*l).name() << ": "
 		     << e.what() << endl;
 	      }
+	    if ((dynamic_cast<const broken_connection *>(&e))) {
+	      /* Give the server some time to recover in case we just
+		 crashed it. */
+	      this_thread::sleep_for(milliseconds(1000));
+	    }
 	  }
       }
     }
