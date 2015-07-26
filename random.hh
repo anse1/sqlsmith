@@ -6,7 +6,7 @@
 #include  <iterator>
 
 namespace smith {
-  extern std::default_random_engine rng;
+  extern std::mt19937_64 rng;
 }
 
 template<typename T> T& random_pick(std::vector<T>& container) {
