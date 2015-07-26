@@ -67,7 +67,9 @@ void exists_predicate::accept(prod_visitor *v)
 
 void exists_predicate::out(std::ostream &out)
 {
-  out << "EXISTS (" << *subquery << ")";
+  out << "EXISTS (";
+  indent(out);
+  out << *subquery << ")";
 }
 
 distinct_pred::distinct_pred(prod *p) : bool_binop(p)

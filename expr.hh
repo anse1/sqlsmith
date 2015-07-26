@@ -81,7 +81,9 @@ struct bool_term : bool_binop {
   virtual ~bool_term() { }
   const char *op;
   virtual void out(std::ostream &out) {
-    out << "( " << *lhs << " ) " << op << " ( " << *rhs << " )";
+    out << "(" << *lhs << ") ";
+    indent(out);
+    out << op << " (" << *rhs << ")";
   }
   bool_term(prod *p) : bool_binop(p)
   {
@@ -104,7 +106,7 @@ struct comparison_op : bool_binop {
   comparison_op(prod *p);
   virtual ~comparison_op() { };
   virtual void out(std::ostream &o) {
-    o << *lhs << oper->name << *rhs;
+    o << *lhs << " " << oper->name << " " << *rhs;
   }
 };
   

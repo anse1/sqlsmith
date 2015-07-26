@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 	  gen.out(cout);
 	  for (auto l : loggers)
 	    l->generated(gen);
-	  cout << endl;
+	  cout << ";" << endl;
 	  queries_generated++;
 
 	  if (options.count("max-queries")

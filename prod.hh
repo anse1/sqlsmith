@@ -20,6 +20,11 @@ struct prod {
       level = 0;
     }
   }
+  virtual void indent(std::ostream &out) {
+    out << std::endl;
+    for (int i = 0; i < level; i++)
+      out << "  ";
+  }
   virtual void out(std::ostream &out) = 0;
   virtual void accept(prod_visitor *v) { v->visit(this); }
 };

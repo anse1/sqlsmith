@@ -92,13 +92,16 @@ joined_table::joined_table(prod *p) : table_ref(p) {
 }
 
 void joined_table::out(std::ostream &out) {
-  out << *lhs << " " << type << " join "
-      << *rhs << " on (" << condition << ")";
+  out << *lhs;
+  indent(out);
+  out << type << " join " << *rhs;
+  indent(out);
+  out << "on (" << condition << ")";
 }
 
 void table_subquery::out(std::ostream &out) {
   if (is_lateral)
-    out << "lateral";
+    out << "lateral ";
   out << "(" << *query << ") as " << refs[0]->ident();
 }
 
@@ -108,6 +111,7 @@ void from_clause::out(std::ostream &out) {
   out << "from ";
 
   for (auto r = reflist.begin(); r < reflist.end(); r++) {
+    indent(out);
     out << **r;
     if (r + 1 != reflist.end())
       out << ",";
@@ -142,6 +146,7 @@ void select_list::out(std::ostream &out)
 {
   int i = 0;
   for (auto expr = value_exprs.begin(); expr != value_exprs.end(); expr++) {
+    indent(out);
     out << **expr << " as " << derived_table.columns()[i].name;
     i++;
     if (expr+1 != value_exprs.end())
@@ -151,8 +156,16 @@ void select_list::out(std::ostream &out)
 
 void query_spec::out(std::ostream &out) {
   out << "select " << set_quantifier << " "
-      << *select_list << " " << *from_clause << " where " << *search << " "
-      << limit_clause;
+      << *select_list;
+  indent(out);
+  out << *from_clause;
+  indent(out);
+  out << "where ";
+  out << *search;
+  if (limit_clause.length()) {
+    indent(out);
+    out << limit_clause;
+  }
 }
 
 query_spec::query_spec(prod *p, struct scope *s, bool lateral) :
@@ -178,7 +191,7 @@ query_spec::query_spec(prod *p, struct scope *s, bool lateral) :
 
   if (d6() > 2) {
     ostringstream cons;
-    cons << " fetch first " << d100() + d100() << " rows only ";
+    cons << "fetch first " << d100() + d100() << " rows only";
     limit_clause = cons.str();
   }
 }
