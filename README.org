@@ -4,9 +4,9 @@
 SQLsmith is a tool that can generate random SQL queries.  Its paragon
 is [[https://embed.cs.utah.edu/csmith/][Csmith]], which proved valuable for quality assurance in C compilers.
 
-SQLsmith is still in an *early protyping stage* and hasn't exposed any
-bugs in RDBMS products yet.  The only supported RDBMS is Postgres at
-the moment.
+SQLsmith is still in an *early prototyping stage* and hasn't exposed
+any bugs in RDBMS products yet.  The only supported RDBMS is Postgres
+at the moment.
 
 It might be useful in its current stage for safely putting arbitrary
 databases under random load.
