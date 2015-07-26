@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
   cerr << "sqlsmith " << GITREV << endl;
 
   map<string,string> options;
-  regex optregex("--(help|log-to|verbose|target|version|dump-all-graphs|seed)(?:=((?:.|\n)*))?");
+  regex optregex("--(help|log-to|verbose|target|version|dump-all-graphs|seed|dry-run|max-queries)(?:=((?:.|\n)*))?");
   
   for(char **opt = argv+1 ;opt < argv+argc; opt++) {
     smatch match;
@@ -51,8 +51,11 @@ int main(int argc, char *argv[])
       "    --target=connstr     database to send queries to" << endl <<
       "    --seed=int           seed RNG with specified int instead of PID" << endl <<
       "    --dump-all-graphs    dump generated ASTs" << endl <<
+      "    --dry-run            print queries instead of executing" << endl <<
+      "    --max-queries=long   terminate after generating this many queries" << endl <<
       "    --verbose            emit progress output" << endl <<
-      "    --version            show version information" << endl;
+      "    --version            print version information and exit" << endl <<
+      "    --help               print available command line options and exit" << endl;
     return 0;
   } else if (options.count("version")) {
     cerr << GITREV << endl;
@@ -61,12 +64,11 @@ int main(int argc, char *argv[])
 
   try
     {
-      connection c(options["target"]);
       schema_pqxx schema(options["target"]);
       scope scope;
       schema.fill_scope(scope);
-      work w(c);
-      w.commit();
+//       work w(c);
+//       w.commit();
 
       vector<shared_ptr<logger> > loggers;
 
@@ -83,6 +85,24 @@ int main(int argc, char *argv[])
 
       milliseconds query_time(0);
       milliseconds gen_time(0);
+
+      if (options.count("dry-run")) {
+	long queries = 0;
+	while (1) {
+	  query_spec gen = query_spec((struct prod *)0, &scope);
+	  gen.out(cout);
+	  for (auto l : loggers)
+	    l->generated(gen);
+	  cout << endl;
+	  queries++;
+
+	  if (options.count("max-queries")
+	      && (queries >= stol(options["max-queries"])))
+	      return 0;
+	}
+      }
+      
+      connection c(options["target"]);
 
       while (1)
       {

@@ -81,15 +81,15 @@ void cerr_logger::generated(prod &p)
       cerr << e.second << "\t" << e.first << endl;
     }
     cerr << "error rate: " << (float)err_count/(queries) << endl;
-
-  } else if (columns-1 == (queries%columns)) {
-    cerr << endl;
   }
 }
 
 
 void cerr_logger::executed(prod &query)
 {
+  if (columns-1 == (queries%columns)) {
+    cerr << endl;
+  }
   cerr << ".";
 }
 
@@ -98,6 +98,9 @@ void cerr_logger::error(prod &query, const pqxx::failure &e)
   istringstream err(e.what());
   string line;
   
+  if (columns-1 == (queries%columns)) {
+    cerr << endl;
+  }
   getline(err, line);
   errors[line]++;
   if (regex_match(e.what(), e_timeout))
