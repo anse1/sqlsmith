@@ -4,7 +4,7 @@
 SQLsmith is a tool that can generate random SQL queries.  Its paragon
 is [[https://embed.cs.utah.edu/csmith/][Csmith]], which proved valuable for quality assurance in C compilers.
 
-SQLsmith is still in an early protyping phase and hasn't exposed any
+SQLsmith is still in an *early protyping stage* and hasn't exposed any
 bugs in RDBMS products yet.  The only supported RDBMS is Postgres at
 the moment.
 
@@ -30,11 +30,13 @@ Example invocation:
 
 The following options are currently supported:
 
-| =--target=connstr= | target database (default: libpq defaults)        |
-| =--log-to=connstr= | database for logging errors (default: don't log) |
-| =--verbose=        | emit progress output                             |
-| =--version=        | show version information                         |
-| =--seed=int=       | seed RNG with specified integer instead of PID   |
+| =--target=connstr=   | target database (default: libpq defaults)        |
+| =--log-to=connstr=   | database for logging errors (default: don't log) |
+| =--verbose=          | emit progress output                             |
+| =--version=          | show version information                         |
+| =--seed=int=         | seed RNG with specified integer instead of PID   |
+| =--dry-run=          | print queries instead of executing them          |
+| =--max-queries=long= | terminate after generating this many queries     |
 
 Sample output:
 

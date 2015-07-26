@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
       "    --target=connstr     database to send queries to" << endl <<
       "    --seed=int           seed RNG with specified int instead of PID" << endl <<
       "    --dump-all-graphs    dump generated ASTs" << endl <<
-      "    --dry-run            print queries instead of executing" << endl <<
+      "    --dry-run            print queries instead of executing them" << endl <<
       "    --max-queries=long   terminate after generating this many queries" << endl <<
       "    --verbose            emit progress output" << endl <<
       "    --version            print version information and exit" << endl <<
