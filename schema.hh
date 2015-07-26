@@ -19,6 +19,8 @@ struct schema {
   std::multimap<typekey, op> index;
   typedef std::multimap<typekey, op>::iterator op_iterator;
 
+  string version;
+  
   void summary() {
     std::cout << "Found " << tables.size() <<
       " user table(s) in information schema." << std::endl;

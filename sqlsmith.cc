@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
       vector<shared_ptr<logger> > loggers;
 
       if (options.count("log-to"))
-	loggers.push_back(make_shared<pqxx_logger>(options["target"], options["log-to"]));
+	loggers.push_back(make_shared<pqxx_logger>(options["target"], options["log-to"], schema));
 
       if (options.count("verbose"))
 	loggers.push_back(make_shared<cerr_logger>());

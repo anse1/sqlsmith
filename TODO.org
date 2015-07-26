@@ -3,6 +3,9 @@
 *** TODO allow selecting/filtering schemas
 *** TODO Add --benchmark option to not execute generated queries
 *** TODO Add --target-schemas=
+*** TODO cycles
+**** TODO repetitive generation cannot be detected due to i++ identifier generation
+**** TODO manually seeding w/ small value leads to cycle
 ** grammar
 *** TODO [#A] Allow constraining productions by return type
 needed for

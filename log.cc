@@ -8,6 +8,7 @@ extern "C" {
 }
 
 #include "log.hh"
+#include "schema.hh"
 #include "config.h"
 
 using namespace std;
@@ -109,19 +110,19 @@ void cerr_logger::error(prod &query, const pqxx::failure &e)
     cerr << "e";
 }
 
-pqxx_logger::pqxx_logger(std::string target, std::string conninfo)
+pqxx_logger::pqxx_logger(std::string target, std::string conninfo, struct schema &s)
 {
   c = make_shared<pqxx::connection>(conninfo);
 
   work w(*c);
   c->prepare("instance",
-	     "insert into instance (rev, target, hostname) "
-	     "values ($1, $2, $3) returning id");
+	     "insert into instance (rev, target, hostname, version) "
+	     "values ($1, $2, $3, $4) returning id");
 
   char hostname[1024];
   gethostname(hostname, sizeof(hostname));
     
-  result r = w.prepared("instance")(GITREV)(target)(hostname).exec();
+  result r = w.prepared("instance")(GITREV)(target)(hostname)(s.version).exec();
   
   id = r[0][0].as<long>(id);
 

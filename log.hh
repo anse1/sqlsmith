@@ -33,7 +33,7 @@ struct cerr_logger : stats_collecting_logger {
 struct pqxx_logger : stats_collecting_logger {
   long id;
   std::shared_ptr<pqxx::connection> c;
-  pqxx_logger(std::string target, std::string conninfo);
+  pqxx_logger(std::string target, std::string conninfo, struct schema &s);
   virtual void generated(prod &query);
   virtual void error(prod &query, const pqxx::failure &e);
 };

@@ -5,6 +5,7 @@ create table instance (
     rev text,      -- sqlsmith git revision
     target text,   -- target connstr
     hostname text, -- hostname of sqlsmith instance
+    version text,   -- target version()
 
     -- not referenced by sqlsmith:
     t timestamptz default now(),

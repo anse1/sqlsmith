@@ -8,8 +8,12 @@ using namespace pqxx;
 schema_pqxx::schema_pqxx(std::string &conninfo) {
   connection c(conninfo);
   work w(c);
+
+  result r = w.exec("select version()");
+  version = r[0][0].as<string>();
+  
   cerr << "Loading tables...";
-  result r = w.exec("select table_catalog, "
+  r = w.exec("select table_catalog, "
 		    "table_name, "
 		    "table_schema from information_schema.tables;");
 
