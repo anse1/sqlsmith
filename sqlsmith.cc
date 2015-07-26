@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
     {
       schema_pqxx schema(options["target"]);
       scope scope;
+      long queries_generated = 0;
       schema.fill_scope(scope);
 //       work w(c);
 //       w.commit();
@@ -87,17 +88,16 @@ int main(int argc, char *argv[])
       milliseconds gen_time(0);
 
       if (options.count("dry-run")) {
-	long queries = 0;
 	while (1) {
 	  query_spec gen = query_spec((struct prod *)0, &scope);
 	  gen.out(cout);
 	  for (auto l : loggers)
 	    l->generated(gen);
 	  cout << endl;
-	  queries++;
+	  queries_generated++;
 
 	  if (options.count("max-queries")
-	      && (queries >= stol(options["max-queries"])))
+	      && (queries_generated >= stol(options["max-queries"])))
 	      return 0;
 	}
       }
@@ -114,6 +114,10 @@ int main(int argc, char *argv[])
 	  w.commit();
 
 	  while (1) {
+	    if (options.count("max-queries")
+		&& (queries_generated++ > stol(options["max-queries"])))
+	      return 0;
+	    
 	    work w(c);
 	    auto g0 = high_resolution_clock::now();
 	    query_spec gen = query_spec((struct prod *)0, &scope);

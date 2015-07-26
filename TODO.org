@@ -69,4 +69,6 @@ implement operators in relmodel.cc join() project() union() select()
 | 32a5d2a       |       188 |    54 |
 | 3a29a40       |       238 |    54 |
 | 57101e2       |       193 |    54 |
+| 52c5b92       |       212 |    37 |
 
+: time ./sqlsmith --verbose --target='dbname=regression'  --dry-run  --max-queries=10000 > /dev/null
