@@ -1,12 +1,9 @@
 #include <iostream>
 #include <pqxx/pqxx>
-#include <numeric>
 #include <chrono>
 #include <regex>
 
 #include <thread>
-#include <mutex>
-#include <memory>
 
 #include "random.hh"
 #include "grammar.hh"
