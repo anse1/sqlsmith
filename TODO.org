@@ -1,11 +1,6 @@
 * TODO-List
 ** Driver
 *** TODO allow selecting/filtering schemas
-*** TODO Add --benchmark option to not execute generated queries
-*** TODO Add --target-schemas=
-*** TODO cycles
-**** TODO repetitive generation cannot be detected due to i++ identifier generation
-**** TODO manually seeding w/ small value leads to cycle
 ** grammar
 *** TODO [#A] Allow constraining productions by return type
 needed for
@@ -45,13 +40,15 @@ what productions need to be constrained?
 - This attribute could then also be used to blacklist productions for
   incompatible RDBMs
 *** TODO Transactions
+*** TODO Emitting should be factored out of grammar into visitor
 ** schema
 *** TODO DTRT with arrays
 ** TODO [#C] support more RDMBSs
-- Should add more than postgresl early to avoid a point of no return
+- Should add more than products early to avoid a point of no return
 - Allow blacklisting of productions for RDBMs with gaps wrt standards
   conformance (probably depends on improved random generation)
-- Allow automatic detection of problematic productions via stats visitor
+- Should be easy to prune unsupported productions automatically on syntax errors
+- Allow automatic detection of problematic productions via stats visitor.
 ** relmodel
 *** TODO [#C] operations on Tuples
 instead of hacking up tuples inside productions it's more sensible to
@@ -59,16 +56,18 @@ implement operators in relmodel.cc join() project() union() select()
 *** TODO [#C] Introduce basic semantic modeling
 - use sampling of witness tuples instead of working on whole data base
 *** TODO [#C] primitive cost model
+*** TODO Load samples at startup to have a pool of values for literals
+- how to do it in a reproducible fashion? TABLESAMPLE? ORDER BY?
 ** Performance
+| revision      | queries/s | nodes | comment                                |
+|---------------+-----------+-------+----------------------------------------|
+| ee9c94f-dirty |       208 |     ? |                                        |
+| 4547909-dirty |       125 |    72 |                                        |
+| 7fa25c6-dirty |       156 |    54 |                                        |
+| 32a5d2a       |       188 |    54 |                                        |
+| 3a29a40       |       238 |    54 |                                        |
+| 57101e2       |       193 |    54 |                                        |
+| 52c5b92       |       212 |    37 |                                        |
+| efca827       |       205 |    37 | changed RNG to 64-Bit Mersenne Twister |
 
-| revision      | queries/s | nodes |
-|---------------+-----------+-------|
-| ee9c94f-dirty |       208 |     ? |
-| 4547909-dirty |       125 |    72 |
-| 7fa25c6-dirty |       156 |    54 |
-| 32a5d2a       |       188 |    54 |
-| 3a29a40       |       238 |    54 |
-| 57101e2       |       193 |    54 |
-| 52c5b92       |       212 |    37 |
-
-: time ./sqlsmith --verbose --target='dbname=regression'  --dry-run  --max-queries=10000 > /dev/null
+: time ./sqlsmith --verbose --target='dbname=regression' --dry-run --max-queries=10000 > /dev/null
