@@ -14,9 +14,7 @@ LDFLAGS = -lpqxx -lpq -lstdc++ -lpthread
 # LDFLAGS = -lpqxx -lpq -lc++ -lpthread
 
 config.h: .git/*
-	echo -n '#define GITREV "' > $@
-	echo -n "$$(git describe --dirty --tags --always)" >> $@
-	echo '"' >> $@
+	echo "#define GITREV \"$$(git describe --dirty --tags --always)\"" > $@
 
 sqlsmith: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -std=c++11 -Wall $+ $(LDFLAGS) -o $@
