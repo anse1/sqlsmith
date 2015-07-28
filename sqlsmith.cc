@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 	auto l = make_shared<cerr_logger>();
 	global_cerr_logger = &*l;
 	loggers.push_back(l);
-	signal(2, cerr_log_handler);
+	signal(SIGINT, cerr_log_handler);
       }
       
       if (options.count("dump-all-graphs"))
