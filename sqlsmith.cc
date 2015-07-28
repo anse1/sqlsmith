@@ -136,6 +136,8 @@ int main(int argc, char *argv[])
 	    }
 	    
 	    work w(c);
+
+	    /* Invoke top-level production to generate AST */
 	    auto g0 = high_resolution_clock::now();
 	    query_spec gen = query_spec((struct prod *)0, &scope);
 	    auto g1 = high_resolution_clock::now();
@@ -144,9 +146,11 @@ int main(int argc, char *argv[])
 	    for (auto l : loggers)
 	      l->generated(gen);
 	  
+	    /* Generate SQL from AST */
 	    ostringstream s;
 	    gen.out(s);
 
+	    /* Try to execute it */
 	    try {
 	      auto q0 = high_resolution_clock::now();
 	      result r = w.exec(s.str() + ";");
@@ -164,12 +168,14 @@ int main(int argc, char *argv[])
 		       << e.what() << endl;
 		}
 	      if ((dynamic_cast<const broken_connection *>(&e))) {
+		/* re-throw to outer loop to recover session. */
 		throw;
 	      }
 	    }
 	  }
 	}
 	catch (const broken_connection &e) {
+	  /* Give server some time to recover. */
 	  this_thread::sleep_for(milliseconds(1000));
 	}
       }
