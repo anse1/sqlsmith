@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
 
 	  while (1) {
 	    if (options.count("max-queries")
-		&& (queries_generated++ > stol(options["max-queries"]))) {
+		&& (++queries_generated > stol(options["max-queries"]))) {
 	      if (global_cerr_logger)
 		global_cerr_logger->report();
 	      return 0;
