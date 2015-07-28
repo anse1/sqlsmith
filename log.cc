@@ -56,11 +56,8 @@ void stats_collecting_logger::generated(prod &query)
 static regex e_timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
 static regex e_syntax("ERROR:  syntax error at or near(\n|.)*");
 
-void cerr_logger::generated(prod &p)
+void cerr_logger::report()
 {
-  stats_collecting_logger::generated(p);
-  
-  if ((10*columns-1) == queries%(10*columns)) {
     cerr << endl << "queries: " << queries << endl;
 // 	 << " (" << 1000.0*query_count/gen_time.count() << " gen/s, "
 // 	 << 1000.0*query_count/query_time.count() << " exec/s)" << endl;
@@ -81,9 +78,15 @@ void cerr_logger::generated(prod &p)
       cerr << e.second << "\t" << e.first << endl;
     }
     cerr << "error rate: " << (float)err_count/(queries) << endl;
-  }
 }
 
+
+void cerr_logger::generated(prod &p)
+{
+  stats_collecting_logger::generated(p);
+  if ((10*columns-1) == queries%(10*columns))
+    report();
+}
 
 void cerr_logger::executed(prod &query)
 {
