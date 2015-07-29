@@ -171,7 +171,6 @@ void query_spec::out(std::ostream &out) {
 query_spec::query_spec(prod *p, struct scope *s, bool lateral) :
   prod(p)
 {
-  vector<column> &cols = select_list->derived_table.columns();
   scope = new struct scope(s);
   scope->tables = s->tables;
 
@@ -181,10 +180,6 @@ query_spec::query_spec(prod *p, struct scope *s, bool lateral) :
   from_clause = make_shared<struct from_clause>(this);
   select_list = make_shared<struct select_list>(this);
   
-//   if (!count_if(cols.begin(), cols.end(),
-// 		[] (column c) { return c.type == "anyarray"; })) {
-//     set_quantifier = (d<>) == 1) ? "" : "distinct ";
-//   }
   set_quantifier = "";
 
   search = bool_expr::factory(this);

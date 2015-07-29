@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <memory>
+#include <cassert>
 
 #include "random.hh"
 #include "relmodel.hh"
@@ -15,8 +16,10 @@ using namespace std;
 shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
 {
   try {
-    if (1 == d42() && !type_constraint)
+    if ((1 == d42()) && !type_constraint)
       return make_shared<const_expr>(p);
+    else if (1 == d20())
+      return make_shared<coalesce>(p, type_constraint);
     else
       return make_shared<column_reference>(p, type_constraint);
   } catch (runtime_error &e) {
@@ -27,7 +30,16 @@ shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
 
 column_reference::column_reference(prod *p, sqltype *type_constraint) : value_expr(p)
 {
-  if (!type_constraint) {
+  if (type_constraint) {
+    auto pairs = scope->refs_of_type(type_constraint);
+    for (auto p : pairs)
+      assert(p.second->type == type_constraint);
+    auto picked = random_pick(pairs);
+    reference += picked.first->ident()
+      + "." + picked.second->name;
+    type = picked.second->type;
+    assert(type == type_constraint);
+  } else {
     named_relation *r = random_pick(scope->refs);
 
     if (!r)
@@ -38,12 +50,6 @@ column_reference::column_reference(prod *p, sqltype *type_constraint) : value_ex
     column &c = random_pick(r->columns());
     type = c.type;
     reference += c.name;
-  } else {
-    auto pairs = scope->refs_of_type(type_constraint);
-    auto picked = random_pick(pairs);
-    reference += picked.first->ident()
-      + "." + picked.second->name;
-    type = picked.second->type;
   }
 }
 
@@ -99,4 +105,22 @@ comparison_op::comparison_op(prod *p) : bool_binop(p)
     { retries++; goto retry; }
 
   oper = &op_iter->second;
+}
+
+coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
+{
+  value_exprs.push_back(value_expr::factory(this, type_constraint));
+  type = value_exprs[0]->type;
+  assert(!type_constraint || type == type_constraint);
+}
+
+void coalesce::out(std::ostream &out)
+{
+  out << "coalesce(";
+  for (auto expr = value_exprs.begin(); expr != value_exprs.end(); expr++) {
+    out << **expr;
+    if (expr+1 != value_exprs.end())
+      out << ", ";
+  }
+  out << ")";
 }

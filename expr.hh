@@ -4,6 +4,7 @@
 #include "prod.hh"
 
 using std::shared_ptr;
+using std::vector;
 
 struct value_expr: prod {
   sqltype *type;
@@ -24,6 +25,18 @@ struct column_reference: value_expr {
   virtual void out(std::ostream &out) { out << reference; }
   std::string reference;
   virtual ~column_reference() { }
+};
+
+struct coalesce : value_expr {
+  vector<shared_ptr<value_expr> > value_exprs;
+  virtual ~coalesce() { };
+  coalesce(prod *p, sqltype *type_constraint = 0);
+  virtual void out(std::ostream &out);
+  virtual void accept(prod_visitor *v) {
+    v->visit(this);
+    for (auto p : value_exprs)
+      p->accept(v);
+  }
 };
 
 struct bool_expr : value_expr {
