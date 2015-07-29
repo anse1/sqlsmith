@@ -10,7 +10,7 @@ struct value_expr: prod {
   virtual void out(std::ostream &out) = 0;
   virtual ~value_expr() { }
   value_expr(prod *p) : prod(p) { }
-  static shared_ptr<value_expr> factory(prod *p);
+  static shared_ptr<value_expr> factory(prod *p, sqltype *type_constraint = 0);
 };
 
 struct const_expr: value_expr {
@@ -20,7 +20,7 @@ struct const_expr: value_expr {
 };
 
 struct column_reference: value_expr {
-  column_reference(prod *p);
+  column_reference(prod *p, sqltype *type_constraint = 0);
   virtual void out(std::ostream &out) { out << reference; }
   std::string reference;
   virtual ~column_reference() { }

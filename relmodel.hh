@@ -3,10 +3,13 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <utility>
 
 using std::string;
 using std::vector;
 using std::map;
+using std::pair;
+using std::make_pair;
 
 struct sqltype {
   string name;
@@ -61,6 +64,14 @@ struct scope {
   scope(struct scope *parent = 0) : parent(parent) {
     if (parent)
       schema = parent->schema;
+  }
+  vector<pair<named_relation*, column*> > refs_of_type(sqltype *t) {
+    vector<pair<named_relation*, column*> > result;
+    for (auto r : refs)
+      for (auto c : r->columns())
+	if (c.type == t)
+	  result.push_back(make_pair(r,&c));
+    return result;
   }
 };
 

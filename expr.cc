@@ -12,31 +12,39 @@
 
 using namespace std;
 
-shared_ptr<value_expr> value_expr::factory(prod *p)
+shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
 {
   try {
-    if (1 == d42())
+    if (1 == d42() && !type_constraint)
       return make_shared<const_expr>(p);
     else
-      return make_shared<column_reference>(p);
+      return make_shared<column_reference>(p, type_constraint);
   } catch (runtime_error &e) {
     p->retries++;
     return factory(p);
   }
 }
 
-column_reference::column_reference(prod *p) : value_expr(p)
+column_reference::column_reference(prod *p, sqltype *type_constraint) : value_expr(p)
 {
-  named_relation *r = random_pick(scope->refs);
+  if (!type_constraint) {
+    named_relation *r = random_pick(scope->refs);
 
-  if (!r)
-    throw runtime_error("Cannot find table reference candidate");
-  reference += r->ident() + ".";
-  if (!r->columns().size())
-    throw runtime_error("Cannot find column candidate");
-  column &c = random_pick(r->columns());
-  type = c.type;
-  reference += c.name;
+    if (!r)
+      throw runtime_error("Cannot find table reference candidate");
+    reference += r->ident() + ".";
+    if (!r->columns().size())
+      throw runtime_error("Cannot find column candidate");
+    column &c = random_pick(r->columns());
+    type = c.type;
+    reference += c.name;
+  } else {
+    auto pairs = scope->refs_of_type(type_constraint);
+    auto picked = random_pick(pairs);
+    reference += picked.first->ident()
+      + "." + picked.second->name;
+    type = picked.second->type;
+  }
 }
 
 shared_ptr<bool_expr> bool_expr::factory(prod *p)
@@ -75,10 +83,7 @@ void exists_predicate::out(std::ostream &out)
 distinct_pred::distinct_pred(prod *p) : bool_binop(p)
 {
   lhs = make_shared<column_reference>(this);
- retry:
-  rhs = make_shared<column_reference>(this);
-  if (lhs->type != rhs->type)
-    { retries++; goto retry; }
+  rhs = make_shared<column_reference>(this, lhs->type);
 }
 
 comparison_op::comparison_op(prod *p) : bool_binop(p)
