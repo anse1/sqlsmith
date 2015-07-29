@@ -65,3 +65,6 @@ create view instance_speed as
     where updated > now() - interval '1 minutes';
 
 comment on view instance_speed is 'query speed of recently active instances';
+
+-- YMMV.
+create index on error(t);
