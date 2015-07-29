@@ -65,12 +65,12 @@ struct scope {
     if (parent)
       schema = parent->schema;
   }
-  vector<pair<named_relation*, column*> > refs_of_type(sqltype *t) {
-    vector<pair<named_relation*, column*> > result;
+  vector<pair<named_relation*, column> > refs_of_type(sqltype *t) {
+    vector<pair<named_relation*, column> > result;
     for (auto r : refs)
       for (auto c : r->columns())
 	if (c.type == t)
-	  result.push_back(make_pair(r,&c));
+	  result.push_back(make_pair(r,c));
     return result;
   }
 };
