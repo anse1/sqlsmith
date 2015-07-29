@@ -23,7 +23,7 @@ int table_or_query_name::sequence = 0;
 table_or_query_name::table_or_query_name(prod *p) : table_ref(p) {
   t = random_pick(scope->tables);
   ostringstream o;
-  o << "rel" << sequence++;
+  o << "rel_" << sequence++;
   refs.push_back(make_shared<aliased_relation>(o.str(), t));
 }
 
