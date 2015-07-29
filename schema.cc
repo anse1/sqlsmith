@@ -1,6 +1,7 @@
 #include "schema.hh"
 #include "relmodel.hh"
 #include <pqxx/pqxx>
+#include "config.h"
 
 using namespace std;
 using namespace pqxx;
@@ -9,6 +10,8 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
   connection c(conninfo);
   work w(c);
 
+  w.exec("set application_name to 'sqlsmith " GITREV "';");
+    
   result r = w.exec("select version()");
   version = r[0][0].as<string>();
   

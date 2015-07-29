@@ -121,6 +121,8 @@ pqxx_logger::pqxx_logger(std::string target, std::string conninfo, struct schema
   c = make_shared<pqxx::connection>(conninfo);
 
   work w(*c);
+  w.exec("set application_name to 'sqlsmith " GITREV "';");
+
   c->prepare("instance",
 	     "insert into instance (rev, target, hostname, version) "
 	     "values ($1, $2, $3, $4) returning id");
