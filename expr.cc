@@ -16,7 +16,8 @@ using namespace std;
 shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
 {
   try {
-    if ((1 == d42()) && !type_constraint)
+    if (((1 == d42()) && !type_constraint)
+	|| (type_constraint && type_constraint == p->scope->schema->inttype))
       return make_shared<const_expr>(p);
     else if (1 == d20() && p->level < 6)
       return make_shared<coalesce>(p, type_constraint);
@@ -112,8 +113,8 @@ coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
   value_exprs.push_back(value_expr::factory(this, type_constraint));
   type = value_exprs[0]->type;
   assert(!type_constraint || type == type_constraint);
-//   value_exprs.push_back(value_expr::factory(this, type));
-//   assert(value_exprs[1]->type == value_exprs[0]->type);
+  value_exprs.push_back(value_expr::factory(this, type));
+  assert(value_exprs[1]->type == value_exprs[0]->type);
 }
 
 void coalesce::out(std::ostream &out)
