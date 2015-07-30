@@ -2,17 +2,6 @@
 ** Driver
 *** TODO allow selecting/filtering schemas
 ** grammar
-*** TODO [#A] Allow constraining productions by return type
-needed for
-- coalesce
-- function calls
-- nontrivial expressions
-- insert/update
-
-what productions need to be constrained?
-- obviously exprs
-- atomic value subselects => constraining the select list...
-
 *** TODO [#A] Allow productions to fail in factories
 - Make productions throw a smith::no_candidate : std::runtime_error
 - Catch it and randomly pick another one.
@@ -69,5 +58,6 @@ implement operators in relmodel.cc join() project() union() select()
 | 57101e2       |       193 |    54 |                                        |
 | 52c5b92       |       212 |    37 |                                        |
 | efca827       |       205 |    37 | changed RNG to 64-Bit Mersenne Twister |
+| 9099e07       |       151 |    37 | coalesce production                    |
 
 : time ./sqlsmith --verbose --target='dbname=regression' --dry-run --max-queries=10000 > /dev/null
