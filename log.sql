@@ -9,7 +9,8 @@ create table instance (
 
     -- not referenced by sqlsmith:
     t timestamptz default now(),
-    client inet default inet_client_addr()
+    client inet default inet_client_addr(),
+    port integer default inet_client_port()
 );
 
 comment on table instance is 'details about an sqlsmith instance';
@@ -41,7 +42,7 @@ comment on table stat is 'statistics about ASTs';
 -- stuff beyond this line is not referenced by sqlsmith
 
 create view base_error as
-       select id, (regexp_split_to_array(msg,'\n'))[1] as error, query from error;
+       select id, (regexp_split_to_array(msg,'\n'))[1] as error, query, t, errid from error;
 
 comment on view base_error is 'like error, but truncate msg to first line';
 
@@ -49,6 +50,12 @@ create view report as
        select count(1), error from base_error group by 2 order by count desc;
 
 comment on view report is 'same report as sqlsmith''s verbose output';
+
+drop view if exists report24h;
+create view report24h as
+       select count(1), error
+       from base_error e join instance i on (e.id = i.id)
+       where i.t > now() - interval '24 hours' group by 2 order by count desc;
 
 create view instance_activity as
        select hostname, target, max(e.t)
