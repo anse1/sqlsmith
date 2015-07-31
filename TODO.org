@@ -58,6 +58,6 @@ implement operators in relmodel.cc join() project() union() select()
 | 57101e2       |       193 |    54 |                                        |
 | 52c5b92       |       212 |    37 |                                        |
 | efca827       |       205 |    37 | changed RNG to 64-Bit Mersenne Twister |
-| 9099e07       |       151 |    37 | coalesce production                    |
+| 9099e07       |       185 |    37 | coalesce production                    |
 
 : time ./sqlsmith --verbose --target='dbname=regression' --dry-run --max-queries=10000 > /dev/null
