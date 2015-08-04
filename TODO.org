@@ -2,6 +2,9 @@
 ** Driver
 *** TODO allow selecting/filtering schemas
 ** grammar
+*** TODO [#A] add proper identifier quoting
+sqlsmiths fails horribly with databases containing identifiers that
+require quoting.
 *** TODO [#A] Allow productions to fail in factories
 - Make productions throw a smith::no_candidate : std::runtime_error
 - Catch it and randomly pick another one.
