@@ -41,8 +41,12 @@ comment on table stat is 'statistics about ASTs';
 
 -- stuff beyond this line is not referenced by sqlsmith
 
+create function firstline(msg text) returns text as $$
+    select (regexp_split_to_array(msg,'\n'))[1];
+$$ language sql immutable;
+
 create view base_error as
-       select id, (regexp_split_to_array(msg,'\n'))[1] as error, query, t, errid from error;
+       select id, firstline(msg) as error, query, t, errid from error;
 
 comment on view base_error is 'like error, but truncate msg to first line';
 
@@ -72,6 +76,20 @@ create view instance_speed as
     where updated > now() - interval '1 minutes';
 
 comment on view instance_speed is 'query speed of recently active instances';
+
+create table known(error text);
+
+create function discard_known() returns trigger as $$
+begin
+	if firstline(new.msg) in (select error from known) then
+	   return NULL;
+	end if;
+	return new;
+end
+$$ language plpgsql;
+
+create trigger discard_known before insert on error
+    for each row execute procedure discard_known();
 
 -- YMMV.
 create index on error(t);
