@@ -26,7 +26,7 @@ extern "C" {
 #include <signal.h>
 }
 
-/* make the cerr logger globally accesible so we can emit one last
+/* make the cerr logger globally accessible so we can emit one last
    report on SIGINT */
 cerr_logger *global_cerr_logger;
 
