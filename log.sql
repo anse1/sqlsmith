@@ -50,16 +50,19 @@ create view base_error as
 
 comment on view base_error is 'like error, but truncate msg to first line';
 
+drop view if exists report;
 create view report as
-       select count(1), error from base_error group by 2 order by count desc;
+       select count(1), max(t) as last_seen, error
+       from base_error group by 3 order by count desc;
 
 comment on view report is 'same report as sqlsmith''s verbose output';
 
 drop view if exists report24h;
 create view report24h as
-       select count(1), error
+       select count(1), error, max(e.t) as last_seen
        from base_error e join instance i on (e.id = i.id)
-       where i.t > now() - interval '24 hours' group by 2 order by count desc;
+       where i.t > now() - interval '1 days'
+       	     group by 2 order by count desc;
 
 create view instance_activity as
        select hostname, target, max(e.t)
