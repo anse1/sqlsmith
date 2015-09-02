@@ -1,7 +1,7 @@
 #include "schema.hh"
 #include "relmodel.hh"
 #include <pqxx/pqxx>
-#include "config.h"
+#include "gitrev.h"
 
 using namespace std;
 using namespace pqxx;

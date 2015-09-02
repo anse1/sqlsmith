@@ -9,7 +9,7 @@ extern "C" {
 
 #include "log.hh"
 #include "schema.hh"
-#include "config.h"
+#include "gitrev.h"
 
 using namespace std;
 using namespace pqxx;
