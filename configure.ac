@@ -1,0 +1,13 @@
+AC_INIT(sqlsmith, 0.1, seltenreich@gmx.de)
+AM_INIT_AUTOMAKE(-Wall -Werror foreign)
+AC_PROG_CXX
+AX_CXX_COMPILE_STDCXX_11(noext,mandatory)
+
+PKG_CHECK_MODULES(LIBPQXX, libpqxx >= 4.0)
+AC_SUBST(LIBPQXX_CFLAGS)
+AC_SUBST(LIBPQXX_LIBS)
+AC_CONFIG_HEADERS(config.h)
+AC_CONFIG_FILES([
+ Makefile
+])
+AC_OUTPUT

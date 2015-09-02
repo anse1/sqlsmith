@@ -10,7 +10,7 @@
 #include "relmodel.hh"
 #include "schema.hh"
 
-#include "config.h"
+#include "gitrev.h"
 
 #include "log.hh"
 #include "dump.hh"
