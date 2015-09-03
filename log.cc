@@ -1,6 +1,16 @@
+#include "config.h"
 #include <iostream>
 #include <pqxx/pqxx>
+
+#ifndef HAVE_BOOST_REGEX
 #include <regex>
+#else
+#include <boost/regex.hpp>
+using boost::regex;
+using boost::smatch;
+using boost::regex_match;
+#endif
+
 #include <string>
 
 extern "C" {
