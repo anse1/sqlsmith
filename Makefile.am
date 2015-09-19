@@ -7,7 +7,7 @@ sqlsmith_SOURCES = relmodel.cc schema.cc random.cc expr.cc grammar.cc log.cc dum
 AM_LDFLAGS = $(BOOST_LDFLAGS) $(LIBPQXX_LIBS) $(BOOST_REGEX_LIB)
 AM_CPPFLAGS = $(BOOST_CPPFLAGS) $(PQXX_CFLAGS)  -Wall
 
-EXTRA_DIST = *.hh *.sql *.xsl README.org
+EXTRA_DIST = gitrev.h *.hh *.sql *.xsl README.org
 
 gitrev.h: $(HEADERS) $(SOURCES) .git/*
 	echo "#define GITREV \"$$(git describe --dirty --tags --always)\"" > $@
