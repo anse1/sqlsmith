@@ -22,7 +22,6 @@ struct table_or_query_name : table_ref {
   virtual void out(std::ostream &out);
   table_or_query_name(prod *p);
   virtual ~table_or_query_name() { }
-  static int sequence;
 private:
   named_relation *t;
 };

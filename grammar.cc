@@ -19,12 +19,9 @@ shared_ptr<table_ref> table_ref::factory(prod *p) {
   return make_shared<table_or_query_name>(p);
 }
 
-int table_or_query_name::sequence = 0;
 table_or_query_name::table_or_query_name(prod *p) : table_ref(p) {
   t = random_pick(scope->tables);
-  ostringstream o;
-  o << "rel_" << sequence++;
-  refs.push_back(make_shared<aliased_relation>(o.str(), t));
+  refs.push_back(make_shared<aliased_relation>(scope->stmt_uid("ref"), t));
 }
 
 void table_or_query_name::out(std::ostream &out) {
@@ -35,10 +32,8 @@ int table_subquery::instances;
 
 table_subquery::table_subquery(prod *p, bool lateral)
   : table_ref(p), is_lateral(lateral) {
-  ostringstream r;
-  r << "subq_" << instances++;
   query = make_shared<query_spec>(this, scope);
-  string alias = r.str();
+  string alias = scope->stmt_uid("subq");
   relation *aliased_rel = &query->select_list->derived_table;
   refs.push_back(make_shared<aliased_relation>(alias, aliased_rel));
 }

@@ -4,12 +4,14 @@
 #include <vector>
 #include <map>
 #include <utility>
+#include <memory>
 
 using std::string;
 using std::vector;
 using std::map;
 using std::pair;
 using std::make_pair;
+using std::shared_ptr;
 
 struct sqltype {
   string name;
@@ -61,9 +63,12 @@ struct scope {
   vector<named_relation*> tables;  // available to table_ref productions
   vector<named_relation*> refs; // available to column_ref productions
   struct schema *schema;
+  shared_ptr<map<string,unsigned int> > stmt_seq; // sequence for stmt-unique identifiers
   scope(struct scope *parent = 0) : parent(parent) {
-    if (parent)
+    if (parent) {
       schema = parent->schema;
+      stmt_seq = parent->stmt_seq;
+    }
   }
   vector<pair<named_relation*, column> > refs_of_type(sqltype *t) {
     vector<pair<named_relation*, column> > result;
@@ -72,6 +77,15 @@ struct scope {
 	if (c.type == t)
 	  result.push_back(make_pair(r,c));
     return result;
+  }
+  string stmt_uid(const char* prefix) {
+    string result(prefix);
+    result += "_";
+    result += std::to_string((*stmt_seq)[result]++);
+    return result;
+  }
+  void new_stmt() {
+    stmt_seq = std::make_shared<map<string,unsigned int> >();
   }
 };
 
