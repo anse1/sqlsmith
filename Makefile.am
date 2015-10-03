@@ -9,6 +9,6 @@ AM_CPPFLAGS = $(BOOST_CPPFLAGS) $(PQXX_CFLAGS)  -Wall
 
 EXTRA_DIST = gitrev.h *.hh *.sql *.xsl README.org
 
-gitrev.h: $(HEADERS) $(SOURCES) .git/*
+gitrev.h: $(HEADERS) $(SOURCES)
 	echo "#define GITREV \"$$(git describe --dirty --tags --always)\"" > $@
 
