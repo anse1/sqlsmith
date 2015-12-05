@@ -18,10 +18,13 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
   cerr << "Loading tables...";
   r = w.exec("select table_catalog, "
 		    "table_name, "
-		    "table_schema from information_schema.tables;");
+		    "table_schema, "
+	            "is_insertable_into "
+	     "from information_schema.tables;");
 
   for (auto row = r.begin(); row != r.end(); ++row) {
     string schema(row[2].as<string>());
+    string insertable(row[3].as<string>());
     //       if (schema == "pg_catalog")
     // 	continue;
     //       if (schema == "information_schema")
@@ -29,7 +32,8 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
       
     tables.push_back(table(row[0].as<string>(),
 			   row[1].as<string>(),
-			   schema));
+			   schema,
+			   (insertable == "YES") ? true : false));
   }
   cerr << "done." << endl;
 

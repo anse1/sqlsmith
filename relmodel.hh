@@ -52,8 +52,9 @@ struct aliased_relation : named_relation {
 struct table : named_relation {
   string catalog;
   string schema;
-  table(string catalog, string name, string schema)
-    : named_relation(name), catalog(catalog), schema(schema) { }
+  bool insertable;
+  table(string catalog, string name, string schema, bool insertable)
+    : named_relation(name), catalog(catalog), schema(schema), insertable(insertable) { }
   virtual string ident() { return schema + "." + name; }
   virtual ~table() { };
 };
