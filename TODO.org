@@ -1,9 +1,16 @@
+#+CATEGORY: sqlsmith
+
 * TODO-List
 ** Driver
 *** TODO allow selecting/filtering schemas
 *** TODO report SQLSTATE
+
 need to patch libpqxx for that
 http://pqxx.org/development/libpqxx/ticket/219
+
+It's probably better to ditch libpqxx for the testing connection and
+use a custom class instead that abstracts different products
+
 ** grammar
 *** TODO [#A] add proper identifier quoting
 sqlsmiths fails horribly with databases containing identifiers that
@@ -38,12 +45,15 @@ require quoting.
 ** schema + type system
 *** TODO DTRT with arrays
 - review standard so we don't drift into non-standard pg stuff
+*** TODO composite/record types
 ** TODO [#C] support more RDMBSs
 - Should add more than products early to avoid a point of no return
 - Allow blacklisting of productions for RDBMs with gaps wrt standards
   conformance (probably depends on improved random generation)
-- Should be easy to prune unsupported productions automatically on syntax errors
+- Should be easy to prune unsupported productions automatically on syntax errors.
+  Or maybe it's better to add a calibration phase? -> conflicts with hard-coded grammar
 - Allow automatic detection of problematic productions via stats visitor.
+- Alternate approach: add a test_compat() method to rules
 ** relmodel
 *** TODO [#C] operations on Tuples
 instead of hacking up tuples inside productions it's more sensible to
@@ -51,6 +61,7 @@ implement operators in relmodel.cc join() project() union() select()
 *** TODO [#C] primitive cost model
 *** TODO Load samples at startup to have a pool of values for literals
 - how to do it in a reproducible fashion? TABLESAMPLE? ORDER BY?
+- maybe use atomic value subselects to fetch compatible values
 ** Performance
 | revision      | queries/s | nodes | comment                                |
 |---------------+-----------+-------+----------------------------------------|
