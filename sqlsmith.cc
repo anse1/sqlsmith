@@ -114,10 +114,10 @@ int main(int argc, char *argv[])
       if (options.count("dry-run")) {
 	while (1) {
 	  scope.new_stmt();
-	  query_spec gen = query_spec((struct prod *)0, &scope);
-	  gen.out(cout);
+	  shared_ptr<prod> gen = statement_factory(&scope);
+	  gen->out(cout);
 	  for (auto l : loggers)
-	    l->generated(gen);
+	    l->generated(*gen);
 	  cout << ";" << endl;
 	  queries_generated++;
 
