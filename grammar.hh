@@ -113,4 +113,6 @@ struct prepare_stmt : prod {
   }
 };
 
+shared_ptr<prod> statement_factory(struct scope *s);
+
 #endif

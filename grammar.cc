@@ -187,3 +187,8 @@ query_spec::query_spec(prod *p, struct scope *s, bool lateral) :
 }
 
 long prepare_stmt::seq;
+
+shared_ptr<prod> statement_factory(struct scope *s)
+{
+  return make_shared<query_spec>((struct prod *)0, s);
+}

@@ -152,16 +152,16 @@ int main(int argc, char *argv[])
 
 	    /* Invoke top-level production to generate AST */
 	    auto g0 = high_resolution_clock::now();
-	    query_spec gen = query_spec((struct prod *)0, &scope);
+	    shared_ptr<prod> gen = statement_factory(&scope);
 	    auto g1 = high_resolution_clock::now();
 	    gen_time += duration_cast<milliseconds>(g1-g0);
 
 	    for (auto l : loggers)
-	      l->generated(gen);
+	      l->generated(*gen);
 	  
 	    /* Generate SQL from AST */
 	    ostringstream s;
-	    gen.out(s);
+	    gen->out(s);
 
 	    /* Try to execute it */
 	    try {
@@ -170,12 +170,12 @@ int main(int argc, char *argv[])
 	      auto q1 = high_resolution_clock::now();
 	      query_time =  duration_cast<milliseconds>(q1-q0);
 	      for (auto l : loggers)
-		l->executed(gen);
+		l->executed(*gen);
 	      w.abort();
 	    } catch (const pqxx::failure &e) {
 	      for (auto l : loggers)
 		try {
-		  l->error(gen, e);
+		  l->error(*gen, e);
 		} catch (runtime_error &e) {
 		  cerr << endl << "log failed: " << typeid(*l).name() << ": "
 		       << e.what() << endl;
