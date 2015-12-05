@@ -188,7 +188,24 @@ query_spec::query_spec(prod *p, struct scope *s, bool lateral) :
 
 long prepare_stmt::seq;
 
+delete_stmt::delete_stmt(prod *p, struct scope *s) : prod(p) {
+  scope = 0;
+  do {
+    struct named_relation *pick = random_pick(s->tables);
+    victim = dynamic_cast<struct table*>(pick);
+    retries++;
+  } while (! victim || !victim->insertable);
+
+  scope = new struct scope(s);
+  scope->tables = s->tables;
+  scope->refs.push_back(victim);
+  search = bool_expr::factory(this);
+}
+
 shared_ptr<prod> statement_factory(struct scope *s)
 {
-  return make_shared<query_spec>((struct prod *)0, s);
+  if (d6() < 5)
+    return make_shared<query_spec>((struct prod *)0, s);
+  else
+    return make_shared<delete_stmt>((struct prod *)0, s);
 }

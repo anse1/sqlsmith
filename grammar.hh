@@ -113,6 +113,20 @@ struct prepare_stmt : prod {
   }
 };
 
+struct delete_stmt : prod {
+  table *victim;
+  shared_ptr<bool_expr> search;
+  delete_stmt(prod *p, struct scope *s);
+  virtual ~delete_stmt() { delete scope; }
+  virtual void out(std::ostream &out) {
+    out << "delete from " << victim->ident() << " where " << *search;
+  }
+  virtual void accept(prod_visitor *v) {
+    v->visit(this);
+    search->accept(v);
+  }
+};
+
 shared_ptr<prod> statement_factory(struct scope *s);
 
 #endif
