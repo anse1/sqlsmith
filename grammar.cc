@@ -35,7 +35,7 @@ table_sample::table_sample(prod *p) : table_ref(p) {
   do {
     auto pick = random_pick(scope->tables);
     t = dynamic_cast<struct table*>(pick);
-  } while (!t || !t->insertable);
+  } while (!t || !t->is_base_table);
   
   refs.push_back(make_shared<aliased_relation>(scope->stmt_uid("sample"), t));
   percent = 0.1 * d100();
@@ -216,7 +216,7 @@ delete_stmt::delete_stmt(prod *p, struct scope *s) : prod(p) {
     struct named_relation *pick = random_pick(s->tables);
     victim = dynamic_cast<struct table*>(pick);
     retries++;
-  } while (! victim || !victim->insertable);
+  } while (! victim || !victim->is_base_table);
 
   scope = new struct scope(s);
   scope->tables = s->tables;
