@@ -18,9 +18,8 @@ arbitrary databases under random load.
 ** Usage
 
 sqlsmith connects to the target database to retrieve the schema for
-query generation and to send the generated queries to.  Currently,
-only read-only queries are generated.  Further, all generated
-statements are rolled back.
+query generation and to send the generated queries to.  Currently, all
+generated statements are rolled back.
 
 Example invocation:
 
