@@ -19,12 +19,14 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
   r = w.exec("select table_catalog, "
 		    "table_name, "
 		    "table_schema, "
-	            "is_insertable_into "
+	            "is_insertable_into, "
+	            "table_type "
 	     "from information_schema.tables;");
 
   for (auto row = r.begin(); row != r.end(); ++row) {
     string schema(row[2].as<string>());
     string insertable(row[3].as<string>());
+    string table_type(row[4].as<string>());
     //       if (schema == "pg_catalog")
     // 	continue;
     //       if (schema == "information_schema")
@@ -33,7 +35,8 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
     tables.push_back(table(row[0].as<string>(),
 			   row[1].as<string>(),
 			   schema,
-			   (insertable == "YES") ? true : false));
+			   ((insertable == "YES") ? true : false),
+			   ((table_type == "BASE TABLE") ? true : false)));
   }
   cerr << "done." << endl;
 
