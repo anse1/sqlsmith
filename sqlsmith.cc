@@ -113,7 +113,6 @@ int main(int argc, char *argv[])
 
       if (options.count("dry-run")) {
 	while (1) {
-	  scope.new_stmt();
 	  shared_ptr<prod> gen = statement_factory(&scope);
 	  gen->out(cout);
 	  for (auto l : loggers)
@@ -148,7 +147,6 @@ int main(int argc, char *argv[])
 	    }
 	    
 	    work w(c);
-	    scope.new_stmt();
 
 	    /* Invoke top-level production to generate AST */
 	    auto g0 = high_resolution_clock::now();

@@ -226,6 +226,7 @@ delete_stmt::delete_stmt(prod *p, struct scope *s) : prod(p) {
 
 shared_ptr<prod> statement_factory(struct scope *s)
 {
+  s->new_stmt();
   if (d6() < 5)
     return make_shared<query_spec>((struct prod *)0, s);
   else
