@@ -16,7 +16,10 @@ shared_ptr<table_ref> table_ref::factory(prod *p) {
     else
       return make_shared<joined_table>(p);
   }
-  return make_shared<table_or_query_name>(p);
+  if (d6() > 3)
+    return make_shared<table_or_query_name>(p);
+  else
+    return make_shared<table_sample>(p);
 }
 
 table_or_query_name::table_or_query_name(prod *p) : table_ref(p) {
@@ -27,6 +30,25 @@ table_or_query_name::table_or_query_name(prod *p) : table_ref(p) {
 void table_or_query_name::out(std::ostream &out) {
   out << t->ident() << " as " << refs[0]->ident();
 }
+
+table_sample::table_sample(prod *p) : table_ref(p) {
+  do {
+    auto pick = random_pick(scope->tables);
+    t = dynamic_cast<struct table*>(pick);
+  } while (!t || !t->insertable);
+  
+  refs.push_back(make_shared<aliased_relation>(scope->stmt_uid("sample"), t));
+  percent = 0.1 * d20() * d20();
+  method = (d6() > 3) ? "system" : "bernoulli";
+}
+
+void table_sample::out(std::ostream &out) {
+  out << t->ident() <<
+    " as " << refs[0]->ident() <<
+    " tablesample " << method <<
+    " (" << percent << ") ";
+}
+
 
 int table_subquery::instances;
 

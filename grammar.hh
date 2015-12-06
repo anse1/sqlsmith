@@ -26,6 +26,16 @@ private:
   named_relation *t;
 };
 
+struct table_sample : table_ref {
+  virtual void out(std::ostream &out);
+  table_sample(prod *p);
+  virtual ~table_sample() { }
+private:
+  struct table *t;
+  string method;
+  double percent;
+};
+
 struct table_subquery : table_ref {
   bool is_lateral;
   virtual void out(std::ostream &out);
