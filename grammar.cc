@@ -54,7 +54,7 @@ int table_subquery::instances;
 
 table_subquery::table_subquery(prod *p, bool lateral)
   : table_ref(p), is_lateral(lateral) {
-  query = make_shared<query_spec>(this, scope);
+  query = make_shared<query_spec>(this, scope, lateral);
   string alias = scope->stmt_uid("subq");
   relation *aliased_rel = &query->select_list->derived_table;
   refs.push_back(make_shared<aliased_relation>(alias, aliased_rel));
