@@ -38,8 +38,8 @@ table_sample::table_sample(prod *p) : table_ref(p) {
   } while (!t || !t->insertable);
   
   refs.push_back(make_shared<aliased_relation>(scope->stmt_uid("sample"), t));
-  percent = 0.1 * d20() * d20();
-  method = (d6() > 3) ? "system" : "bernoulli";
+  percent = 0.1 * d100();
+  method = (d6() > 2) ? "system" : "bernoulli";
 }
 
 void table_sample::out(std::ostream &out) {
