@@ -21,12 +21,12 @@ shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
       return make_shared<const_expr>(p);
     else if (1 == d20() && p->level < 6)
       return make_shared<coalesce>(p, type_constraint);
-    else
+    else if (p->scope->refs.size())
       return make_shared<column_reference>(p, type_constraint);
   } catch (runtime_error &e) {
-    p->retry();
-    return factory(p, type_constraint);
   }
+  p->retry();
+  return factory(p, type_constraint);
 }
 
 column_reference::column_reference(prod *p, sqltype *type_constraint) : value_expr(p)
