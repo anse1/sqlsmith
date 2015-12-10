@@ -118,6 +118,7 @@ coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
  
 void coalesce::out(std::ostream &out)
 {
+  out << "cast(";
   out << "coalesce(";
   for (auto expr = value_exprs.begin(); expr != value_exprs.end(); expr++) {
     out << **expr;
@@ -125,6 +126,7 @@ void coalesce::out(std::ostream &out)
       out << ", ";
   }
   out << ")";
+  out << " as " << type->name << ")";
 }
 
 const_expr::const_expr(prod *p, sqltype *type_constraint)
@@ -133,7 +135,7 @@ const_expr::const_expr(prod *p, sqltype *type_constraint)
   type = type_constraint ? type_constraint : scope->schema->inttype;
       
   if (type == scope->schema->inttype)
-    expr += d100();
+    expr = to_string(d100());
   else if (type == scope->schema->booltype)
     expr += (d6() > 3) ? "true" : "false";
   else
