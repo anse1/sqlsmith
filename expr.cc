@@ -16,9 +16,8 @@ using namespace std;
 shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
 {
   try {
-    if (((1 == d42()) && !type_constraint)
-	|| (type_constraint && type_constraint == p->scope->schema->inttype))
-      return make_shared<const_expr>(p);
+    if (1 == d42())
+      return make_shared<const_expr>(p, type_constraint);
     else if (1 == d20() && p->level < 6)
       return make_shared<coalesce>(p, type_constraint);
     else if (p->scope->refs.size())
@@ -116,7 +115,7 @@ coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
   value_exprs.push_back(value_expr::factory(this, type));
   assert(value_exprs[1]->type == value_exprs[0]->type);
 }
-
+ 
 void coalesce::out(std::ostream &out)
 {
   out << "coalesce(";
@@ -126,4 +125,17 @@ void coalesce::out(std::ostream &out)
       out << ", ";
   }
   out << ")";
+}
+
+const_expr::const_expr(prod *p, sqltype *type_constraint)
+    : value_expr(p), expr("")
+{
+  type = type_constraint ? type_constraint : scope->schema->inttype;
+      
+  if (type == scope->schema->inttype)
+    expr += d100();
+  else if (type == scope->schema->booltype)
+    expr += (d6() > 3) ? "true" : "false";
+  else
+    expr += "null";
 }

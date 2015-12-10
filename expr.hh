@@ -2,6 +2,7 @@
 #define EXPR_HH
 
 #include "prod.hh"
+#include <string>
 
 using std::shared_ptr;
 using std::vector;
@@ -15,8 +16,9 @@ struct value_expr: prod {
 };
 
 struct const_expr: value_expr {
-  const_expr(prod *p) : value_expr(p) { type = scope->schema->inttype; }
-  virtual void out(std::ostream &out) { out << d42(); }
+  std::string expr;
+  const_expr(prod *p, sqltype *type_constraint = 0);
+  virtual void out(std::ostream &out) { out << expr; }
   virtual ~const_expr() { }
 };
 
