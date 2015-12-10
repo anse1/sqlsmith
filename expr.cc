@@ -20,6 +20,8 @@ shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
       return make_shared<const_expr>(p, type_constraint);
     else if (1 == d20() && p->level < 6)
       return make_shared<coalesce>(p, type_constraint);
+    else if (1 == d6())
+      return make_shared<funcall>(p, type_constraint);
     else if (p->scope->refs.size())
       return make_shared<column_reference>(p, type_constraint);
   } catch (runtime_error &e) {
@@ -140,4 +142,26 @@ const_expr::const_expr(prod *p, sqltype *type_constraint)
     expr += (d6() > 3) ? "true" : "false";
   else
     expr += "null";
+}
+
+funcall::funcall(prod *p, sqltype *type_constraint)
+  : value_expr(p)
+{
+  type = type_constraint ? type_constraint : p->scope->schema->inttype;
+  proc = 0;
+  for (auto &cand : p->scope->schema->routines) {
+    if (cand.restype == type) {
+      if (cand.argtypes.size())
+	continue;
+      proc = &cand;
+      break;
+    }
+  }
+  if (!proc)
+    throw runtime_error("no candidates for funcall");
+}
+
+void funcall::out(std::ostream &out)
+{
+  out << proc->ident() << "()";
 }

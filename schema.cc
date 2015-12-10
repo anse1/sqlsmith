@@ -76,5 +76,37 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
 
   booltype = sqltype::get("boolean");
   inttype = sqltype::get("integer");
-}
 
+  cerr << "Loading routines...";
+  r = w.exec("select specific_schema, specific_name, data_type, routine_name "
+	     "from information_schema.routines "
+	     "where specific_catalog = current_catalog");
+
+  for (auto row : r) {
+    routine proc(row[0].as<string>(),
+		 row[1].as<string>(),
+		 sqltype::get(row[2].as<string>()),
+		 row[3].as<string>());
+    routines.push_back(proc);
+  }
+
+  cerr << "done." << endl;
+
+  cerr << "Loading parameters...";
+
+  for (auto &proc : routines) {
+    string q("select data_type "
+	     "from information_schema.parameters "
+	     "where specific_catalog = current_catalog ");
+    q += " and specific_name = " + w.quote(proc.specific_name);
+    q += " and specific_schema = " + w.quote(proc.schema);
+    q += " order by ordinal_position asc";
+      
+    r = w.exec(q);
+    for (auto row : r) {
+      proc.argtypes.push_back(sqltype::get(row[0].as<string>()));
+    }
+  }
+  cerr << "done." << endl;
+
+}

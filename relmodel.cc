@@ -4,11 +4,8 @@ map<string, sqltype*> sqltype::typemap;
 
 sqltype * sqltype::get(string n)
 {
-  auto &p = typemap[n];
-  if (p)
-    return p;
-
-  p = new sqltype(n);
-  return p;
+  if (typemap.count(n))
+    return typemap[n];
+  else
+    return typemap[n] = new sqltype(n);
 };
-

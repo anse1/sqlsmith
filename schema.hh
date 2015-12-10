@@ -15,6 +15,8 @@ struct schema {
   
   std::vector<table> tables;
   std::vector<op> operators;
+  std::vector<routine> routines;
+
   typedef std::tuple<sqltype *,sqltype *,sqltype *> typekey;
   std::multimap<typekey, op> index;
   typedef std::multimap<typekey, op>::iterator op_iterator;
@@ -36,12 +38,14 @@ struct schema {
     index.insert(std::pair<typekey,op>(t,o));
   }
   virtual op_iterator find_operator(sqltype *left, sqltype *right, sqltype *res) {
-    auto cons = index.equal_range(typekey(left, right, res));
+    typekey t(left, right, res);
+    auto cons = index.equal_range(t);
     if (cons.first == cons.second)
       return index.end();
     else
       return random_pick<>(cons.first, cons.second);
   }
+  schema() : index() { }
 };
 
 struct schema_pqxx : public schema {

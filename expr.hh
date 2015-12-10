@@ -15,6 +15,13 @@ struct value_expr: prod {
   static shared_ptr<value_expr> factory(prod *p, sqltype *type_constraint = 0);
 };
 
+struct funcall : value_expr {
+  routine *proc;
+  virtual void out(std::ostream &out);
+  virtual ~funcall() { }
+  funcall(prod *p, sqltype *type_constraint = 0);
+};
+
 struct const_expr: value_expr {
   std::string expr;
   const_expr(prod *p, sqltype *type_constraint = 0);

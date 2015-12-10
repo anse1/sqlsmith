@@ -111,4 +111,15 @@ struct op {
   op() { }
 };
 
+struct routine {
+  string specific_name;
+  string schema;
+  vector<sqltype *> argtypes;
+  sqltype *restype;
+  string name;
+  routine(string schema, string specific_name, sqltype* data_type, string name)
+    : specific_name(specific_name), schema(schema), restype(data_type), name(name) { }
+  virtual string ident() { return schema + "." + name; }
+};
+
 #endif
