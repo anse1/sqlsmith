@@ -224,10 +224,50 @@ delete_stmt::delete_stmt(prod *p, struct scope *s) : prod(p) {
   search = bool_expr::factory(this);
 }
 
+insert_stmt::insert_stmt(prod *p, struct scope *s) : prod(p)
+{
+  scope = s;
+  do {
+    struct named_relation *pick = random_pick(s->tables);
+    victim = dynamic_cast<struct table*>(pick);
+    retries++;
+  } while (! victim || !victim->is_insertable);
+
+  for (auto col : victim->columns()) {
+    auto expr = value_expr::factory(this, col.type);
+    value_exprs.push_back(expr);
+  }
+}
+
+void insert_stmt::out(std::ostream &out)
+{
+  out << "insert into " << victim->ident() << " ";
+
+  if (!value_exprs.size()) {
+    out << "default values";
+    return;
+  }
+
+  out << "values (";
+  
+  for (auto expr = value_exprs.begin();
+       expr != value_exprs.end();
+       expr++) {
+    indent(out);
+    out << **expr;
+    if (expr+1 != value_exprs.end())
+      out << ", ";
+  }
+  out << ")";
+}
+
 shared_ptr<prod> statement_factory(struct scope *s)
 {
   s->new_stmt();
+
   if (d6() < 5)
+    return make_shared<insert_stmt>((struct prod *)0, s);
+  else if (d6() < 5)
     return make_shared<query_spec>((struct prod *)0, s);
   else
     return make_shared<delete_stmt>((struct prod *)0, s);

@@ -137,6 +137,18 @@ struct delete_stmt : prod {
   }
 };
 
+struct insert_stmt : prod {
+  table *victim;
+  vector<shared_ptr<value_expr> > value_exprs;
+  insert_stmt(prod *p, struct scope *s);
+  virtual ~insert_stmt() {  }
+  virtual void out(std::ostream &out);
+  virtual void accept(prod_visitor *v) {
+    v->visit(this);
+    for (auto p : value_exprs) p->accept(v);
+  }
+};
+
 shared_ptr<prod> statement_factory(struct scope *s);
 
 #endif
