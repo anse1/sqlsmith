@@ -77,7 +77,7 @@ joined_table::joined_table(prod *p) : table_ref(p) {
   named_relation *left_rel = &*random_pick(lhs->refs);
   
   if (!left_rel->columns().size())
-    { retries++; goto retry; }
+    { retry(); goto retry; }
 
   named_relation *right_rel = &*random_pick(rhs->refs);
 
@@ -91,7 +91,7 @@ joined_table::joined_table(prod *p) : table_ref(p) {
     }
   }
   if (condition == "") {
-    retries++; goto retry;
+    retry(); goto retry;
   }
 
   if (d6()<4) {
@@ -215,7 +215,7 @@ delete_stmt::delete_stmt(prod *p, struct scope *s) : prod(p) {
   do {
     struct named_relation *pick = random_pick(s->tables);
     victim = dynamic_cast<struct table*>(pick);
-    retries++;
+    retry();
   } while (! victim || !victim->is_base_table);
 
   scope = new struct scope(s);

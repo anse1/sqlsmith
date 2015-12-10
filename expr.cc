@@ -24,7 +24,7 @@ shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
     else
       return make_shared<column_reference>(p, type_constraint);
   } catch (runtime_error &e) {
-    p->retries++;
+    p->retry();
     return factory(p, type_constraint);
   }
 }
@@ -103,7 +103,7 @@ comparison_op::comparison_op(prod *p) : bool_binop(p)
     scope->schema->find_operator(lhs->type, rhs->type, scope->schema->booltype);
 
   if (op_iter == scope->schema->index.end())
-    { retries++; goto retry; }
+    { p->retry(); goto retry; }
 
   oper = &op_iter->second;
 }

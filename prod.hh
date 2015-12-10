@@ -1,3 +1,6 @@
+#include <stdexcept>
+#include <string>
+
 #ifndef PROD_HH
 #define PROD_HH
 
@@ -27,6 +30,12 @@ struct prod {
   }
   virtual void out(std::ostream &out) = 0;
   virtual void accept(prod_visitor *v) { v->visit(this); }
+  void retry() {
+    if (retries++ > 100000)
+      throw std::runtime_error(std::string("excessive retries in ")
+			       + typeid(this).name());
+  };
+  
 };
 
 inline std::ostream& operator<<(std::ostream& s, prod& p)
