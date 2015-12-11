@@ -21,6 +21,9 @@ struct schema {
   std::multimap<typekey, op> index;
   typedef std::multimap<typekey, op>::iterator op_iterator;
 
+  std::multimap<sqltype*, routine*> routines_returning_type;
+  std::multimap<sqltype*, routine*> parameterless_routines_returning_type;
+
   string version;
   
   void summary() {
@@ -37,6 +40,9 @@ struct schema {
     typekey t(o.left, o.right, o.result);
     index.insert(std::pair<typekey,op>(t,o));
   }
+  virtual void register_routine(routine& r) {
+    routines.push_back(r);
+  }
   virtual op_iterator find_operator(sqltype *left, sqltype *right, sqltype *res) {
     typekey t(left, right, res);
     auto cons = index.equal_range(t);
@@ -45,7 +51,8 @@ struct schema {
     else
       return random_pick<>(cons.first, cons.second);
   }
-  schema() : index() { }
+  schema() { }
+  void generate_indexes();
 };
 
 struct schema_pqxx : public schema {

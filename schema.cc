@@ -78,14 +78,19 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
   cerr << "Loading routines...";
   r = w.exec("select specific_schema, specific_name, data_type, routine_name "
 	     "from information_schema.routines "
-	     "where specific_catalog = current_catalog");
+	     "where specific_catalog = current_catalog "
+	     "and data_type not in ('event_trigger', 'trigger', 'opaque', 'internal') "
+	     "and routine_name !~ '^ri_fkey_' "
+	     "and not exists (select 1 from pg_proc where "
+    	     "(proretset or proisagg or proiswindow) "
+	     "and proname = routine_name)");
 
   for (auto row : r) {
     routine proc(row[0].as<string>(),
 		 row[1].as<string>(),
 		 sqltype::get(row[2].as<string>()),
 		 row[3].as<string>());
-    routines.push_back(proc);
+    register_routine(proc);
   }
 
   cerr << "done." << endl;
@@ -98,7 +103,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
 	     "where specific_catalog = current_catalog ");
     q += " and specific_name = " + w.quote(proc.specific_name);
     q += " and specific_schema = " + w.quote(proc.schema);
-    q += " order by ordinal_position asc";
+    q += " order by ordinal_position asc ";
       
     r = w.exec(q);
     for (auto row : r) {
@@ -106,5 +111,17 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
     }
   }
   cerr << "done." << endl;
+  cerr << "Generating indexes...";
+  generate_indexes();
+  cerr << "done." << endl;
 
 }
+
+
+void schema::generate_indexes() {
+    for(auto &r: routines) {
+      routines_returning_type.insert(pair<sqltype*, routine*>(r.restype, &r));
+      if(!r.argtypes.size())
+	parameterless_routines_returning_type.insert(pair<sqltype*, routine*>(r.restype, &r));
+    }
+  }

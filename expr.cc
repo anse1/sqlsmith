@@ -147,18 +147,22 @@ const_expr::const_expr(prod *p, sqltype *type_constraint)
 funcall::funcall(prod *p, sqltype *type_constraint)
   : value_expr(p)
 {
-  type = type_constraint ? type_constraint : p->scope->schema->inttype;
+  auto idx = p->scope->schema->parameterless_routines_returning_type;
   proc = 0;
-  for (auto &cand : p->scope->schema->routines) {
-    if (cand.restype == type) {
-      if (cand.argtypes.size())
-	continue;
-      proc = &cand;
-      break;
-    }
+  if (!type_constraint) {
+    proc = random_pick(idx.begin(), idx.end())->second;
+  } else {
+    auto iters = idx.equal_range(type_constraint);
+    if (iters.first != iters.second)
+      proc = random_pick<>(iters.first, iters.second)->second;
+    assert(!proc || proc->restype == type_constraint);
   }
+
   if (!proc)
     throw runtime_error("no candidates for funcall");
+
+  type = proc->restype;
+
 }
 
 void funcall::out(std::ostream &out)
