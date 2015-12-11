@@ -16,24 +16,22 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
   version = r[0][0].as<string>();
   
   cerr << "Loading tables...";
-  r = w.exec("select table_catalog, "
-		    "table_name, "
+  r = w.exec("select table_name, "
 		    "table_schema, "
 	            "is_insertable_into, "
 	            "table_type "
 	     "from information_schema.tables;");
 
   for (auto row = r.begin(); row != r.end(); ++row) {
-    string schema(row[2].as<string>());
-    string insertable(row[3].as<string>());
-    string table_type(row[4].as<string>());
+    string schema(row[1].as<string>());
+    string insertable(row[2].as<string>());
+    string table_type(row[3].as<string>());
     //       if (schema == "pg_catalog")
     // 	continue;
     //       if (schema == "information_schema")
     // 	continue;
       
     tables.push_back(table(row[0].as<string>(),
-			   row[1].as<string>(),
 			   schema,
 			   ((insertable == "YES") ? true : false),
 			   ((table_type == "BASE TABLE") ? true : false)));
@@ -45,8 +43,8 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
   for (auto t = tables.begin(); t != tables.end(); ++t) {
     string q("select column_name, "
 	     "udt_name"
-	     " from information_schema.columns where");
-    q += " table_catalog = " + w.quote(t->catalog);
+	     " from information_schema.columns where"
+	     " table_catalog = current_catalog");
     q += " and table_schema = " + w.quote(t->schema);
     q += " and table_name = " + w.quote(t->name);
     q += ";";

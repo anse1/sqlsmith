@@ -50,13 +50,11 @@ struct aliased_relation : named_relation {
 };
 
 struct table : named_relation {
-  string catalog;
   string schema;
   bool is_insertable;
   bool is_base_table;
-  table(string catalog, string name, string schema, bool insertable, bool base_table)
+  table(string name, string schema, bool insertable, bool base_table)
     : named_relation(name),
-      catalog(catalog),
       schema(schema),
       is_insertable(insertable),
       is_base_table(base_table) { }
