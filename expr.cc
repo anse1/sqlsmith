@@ -16,14 +16,14 @@ using namespace std;
 shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
 {
   try {
-    if (1 == d42())
-      return make_shared<const_expr>(p, type_constraint);
-    else if (1 == d20() && p->level < 6)
+    if (1 == d20() && p->level < 6)
       return make_shared<coalesce>(p, type_constraint);
-    else if (1 == d6())
+    else if (d6()<3)
       return make_shared<funcall>(p, type_constraint);
     else if (p->scope->refs.size())
       return make_shared<column_reference>(p, type_constraint);
+    else
+      return make_shared<const_expr>(p, type_constraint);
   } catch (runtime_error &e) {
   }
   p->retry();
@@ -140,6 +140,8 @@ const_expr::const_expr(prod *p, sqltype *type_constraint)
     expr = to_string(d100());
   else if (type == scope->schema->booltype)
     expr += (d6() > 3) ? "true" : "false";
+  else if (dynamic_cast<insert_stmt*>(p) && (d6() > 3))
+    expr += "default";
   else
     expr += "null";
 }
