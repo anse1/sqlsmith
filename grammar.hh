@@ -129,7 +129,9 @@ struct delete_stmt : prod {
   delete_stmt(prod *p, struct scope *s);
   virtual ~delete_stmt() { delete scope; }
   virtual void out(std::ostream &out) {
-    out << "delete from " << victim->ident() << " where " << *search;
+    out << "delete from " << victim->ident() << std::endl;
+    indent(out);
+    out << "where " << std::endl << *search;
   }
   virtual void accept(prod_visitor *v) {
     v->visit(this);
@@ -142,7 +144,7 @@ struct delete_returning : delete_stmt {
   delete_returning(prod *p, struct scope *s);
   virtual void out(std::ostream &out) {
     delete_stmt::out(out);
-    out << " returning " << *select_list;
+    out << std::endl << "returning " << *select_list;
   }
   virtual void accept(prod_visitor *v) {
     v->visit(this);
@@ -160,6 +162,36 @@ struct insert_stmt : prod {
   virtual void accept(prod_visitor *v) {
     v->visit(this);
     for (auto p : value_exprs) p->accept(v);
+  }
+};
+
+struct update_stmt : prod {
+  table *victim;
+  vector<shared_ptr<value_expr> > value_exprs;
+  vector<string> names;
+  shared_ptr<bool_expr> search;
+  update_stmt(prod *p, struct scope *s);
+  virtual ~update_stmt() {  }
+  virtual void out(std::ostream &out);
+  virtual void accept(prod_visitor *v) {
+    v->visit(this);
+    search->accept(v);
+    for (auto p : value_exprs) p->accept(v);
+  }
+};
+
+struct update_returning : update_stmt {
+  shared_ptr<struct select_list> select_list;
+  update_returning(prod *p, struct scope *s);
+  virtual void out(std::ostream &out) {
+    update_stmt::out(out);
+    out << std::endl << "returning " << *select_list;
+  }
+  virtual void accept(prod_visitor *v) {
+    v->visit(this);
+    search->accept(v);
+    for (auto p : value_exprs) p->accept(v);
+    select_list->accept(v);
   }
 };
 

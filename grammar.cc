@@ -1,6 +1,7 @@
 #include <numeric>
 #include <algorithm>
 #include <stdexcept>
+#include <cassert>
 
 #include "random.hh"
 #include "relmodel.hh"
@@ -228,7 +229,6 @@ delete_returning::delete_returning(prod *p, struct scope *s) : delete_stmt(p, s)
   select_list = make_shared<struct select_list>(this);
 }
 
-
 insert_stmt::insert_stmt(prod *p, struct scope *s) : prod(p)
 {
   scope = s;
@@ -266,16 +266,60 @@ void insert_stmt::out(std::ostream &out)
   out << ")";
 }
 
+update_stmt::update_stmt(prod *p, struct scope *s) : prod(p) {
+  scope = 0;
+  do {
+    struct named_relation *pick = random_pick(s->tables);
+    victim = dynamic_cast<struct table*>(pick);
+    retry();
+  } while (! victim || !victim->is_base_table || !victim->columns().size());
+  
+  scope = new struct scope(s);
+  scope->tables = s->tables;
+  scope->refs.push_back(victim);
+  search = bool_expr::factory(this);
+
+  do {
+    for (auto col : victim->columns()) {
+      if (d6() < 4)
+	continue;
+      auto expr = value_expr::factory(this, col.type);
+      value_exprs.push_back(expr);
+      names.push_back(col.name);
+    }
+  } while (!names.size());
+}
+
+update_returning::update_returning(prod *p, struct scope *s) : update_stmt(p, s) {
+  select_list = make_shared<struct select_list>(this);
+}
+
+void update_stmt::out(std::ostream &out)
+{
+  assert(names.size());
+  out << "update " << victim->ident() << " set ";
+  for (size_t i = 0; i < names.size(); i++) {
+    indent(out);
+    out << names[i] << " = " << *value_exprs[i];
+    if (i+1 != names.size())
+      out << ", ";
+  }
+}
+
 shared_ptr<prod> statement_factory(struct scope *s)
 {
   s->new_stmt();
 
-  if (d6() == 1)
+  if (d12() == 1)
     return make_shared<insert_stmt>((struct prod *)0, s);
-  else if (d6() == 1)
+  else if (d12() == 1)
     return make_shared<delete_stmt>((struct prod *)0, s);
-  else if (d6() == 1)
+  else if (d12() == 1)
     return make_shared<delete_returning>((struct prod *)0, s);
+  else if (d12() == 1)
+    return make_shared<update_stmt>((struct prod *)0, s);
+  else if (d12() == 1)
+    return make_shared<update_returning>((struct prod *)0, s);
   else
     return make_shared<query_spec>((struct prod *)0, s);
 }
