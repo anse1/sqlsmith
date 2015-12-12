@@ -148,7 +148,7 @@ from_clause::from_clause(prod *p) : prod(p) {
   }
 }
 
-select_list::select_list(query_spec *q) : prod(q)
+select_list::select_list(prod *p) : prod(p)
 {
   do {
     shared_ptr<value_expr> e = value_expr::factory(this);
@@ -224,6 +224,11 @@ delete_stmt::delete_stmt(prod *p, struct scope *s) : prod(p) {
   search = bool_expr::factory(this);
 }
 
+delete_returning::delete_returning(prod *p, struct scope *s) : delete_stmt(p, s) {
+  select_list = make_shared<struct select_list>(this);
+}
+
+
 insert_stmt::insert_stmt(prod *p, struct scope *s) : prod(p)
 {
   scope = s;
@@ -269,6 +274,8 @@ shared_ptr<prod> statement_factory(struct scope *s)
     return make_shared<insert_stmt>((struct prod *)0, s);
   else if (d6() == 1)
     return make_shared<delete_stmt>((struct prod *)0, s);
+  else if (d6() == 1)
+    return make_shared<delete_returning>((struct prod *)0, s);
   else
     return make_shared<query_spec>((struct prod *)0, s);
 }

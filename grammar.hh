@@ -80,7 +80,7 @@ struct select_list : prod {
   std::vector<shared_ptr<value_expr> > value_exprs;
   relation derived_table;
   int columns = 0;
-  select_list(query_spec *q);
+  select_list(prod *p);
   virtual void out(std::ostream &out);
   ~select_list() { }
   virtual void accept(prod_visitor *v) {
@@ -134,6 +134,20 @@ struct delete_stmt : prod {
   virtual void accept(prod_visitor *v) {
     v->visit(this);
     search->accept(v);
+  }
+};
+
+struct delete_returning : delete_stmt {
+  shared_ptr<struct select_list> select_list;
+  delete_returning(prod *p, struct scope *s);
+  virtual void out(std::ostream &out) {
+    delete_stmt::out(out);
+    out << " returning " << *select_list;
+  }
+  virtual void accept(prod_visitor *v) {
+    v->visit(this);
+    search->accept(v);
+    select_list->accept(v);
   }
 };
 
