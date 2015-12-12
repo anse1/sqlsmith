@@ -41,8 +41,8 @@ comment on table stat is 'statistics about ASTs';
 
 -- stuff beyond this line is not referenced by sqlsmith
 
-create function firstline(msg text) returns text as $$
-    select (regexp_split_to_array(msg,'\n'))[1];
+create or replace function firstline(msg text) returns text as $$
+    select split_part(msg, E'\n', 1);
 $$ language sql immutable;
 
 create view base_error as
