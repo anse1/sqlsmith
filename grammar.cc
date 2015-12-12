@@ -211,16 +211,20 @@ query_spec::query_spec(prod *p, struct scope *s, bool lateral) :
 
 long prepare_stmt::seq;
 
-delete_stmt::delete_stmt(prod *p, struct scope *s) : prod(p) {
-  scope = 0;
+modifying_stmt::modifying_stmt(prod *p, struct scope *s)
+  : prod(p)
+{
   do {
     struct named_relation *pick = random_pick(s->tables);
     victim = dynamic_cast<struct table*>(pick);
     retry();
-  } while (! victim || !victim->is_base_table);
+  } while (! victim || !victim->is_base_table || !victim->columns().size());
 
   scope = new struct scope(s);
   scope->tables = s->tables;
+}
+
+delete_stmt::delete_stmt(prod *p, struct scope *s) : modifying_stmt(p,s) {
   scope->refs.push_back(victim);
   search = bool_expr::factory(this);
 }
@@ -229,15 +233,8 @@ delete_returning::delete_returning(prod *p, struct scope *s) : delete_stmt(p, s)
   select_list = make_shared<struct select_list>(this);
 }
 
-insert_stmt::insert_stmt(prod *p, struct scope *s) : prod(p)
+insert_stmt::insert_stmt(prod *p, struct scope *s) : modifying_stmt(p,s)
 {
-  scope = s;
-  do {
-    struct named_relation *pick = random_pick(s->tables);
-    victim = dynamic_cast<struct table*>(pick);
-    retries++;
-  } while (! victim || !victim->is_insertable);
-
   for (auto col : victim->columns()) {
     auto expr = value_expr::factory(this, col.type);
     value_exprs.push_back(expr);
@@ -266,16 +263,7 @@ void insert_stmt::out(std::ostream &out)
   out << ")";
 }
 
-update_stmt::update_stmt(prod *p, struct scope *s) : prod(p) {
-  scope = 0;
-  do {
-    struct named_relation *pick = random_pick(s->tables);
-    victim = dynamic_cast<struct table*>(pick);
-    retry();
-  } while (! victim || !victim->is_base_table || !victim->columns().size());
-  
-  scope = new struct scope(s);
-  scope->tables = s->tables;
+update_stmt::update_stmt(prod *p, struct scope *s) : modifying_stmt(p,s) {
   scope->refs.push_back(victim);
   search = bool_expr::factory(this);
 

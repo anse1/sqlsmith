@@ -123,11 +123,16 @@ struct prepare_stmt : prod {
   }
 };
 
-struct delete_stmt : prod {
+struct modifying_stmt : prod {
   table *victim;
+  modifying_stmt(prod *p, struct scope *s);
+  virtual ~modifying_stmt() { delete scope; }
+};
+
+struct delete_stmt : modifying_stmt {
   shared_ptr<bool_expr> search;
   delete_stmt(prod *p, struct scope *s);
-  virtual ~delete_stmt() { delete scope; }
+  virtual ~delete_stmt() { }
   virtual void out(std::ostream &out) {
     out << "delete from " << victim->ident() << std::endl;
     indent(out);
@@ -153,8 +158,7 @@ struct delete_returning : delete_stmt {
   }
 };
 
-struct insert_stmt : prod {
-  table *victim;
+struct insert_stmt : modifying_stmt {
   vector<shared_ptr<value_expr> > value_exprs;
   insert_stmt(prod *p, struct scope *s);
   virtual ~insert_stmt() {  }
@@ -165,8 +169,7 @@ struct insert_stmt : prod {
   }
 };
 
-struct update_stmt : prod {
-  table *victim;
+struct update_stmt : modifying_stmt {
   vector<shared_ptr<value_expr> > value_exprs;
   vector<string> names;
   shared_ptr<bool_expr> search;
