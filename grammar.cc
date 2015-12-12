@@ -304,11 +304,7 @@ shared_ptr<prod> statement_factory(struct scope *s)
   if (d12() == 1)
     return make_shared<insert_stmt>((struct prod *)0, s);
   else if (d12() == 1)
-    return make_shared<delete_stmt>((struct prod *)0, s);
-  else if (d12() == 1)
     return make_shared<delete_returning>((struct prod *)0, s);
-  else if (d12() == 1)
-    return make_shared<update_stmt>((struct prod *)0, s);
   else if (d12() == 1)
     return make_shared<update_returning>((struct prod *)0, s);
   else
