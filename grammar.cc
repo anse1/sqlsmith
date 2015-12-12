@@ -265,10 +265,10 @@ shared_ptr<prod> statement_factory(struct scope *s)
 {
   s->new_stmt();
 
-  if (d6() < 5)
+  if (d6() == 1)
     return make_shared<insert_stmt>((struct prod *)0, s);
-  else if (d6() < 5)
-    return make_shared<query_spec>((struct prod *)0, s);
-  else
+  else if (d6() == 1)
     return make_shared<delete_stmt>((struct prod *)0, s);
+  else
+    return make_shared<query_spec>((struct prod *)0, s);
 }
