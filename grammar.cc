@@ -218,7 +218,10 @@ modifying_stmt::modifying_stmt(prod *p, struct scope *s)
     struct named_relation *pick = random_pick(s->tables);
     victim = dynamic_cast<struct table*>(pick);
     retry();
-  } while (! victim || !victim->is_base_table || !victim->columns().size());
+  } while (! victim
+	   || victim->schema == "pg_catalog"
+	   || !victim->is_base_table
+	   || !victim->columns().size());
 
   scope = new struct scope(s);
   scope->tables = s->tables;
