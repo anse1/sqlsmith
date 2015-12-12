@@ -80,11 +80,14 @@ create view instance_speed as
 
 comment on view instance_speed is 'query speed of recently active instances';
 
+create table known_re(re text);
 create table known(error text);
 
-create function discard_known() returns trigger as $$
+create or replace function discard_known() returns trigger as $$
 begin
-	if firstline(new.msg) in (select error from known) then
+	if exists (select 1 from known_re where new.msg ~ re)
+	     or exists (select 1 from known where firstline(new.msg) = error)
+        then
 	   return NULL;
 	end if;
 	return new;
