@@ -82,5 +82,17 @@ implement operators in relmodel.cc join() project() union() select()
 | revision | overall | parser |
 |----------+---------+--------|
 | a4c1989  |    26.0 |   20.4 |
-: ./sqlsmith --target='dbname=regression' --verbose --max-queries=10000
+| ee099e6  |    33.8 |   25.8 |
 
+: ./configure --enable-coverage
+:
+: make install
+: initdb /tmp/gcov
+: pg_ctl -D /tmp/gcov start
+: make installcheck
+: pg_ctl -D /tmp/gcov stop
+: make coverage-clean
+: pg_ctl -D /tmp/gcov start
+: sqlsmith --target='dbname=regression' --max-queries=10000
+: pg_ctl -D /tmp/gcov stop
+: make coverage-html
