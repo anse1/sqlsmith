@@ -53,6 +53,7 @@ struct table : named_relation {
   string schema;
   bool is_insertable;
   bool is_base_table;
+  vector<string> constraints;
   table(string name, string schema, bool insertable, bool base_table)
     : named_relation(name),
       schema(schema),

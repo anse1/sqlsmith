@@ -20,8 +20,8 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
 		    "table_schema, "
 	            "is_insertable_into, "
 	            "table_type "
-	     "from information_schema.tables;");
-
+	     "from information_schema.tables");
+	     
   for (auto row = r.begin(); row != r.end(); ++row) {
     string schema(row[1].as<string>());
     string insertable(row[2].as<string>());
@@ -36,9 +36,10 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
 			   ((insertable == "YES") ? true : false),
 			   ((table_type == "BASE TABLE") ? true : false)));
   }
+	     
   cerr << "done." << endl;
 
-  cerr << "Loading columns...";
+  cerr << "Loading columns and constraints...";
 
   for (auto t = tables.begin(); t != tables.end(); ++t) {
     string q("select column_name, "
@@ -54,6 +55,17 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
       column c(row[0].as<string>(), row[1].as<string>());
       t->columns().push_back(c);
     }
+
+    q = "select conname from pg_class t "
+      "join pg_constraint c on (t.oid = c.conrelid) "
+      "where contype in ('f', 'u', 'p') ";
+    q += " and relnamespace = " + w.quote(t->schema) + "::regnamespace ";
+    q += " and relname = " + w.quote(t->name);
+
+    for (auto row : w.exec(q)) {
+      t->constraints.push_back(row[0].as<string>());
+    }
+    
   }
   cerr << "done." << endl;
 

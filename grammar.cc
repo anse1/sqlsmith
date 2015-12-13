@@ -211,32 +211,42 @@ query_spec::query_spec(prod *p, struct scope *s, bool lateral) :
 
 long prepare_stmt::seq;
 
-modifying_stmt::modifying_stmt(prod *p, struct scope *s)
-  : prod(p)
+void modifying_stmt::pick_victim()
 {
   do {
-    struct named_relation *pick = random_pick(s->tables);
-    victim = dynamic_cast<struct table*>(pick);
-    retry();
-  } while (! victim
+      struct named_relation *pick = random_pick(scope->tables);
+      victim = dynamic_cast<struct table*>(pick);
+      retry();
+    } while (! victim
 	   || victim->schema == "pg_catalog"
 	   || !victim->is_base_table
 	   || !victim->columns().size());
-
-  scope = new struct scope(s);
-  scope->tables = s->tables;
 }
 
-delete_stmt::delete_stmt(prod *p, struct scope *s) : modifying_stmt(p,s) {
+modifying_stmt::modifying_stmt(prod *p, struct scope *s, table *victim)
+  : prod(p)
+{
+  scope = new struct scope(s);
+  scope->tables = s->tables;
+
+  if (!victim)
+    pick_victim();
+}
+
+
+delete_stmt::delete_stmt(prod *p, struct scope *s, table *v)
+  : modifying_stmt(p,s,v) {
   scope->refs.push_back(victim);
   search = bool_expr::factory(this);
 }
 
-delete_returning::delete_returning(prod *p, struct scope *s) : delete_stmt(p, s) {
+delete_returning::delete_returning(prod *p, struct scope *s, table *victim)
+  : delete_stmt(p, s, victim) {
   select_list = make_shared<struct select_list>(this);
 }
 
-insert_stmt::insert_stmt(prod *p, struct scope *s) : modifying_stmt(p,s)
+insert_stmt::insert_stmt(prod *p, struct scope *s, table *v)
+  : modifying_stmt(p, s, v)
 {
   for (auto col : victim->columns()) {
     auto expr = value_expr::factory(this, col.type);
@@ -291,7 +301,8 @@ void set_list::out(std::ostream &out)
   }
 }
 
-update_stmt::update_stmt(prod *p, struct scope *s) : modifying_stmt(p,s) {
+update_stmt::update_stmt(prod *p, struct scope *s, table *v)
+  : modifying_stmt(p, s, v) {
   scope->refs.push_back(victim);
   search = bool_expr::factory(this);
   set_list = make_shared<struct set_list>(this);
@@ -302,18 +313,38 @@ void update_stmt::out(std::ostream &out)
   out << "update " << victim->ident() << *set_list;
 }
 
-update_returning::update_returning(prod *p, struct scope *s) : update_stmt(p, s) {
+update_returning::update_returning(prod *p, struct scope *s, table *v)
+  : update_stmt(p, s, v) {
   select_list = make_shared<struct select_list>(this);
+}
+
+
+upsert_stmt::upsert_stmt(prod *p, struct scope *s, table *v)
+  : insert_stmt(p,s,v)
+{
+  if (!victim->constraints.size())
+    throw std::runtime_error("need table w/ constraint for upsert");
+    
+  set_list = std::make_shared<struct set_list>(this);
+  search = bool_expr::factory(this);
+  constraint = random_pick(victim->constraints);
 }
 
 shared_ptr<prod> statement_factory(struct scope *s)
 {
   s->new_stmt();
-
+  try {
+    return make_shared<upsert_stmt>((struct prod *)0, s);
+  } catch (...) {
+    return statement_factory(s);
+  }
+  
   if (d12() == 1)
     return make_shared<insert_stmt>((struct prod *)0, s);
   else if (d12() == 1)
     return make_shared<delete_returning>((struct prod *)0, s);
+  else if (d12() == 1)
+    return make_shared<upsert_stmt>((struct prod *)0, s);
   else if (d12() == 1)
     return make_shared<update_returning>((struct prod *)0, s);
   else

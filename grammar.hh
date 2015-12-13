@@ -125,13 +125,15 @@ struct prepare_stmt : prod {
 
 struct modifying_stmt : prod {
   table *victim;
-  modifying_stmt(prod *p, struct scope *s);
+  modifying_stmt(prod *p, struct scope *s, struct table *victim = 0);
+//   shared_ptr<modifying_stmt> modifying_stmt::factory(prod *p, struct scope *s);
   virtual ~modifying_stmt() { delete scope; }
+  virtual void pick_victim();
 };
 
 struct delete_stmt : modifying_stmt {
   shared_ptr<bool_expr> search;
-  delete_stmt(prod *p, struct scope *s);
+  delete_stmt(prod *p, struct scope *s, table *v);
   virtual ~delete_stmt() { }
   virtual void out(std::ostream &out) {
     out << "delete from " << victim->ident() << std::endl;
@@ -146,7 +148,7 @@ struct delete_stmt : modifying_stmt {
 
 struct delete_returning : delete_stmt {
   shared_ptr<struct select_list> select_list;
-  delete_returning(prod *p, struct scope *s);
+  delete_returning(prod *p, struct scope *s, table *victim = 0);
   virtual void out(std::ostream &out) {
     delete_stmt::out(out);
     out << std::endl << "returning " << *select_list;
@@ -160,7 +162,7 @@ struct delete_returning : delete_stmt {
 
 struct insert_stmt : modifying_stmt {
   vector<shared_ptr<value_expr> > value_exprs;
-  insert_stmt(prod *p, struct scope *s);
+  insert_stmt(prod *p, struct scope *s, table *victim = 0);
   virtual ~insert_stmt() {  }
   virtual void out(std::ostream &out);
   virtual void accept(prod_visitor *v) {
@@ -181,10 +183,28 @@ struct set_list : prod {
   }
 };
 
+struct upsert_stmt : insert_stmt {
+  shared_ptr<struct set_list> set_list;
+  string constraint;
+  shared_ptr<bool_expr> search;
+  upsert_stmt(prod *p, struct scope *s, table *v = 0);
+  virtual void out(std::ostream &out) {
+    insert_stmt::out(out);
+    out << " on conflict on constraint " << constraint << " do update ";
+    out << *set_list << " where " << *search;
+  }
+  virtual void accept(prod_visitor *v) {
+    insert_stmt::accept(v);
+    set_list->accept(v);
+    search->accept(v);
+  }
+  virtual ~upsert_stmt() {  }
+};
+
 struct update_stmt : modifying_stmt {
   shared_ptr<bool_expr> search;
   shared_ptr<struct set_list> set_list;
-  update_stmt(prod *p, struct scope *s);
+  update_stmt(prod *p, struct scope *s, table *victim = 0);
   virtual ~update_stmt() {  }
   virtual void out(std::ostream &out);
   virtual void accept(prod_visitor *v) {
@@ -195,7 +215,7 @@ struct update_stmt : modifying_stmt {
 
 struct update_returning : update_stmt {
   shared_ptr<struct select_list> select_list;
-  update_returning(prod *p, struct scope *s);
+  update_returning(prod *p, struct scope *s, table *victim = 0);
   virtual void out(std::ostream &out) {
     update_stmt::out(out);
     out << std::endl << "returning " << *select_list;

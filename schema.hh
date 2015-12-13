@@ -5,6 +5,7 @@
 #include <iostream>
 #include <pqxx/pqxx>
 #include <numeric>
+#include <memory>
 
 #include "relmodel.hh"
 #include "random.hh"
