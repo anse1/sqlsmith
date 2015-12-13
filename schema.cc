@@ -43,7 +43,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
 
   for (auto t = tables.begin(); t != tables.end(); ++t) {
     string q("select column_name, "
-	     "udt_name"
+	     "data_type"
 	     " from information_schema.columns where"
 	     " table_catalog = current_catalog");
     q += " and table_schema = " + w.quote(t->schema);
@@ -131,9 +131,15 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
 
 
 void schema::generate_indexes() {
-    for(auto &r: routines) {
-      routines_returning_type.insert(pair<sqltype*, routine*>(r.restype, &r));
-      if(!r.argtypes.size())
-	parameterless_routines_returning_type.insert(pair<sqltype*, routine*>(r.restype, &r));
+  for(auto &r: routines) {
+    routines_returning_type.insert(pair<sqltype*, routine*>(r.restype, &r));
+    if(!r.argtypes.size())
+      parameterless_routines_returning_type.insert(pair<sqltype*, routine*>(r.restype, &r));
+  }
+
+  for (auto &t: tables) {
+    for (auto &c: t.columns()) {
+      tables_with_columns_of_type.insert(pair<sqltype*, table*>(c.type, &t));
     }
   }
+}

@@ -24,6 +24,7 @@ struct schema {
 
   std::multimap<sqltype*, routine*> routines_returning_type;
   std::multimap<sqltype*, routine*> parameterless_routines_returning_type;
+  std::multimap<sqltype*, table*> tables_with_columns_of_type;
 
   string version;
   

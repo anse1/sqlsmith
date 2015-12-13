@@ -22,6 +22,15 @@ struct funcall : value_expr {
   funcall(prod *p, sqltype *type_constraint = 0);
 };
 
+struct atomic_subselect : value_expr {
+  table *tab;
+  column *col;
+  int offset;
+  virtual ~atomic_subselect() { }
+  atomic_subselect(prod *p, sqltype *type_constraint = 0);
+  virtual void out(std::ostream &out);
+};
+
 struct const_expr: value_expr {
   std::string expr;
   const_expr(prod *p, sqltype *type_constraint = 0);
