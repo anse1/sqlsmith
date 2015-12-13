@@ -169,17 +169,27 @@ struct insert_stmt : modifying_stmt {
   }
 };
 
-struct update_stmt : modifying_stmt {
+struct set_list : prod {
   vector<shared_ptr<value_expr> > value_exprs;
   vector<string> names;
+  set_list(modifying_stmt *pprod);
+  virtual ~set_list() {  }
+  virtual void out(std::ostream &out);
+  virtual void accept(prod_visitor *v) {
+    v->visit(this);
+    for (auto p : value_exprs) p->accept(v);
+  }
+};
+
+struct update_stmt : modifying_stmt {
   shared_ptr<bool_expr> search;
+  shared_ptr<struct set_list> set_list;
   update_stmt(prod *p, struct scope *s);
   virtual ~update_stmt() {  }
   virtual void out(std::ostream &out);
   virtual void accept(prod_visitor *v) {
     v->visit(this);
     search->accept(v);
-    for (auto p : value_exprs) p->accept(v);
   }
 };
 
@@ -193,7 +203,7 @@ struct update_returning : update_stmt {
   virtual void accept(prod_visitor *v) {
     v->visit(this);
     search->accept(v);
-    for (auto p : value_exprs) p->accept(v);
+    set_list->accept(v);
     select_list->accept(v);
   }
 };

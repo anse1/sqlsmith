@@ -266,12 +266,10 @@ void insert_stmt::out(std::ostream &out)
   out << ")";
 }
 
-update_stmt::update_stmt(prod *p, struct scope *s) : modifying_stmt(p,s) {
-  scope->refs.push_back(victim);
-  search = bool_expr::factory(this);
-
+set_list::set_list(modifying_stmt *pprod) : prod(pprod)
+{
   do {
-    for (auto col : victim->columns()) {
+    for (auto col : pprod->victim->columns()) {
       if (d6() < 4)
 	continue;
       auto expr = value_expr::factory(this, col.type);
@@ -281,20 +279,31 @@ update_stmt::update_stmt(prod *p, struct scope *s) : modifying_stmt(p,s) {
   } while (!names.size());
 }
 
-update_returning::update_returning(prod *p, struct scope *s) : update_stmt(p, s) {
-  select_list = make_shared<struct select_list>(this);
-}
-
-void update_stmt::out(std::ostream &out)
+void set_list::out(std::ostream &out)
 {
   assert(names.size());
-  out << "update " << victim->ident() << " set ";
+  out << " set ";
   for (size_t i = 0; i < names.size(); i++) {
     indent(out);
     out << names[i] << " = " << *value_exprs[i];
     if (i+1 != names.size())
       out << ", ";
   }
+}
+
+update_stmt::update_stmt(prod *p, struct scope *s) : modifying_stmt(p,s) {
+  scope->refs.push_back(victim);
+  search = bool_expr::factory(this);
+  set_list = make_shared<struct set_list>(this);
+}
+
+void update_stmt::out(std::ostream &out)
+{
+  out << "update " << victim->ident() << *set_list;
+}
+
+update_returning::update_returning(prod *p, struct scope *s) : update_stmt(p, s) {
+  select_list = make_shared<struct select_list>(this);
 }
 
 shared_ptr<prod> statement_factory(struct scope *s)
