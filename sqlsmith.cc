@@ -134,8 +134,7 @@ int main(int argc, char *argv[])
 	  work w(c);
 	  w.exec("set statement_timeout to '1s';"
 		 "set client_min_messages to 'ERROR';"
-		 "set application_name to 'sqlsmith';"
-		 "set lc_messages to 'C';");
+		 "set application_name to 'sqlsmith';");
 	  w.commit();
 
 	  while (1) {
