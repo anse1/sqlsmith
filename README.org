@@ -97,6 +97,16 @@ context where it sees non-index-oids, which causes it to croak:
 Now this is more of a curiosity than a bug, but maybe someday SQLsmith
 finds a real one...
 
+** Building on OSX
+
+In order to build on Mac OSX, assuming you use Homebrew, run the following
+
+: brew install libpqxx automake libtool autoconf autoconf-archive
+: cd sqlsmith
+: autoreconf -i
+: ./configure
+: make sqlsmith
+
 ** License
 
 See COPYING for using and distributing this code.
