@@ -108,9 +108,6 @@ int main(int argc, char *argv[])
       
       smith::rng.seed(options.count("seed") ? stoi(options["seed"]) : getpid());
 
-      milliseconds query_time(0);
-      milliseconds gen_time(0);
-
       if (options.count("dry-run")) {
 	while (1) {
 	  shared_ptr<prod> gen = statement_factory(&scope);
@@ -148,10 +145,7 @@ int main(int argc, char *argv[])
 	    work w(c);
 
 	    /* Invoke top-level production to generate AST */
-	    auto g0 = high_resolution_clock::now();
 	    shared_ptr<prod> gen = statement_factory(&scope);
-	    auto g1 = high_resolution_clock::now();
-	    gen_time += duration_cast<milliseconds>(g1-g0);
 
 	    for (auto l : loggers)
 	      l->generated(*gen);
@@ -162,10 +156,7 @@ int main(int argc, char *argv[])
 
 	    /* Try to execute it */
 	    try {
-	      auto q0 = high_resolution_clock::now();
 	      result r = w.exec(s.str() + ";");
-	      auto q1 = high_resolution_clock::now();
-	      query_time =  duration_cast<milliseconds>(q1-q0);
 	      for (auto l : loggers)
 		l->executed(*gen);
 	      w.abort();
