@@ -147,7 +147,10 @@ const_expr::const_expr(prod *p, sqltype *type_constraint)
 funcall::funcall(prod *p, sqltype *type_constraint)
   : value_expr(p)
 {
-  auto &idx = p->scope->schema->parameterless_routines_returning_type;
+  auto &idx = (6 == d6()) ?
+    p->scope->schema->routines_returning_type
+    : p->scope->schema->parameterless_routines_returning_type;
+
   if (!type_constraint) {
     proc = random_pick(idx.begin(), idx.end())->second;
   } else {
@@ -155,14 +158,21 @@ funcall::funcall(prod *p, sqltype *type_constraint)
     proc = random_pick<>(iters)->second;
     assert(!proc || proc->restype == type_constraint);
   }
-
   type = proc->restype;
 
+  for (auto type : proc->argtypes)
+    parms.push_back(value_expr::factory(this, type));
 }
 
 void funcall::out(std::ostream &out)
 {
-  out << proc->ident() << "()";
+  out << proc->ident() << "(";
+  for (auto expr = parms.begin(); expr != parms.end(); expr++) {
+    out << **expr;
+    if (expr+1 != parms.end())
+      out << ", ";
+  }
+  out << ")";
 }
 
 atomic_subselect::atomic_subselect(prod *p, sqltype *type_constraint)
