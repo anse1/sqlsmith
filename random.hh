@@ -19,6 +19,9 @@ template<typename T> T& random_pick(std::vector<T>& container) {
 
 template<typename I>
 I random_pick(I beg, I end) {
+    if (beg == end)
+      throw std::runtime_error("No candidates available");
+
     std::uniform_int_distribution<> pick(0, std::distance(beg, end) - 1);
     std::advance(beg, pick(smith::rng));
     return beg;

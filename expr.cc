@@ -46,11 +46,7 @@ column_reference::column_reference(prod *p, sqltype *type_constraint) : value_ex
   } else {
     named_relation *r = random_pick(scope->refs);
 
-    if (!r)
-      throw runtime_error("Cannot find table reference candidate");
     reference += r->ident() + ".";
-    if (!r->columns().size())
-      throw runtime_error("Cannot find column candidate");
     column &c = random_pick(r->columns());
     type = c.type;
     reference += c.name;
@@ -152,18 +148,13 @@ funcall::funcall(prod *p, sqltype *type_constraint)
   : value_expr(p)
 {
   auto &idx = p->scope->schema->parameterless_routines_returning_type;
-  proc = 0;
   if (!type_constraint) {
     proc = random_pick(idx.begin(), idx.end())->second;
   } else {
     auto iters = idx.equal_range(type_constraint);
-    if (iters.first != iters.second)
-      proc = random_pick<>(iters.first, iters.second)->second;
+    proc = random_pick<>(iters.first, iters.second)->second;
     assert(!proc || proc->restype == type_constraint);
   }
-
-  if (!proc)
-    throw runtime_error("no candidates for funcall");
 
   type = proc->restype;
 
@@ -184,9 +175,6 @@ atomic_subselect::atomic_subselect(prod *p, sqltype *type_constraint)
     type_constraint = p->scope->schema->inttype;
 
   auto iters = idx.equal_range(type_constraint);
-  if (iters.first == iters.second)
-    throw runtime_error("no candidates for atomic subselect");
-    
   tab = random_pick<>(iters.first, iters.second)->second;
 
   for (auto &cand : tab->columns()) {
