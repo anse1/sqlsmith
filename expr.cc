@@ -152,7 +152,7 @@ funcall::funcall(prod *p, sqltype *type_constraint)
     proc = random_pick(idx.begin(), idx.end())->second;
   } else {
     auto iters = idx.equal_range(type_constraint);
-    proc = random_pick<>(iters.first, iters.second)->second;
+    proc = random_pick<>(iters)->second;
     assert(!proc || proc->restype == type_constraint);
   }
 
@@ -175,7 +175,7 @@ atomic_subselect::atomic_subselect(prod *p, sqltype *type_constraint)
     type_constraint = p->scope->schema->inttype;
 
   auto iters = idx.equal_range(type_constraint);
-  tab = random_pick<>(iters.first, iters.second)->second;
+  tab = random_pick<>(iters)->second;
 
   for (auto &cand : tab->columns()) {
     if (cand.type == type_constraint) {

@@ -2,6 +2,7 @@
 #define RANDOM_HH
 
 #include <random>
+#include <utility>
 #include <stdexcept>
 #include  <iterator>
 
@@ -25,6 +26,11 @@ I random_pick(I beg, I end) {
     std::uniform_int_distribution<> pick(0, std::distance(beg, end) - 1);
     std::advance(beg, pick(smith::rng));
     return beg;
+}
+
+template<typename I>
+I random_pick(std::pair<I,I> iters) {
+  return random_pick(iters.first, iters.second);
 }
 
 int d6(), d9(), d12(), d20(), d42(), d100();
