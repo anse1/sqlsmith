@@ -118,12 +118,11 @@ coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
  
 void coalesce::out(std::ostream &out)
 {
-  out << "cast(";
-  out << "coalesce(";
+  out << "cast(coalesce(";
   for (auto expr = value_exprs.begin(); expr != value_exprs.end(); expr++) {
     out << **expr;
     if (expr+1 != value_exprs.end())
-      out << ", ";
+      out << "," << endl,indent(out);
   }
   out << ")";
   out << " as " << type->name << ")";
@@ -147,7 +146,7 @@ const_expr::const_expr(prod *p, sqltype *type_constraint)
 funcall::funcall(prod *p, sqltype *type_constraint)
   : value_expr(p)
 {
-  auto &idx = (6 == d6()) ?
+  auto &idx = (4 < d6()) ?
     p->scope->schema->routines_returning_type
     : p->scope->schema->parameterless_routines_returning_type;
 
@@ -168,9 +167,10 @@ void funcall::out(std::ostream &out)
 {
   out << proc->ident() << "(";
   for (auto expr = parms.begin(); expr != parms.end(); expr++) {
+    indent(out);
     out << "cast(" << **expr << " as " << (*expr)->type->name << ")";
     if (expr+1 != parms.end())
-      out << ", ";
+      out << "," << endl, indent(out);
   }
   out << ")";
 }

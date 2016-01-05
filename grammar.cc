@@ -333,16 +333,16 @@ upsert_stmt::upsert_stmt(prod *p, struct scope *s, table *v)
 shared_ptr<prod> statement_factory(struct scope *s)
 {
   s->new_stmt();
-  if (d12() == 1)
+  if (d20() == 1)
     return make_shared<insert_stmt>((struct prod *)0, s);
-  else if (d12() == 1)
+  else if (d20() == 1)
     return make_shared<delete_returning>((struct prod *)0, s);
-  else if (d12() == 1)
+  else if (d20() == 1)
     while (1)
       try {
 	return make_shared<upsert_stmt>((struct prod *)0, s);
       } catch (runtime_error &e) { }
-  else if (d12() == 1)
+  else if (d20() == 1)
     return make_shared<update_returning>((struct prod *)0, s);
   else
     return make_shared<query_spec>((struct prod *)0, s);
