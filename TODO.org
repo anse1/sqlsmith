@@ -77,12 +77,19 @@ implement operators in relmodel.cc join() project() union() select()
 
 : time ./sqlsmith --verbose --target='dbname=regression' --dry-run --max-queries=10000 > /dev/null
 
-** Line Coverage
+** Postgresql Line Coverage
 
-| revision | overall | parser |
-|----------+---------+--------|
-| a4c1989  |    26.0 |   20.4 |
-| ee099e6  |    33.8 |   25.8 |
+| sqlsmith        | overall | parser |
+|-----------------+---------+--------|
+| a4c1989         |    26.0 |   20.4 |
+| ee099e6         |    33.8 |   25.8 |
+| 231c88a         |   34.65 |   28.1 |
+
+Reference:
+|                   | overall | parser |
+|-------------------+---------+--------|
+| pg_ctl start/stop |     5.8 |    0.5 |
+| --max-queries=0   |    16.6 |   14.6 |
 
 : ./configure --enable-coverage
 :
