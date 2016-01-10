@@ -146,10 +146,15 @@ const_expr::const_expr(prod *p, sqltype *type_constraint)
 funcall::funcall(prod *p, sqltype *type_constraint)
   : value_expr(p)
 {
+  if (type_constraint == scope->schema->internaltype)
+    throw runtime_error("cannot call functions involving internal type");
+
   auto &idx = (4 < d6()) ?
     p->scope->schema->routines_returning_type
     : p->scope->schema->parameterless_routines_returning_type;
 
+ retry:
+  
   if (!type_constraint) {
     proc = random_pick(idx.begin(), idx.end())->second;
   } else {
@@ -159,6 +164,12 @@ funcall::funcall(prod *p, sqltype *type_constraint)
   }
   type = proc->restype;
 
+  if (type == scope->schema->internaltype)
+    goto retry;
+  for (auto type : proc->argtypes)
+    if (type == scope->schema->internaltype)
+      goto retry;
+  
   for (auto type : proc->argtypes)
     parms.push_back(value_expr::factory(this, type));
 }
