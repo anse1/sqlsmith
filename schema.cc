@@ -6,8 +6,8 @@
 using namespace std;
 using namespace pqxx;
 
-schema_pqxx::schema_pqxx(std::string &conninfo) {
-  connection c(conninfo);
+schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
+{
   work w(c);
 
   w.exec("set application_name to 'sqlsmith " GITREV "';");
@@ -86,6 +86,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) {
 
   booltype = sqltype::get("boolean");
   inttype = sqltype::get("integer");
+
   internaltype = sqltype::get("internal");
 
   cerr << "Loading routines...";

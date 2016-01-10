@@ -28,6 +28,8 @@ struct schema {
   std::multimap<sqltype*, table*> tables_with_columns_of_type;
 
   string version;
+
+  virtual std::string quote_name(const std::string &id) = 0;
   
   void summary() {
     std::cout << "Found " << tables.size() <<
@@ -59,6 +61,10 @@ struct schema {
 };
 
 struct schema_pqxx : public schema {
+  pqxx::connection c;
+  virtual std::string quote_name(const std::string &id) {
+    return c.quote_name(id);
+  }
   schema_pqxx(std::string &conninfo);
 };
   
