@@ -109,7 +109,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
 
   cerr << "done." << endl;
 
-  cerr << "Loading parameters...";
+  cerr << "Loading routine parameters...";
 
   for (auto &proc : routines) {
     string q("select data_type "
@@ -125,6 +125,44 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
     }
   }
   cerr << "done." << endl;
+
+  cerr << "Loading aggregates...";
+  r = w.exec("select specific_schema, specific_name, data_type, routine_name "
+	     "from information_schema.routines "
+	     "where specific_catalog = current_catalog "
+	     "and data_type not in ('event_trigger', 'trigger', 'opaque', 'internal') "
+	     "and routine_name !~ '^ri_fkey_' "
+	     "and exists (select 1 from pg_proc where proisagg "
+                                "and proname = routine_name)");
+
+  for (auto row : r) {
+    routine proc(row[0].as<string>(),
+		 row[1].as<string>(),
+		 sqltype::get(row[2].as<string>()),
+		 row[3].as<string>());
+    register_aggregate(proc);
+  }
+
+  cerr << "done." << endl;
+
+  cerr << "Loading aggregate parameters...";
+
+  for (auto &proc : aggregates) {
+    string q("select data_type "
+	     "from information_schema.parameters "
+	     "where specific_catalog = current_catalog ");
+    q += " and specific_name = " + w.quote(proc.specific_name);
+    q += " and specific_schema = " + w.quote(proc.schema);
+    q += " order by ordinal_position asc ";
+      
+    r = w.exec(q);
+    for (auto row : r) {
+      proc.argtypes.push_back(sqltype::get(row[0].as<string>()));
+    }
+  }
+  cerr << "done." << endl;
+
+
   cerr << "Generating indexes...";
   generate_indexes();
   cerr << "done." << endl;
@@ -137,6 +175,10 @@ void schema::generate_indexes() {
     routines_returning_type.insert(pair<sqltype*, routine*>(r.restype, &r));
     if(!r.argtypes.size())
       parameterless_routines_returning_type.insert(pair<sqltype*, routine*>(r.restype, &r));
+  }
+
+  for(auto &r: aggregates) {
+    aggregates_returning_type.insert(pair<sqltype*, routine*>(r.restype, &r));
   }
 
   for (auto &t: tables) {
