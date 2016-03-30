@@ -22,8 +22,8 @@ create table error (
     target text, -- conninfo of the target
     
     -- not referenced by sqlsmith:
-    t timestamptz default now()
-    errid serial primary key;
+    t timestamptz default now(),
+    errid serial primary key
 );
 
 comment on table error is 'observed errors';
@@ -65,9 +65,9 @@ create view report24h as
        	     group by 2 order by count desc;
 
 create view instance_activity as
-       select hostname, target, max(e.t)
+       select i.hostname, i.target, max(e.t)
        	      from instance i join error e on (i.id = e.id)
-	      group by hostname, target
+	      group by i.hostname, i.target
               order by max desc;
 
 comment on view instance_activity is 'time of last error message from instance';
