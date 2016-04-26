@@ -14,6 +14,7 @@ under random load for benchmarking or stress testing.
 ** Dependencies:
 - C++11
 - libpqxx
+- boost::regex in case your std::regex is broken
 
 ** Building on Debian Jessie
 
