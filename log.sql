@@ -80,8 +80,13 @@ create view instance_speed as
 
 comment on view instance_speed is 'query speed of recently active instances';
 
-create table known_re(re text);
+-- Filtering boring errors
+
 create table known(error text);
+comment on table known is 'error messages to reject';
+
+create table known_re(re text);
+comment on table known_re is 'regular expressions to match error messages to reject';
 
 create or replace function discard_known() returns trigger as $$
 begin
