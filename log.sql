@@ -39,6 +39,13 @@ create table stat (
 
 comment on table stat is 'statistics about ASTs';
 
+-- grant role smith just enough rights to do the logging
+create role smith login;
+grant insert,select on table instance to smith;
+grant insert on table error to smith;
+grant update,insert,select on table stat to smith;
+grant usage on all sequences in schema public to smith;
+
 -- stuff beyond this line is not referenced by sqlsmith
 
 create or replace function firstline(msg text) returns text as $$
