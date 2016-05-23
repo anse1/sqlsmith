@@ -337,14 +337,14 @@ shared_ptr<prod> statement_factory(struct scope *s)
     return make_shared<insert_stmt>((struct prod *)0, s);
   else if (d42() == 1)
     return make_shared<delete_returning>((struct prod *)0, s);
-  else if (d42() == 1)
-    while (1)
+  else if (d42() == 1) {
+    int retries = 0;
+    while (retries < 10)
       try {
 	return make_shared<upsert_stmt>((struct prod *)0, s);
-      } catch (runtime_error &e) { }
-  else if (d42() == 1)
+      } catch (runtime_error &e) { retries++; }
+  } else if (d42() == 1)
     return make_shared<update_returning>((struct prod *)0, s);
-  else
-    return make_shared<query_spec>((struct prod *)0, s);
 
+  return make_shared<query_spec>((struct prod *)0, s);
 }
