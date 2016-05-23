@@ -88,6 +88,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   inttype = sqltype::get("integer");
 
   internaltype = sqltype::get("internal");
+  arraytype = sqltype::get("ARRAY");
 
   cerr << "Loading routines...";
   r = w.exec("select specific_schema, specific_name, data_type, routine_name "

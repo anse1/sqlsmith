@@ -109,7 +109,15 @@ comparison_op::comparison_op(prod *p) : bool_binop(p)
 
 coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
 {
-  value_exprs.push_back(value_expr::factory(this, type_constraint));
+  if (type_constraint == scope->schema->arraytype)
+    throw std::runtime_error("cannot coalesce ARRAY");
+
+  shared_ptr<value_expr> first_expr;
+  do {
+    first_expr = value_expr::factory(this, type_constraint);
+  } while (first_expr->type == scope->schema->arraytype);
+  value_exprs.push_back(first_expr);
+  
   type = value_exprs[0]->type;
   assert(!type_constraint || type == type_constraint);
   value_exprs.push_back(value_expr::factory(this, type));
@@ -167,7 +175,8 @@ funcall::funcall(prod *p, sqltype *type_constraint)
   if (type == scope->schema->internaltype)
     goto retry;
   for (auto type : proc->argtypes)
-    if (type == scope->schema->internaltype)
+    if (type == scope->schema->internaltype
+	|| type == scope->schema->arraytype)
       goto retry;
   
   for (auto type : proc->argtypes)
