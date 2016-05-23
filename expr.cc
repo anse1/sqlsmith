@@ -187,10 +187,10 @@ void funcall::out(std::ostream &out)
 {
   out << proc->ident() << "(";
   for (auto expr = parms.begin(); expr != parms.end(); expr++) {
-    indent(out);
     out << "cast(" << **expr << " as " << (*expr)->type->name << ")";
+    indent(out);
     if (expr+1 != parms.end())
-      out << "," << endl, indent(out);
+      out << ",";
   }
   out << ")";
 }

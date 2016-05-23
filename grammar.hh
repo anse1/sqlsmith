@@ -136,7 +136,7 @@ struct delete_stmt : modifying_stmt {
   delete_stmt(prod *p, struct scope *s, table *v);
   virtual ~delete_stmt() { }
   virtual void out(std::ostream &out) {
-    out << "delete from " << victim->ident() << std::endl;
+    out << "delete from " << victim->ident();
     indent(out);
     out << "where " << std::endl << *search;
   }
