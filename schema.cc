@@ -95,6 +95,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
 	     "from information_schema.routines "
 	     "where specific_catalog = current_catalog "
 	     "and data_type not in ('event_trigger', 'trigger', 'opaque', 'internal') "
+	     "and routine_name not in ('pg_event_trigger_table_rewrite_reason') "
 	     "and routine_name !~ '^ri_fkey_' "
 	     "and not exists (select 1 from pg_proc where "
     	     "(proretset or proisagg or proiswindow) "
