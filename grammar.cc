@@ -343,7 +343,7 @@ shared_ptr<prod> statement_factory(struct scope *s)
       try {
 	return make_shared<upsert_stmt>((struct prod *)0, s);
       } catch (runtime_error &e) { retries++; }
-  } else if (d6() == 1)
+  } else if (d6() > 1)
     return make_shared<update_returning>((struct prod *)0, s);
 
   return make_shared<query_spec>((struct prod *)0, s);
