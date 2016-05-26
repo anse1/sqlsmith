@@ -198,7 +198,7 @@ query_spec::query_spec(prod *p, struct scope *s, bool lateral) :
   from_clause = make_shared<struct from_clause>(this);
   select_list = make_shared<struct select_list>(this);
   
-  set_quantifier = "";
+  set_quantifier = (d12() == 1) ? "distinct" : "";
 
   search = bool_expr::factory(this);
 
