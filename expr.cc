@@ -16,7 +16,9 @@ using namespace std;
 shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
 {
   try {
-    if (1 == d20() && p->level < 6)
+    if (window_function::allowed(p) && 1 == d20())
+      return make_shared<window_function>(p, type_constraint);
+    else if (1 == d20() && p->level < 6)
       return make_shared<coalesce>(p, type_constraint);
     else if (p->scope->refs.size() && d6() > 3)
       return make_shared<column_reference>(p, type_constraint);
@@ -151,13 +153,14 @@ const_expr::const_expr(prod *p, sqltype *type_constraint)
     expr += "null";
 }
 
-funcall::funcall(prod *p, sqltype *type_constraint)
-  : value_expr(p)
+funcall::funcall(prod *p, sqltype *type_constraint, bool agg)
+  : value_expr(p), is_aggregate(agg)
 {
   if (type_constraint == scope->schema->internaltype)
     throw runtime_error("cannot call functions involving internal type");
 
-  auto &idx = (4 < d6()) ?
+  auto &idx = agg ? p->scope->schema->aggregates_returning_type
+    : (4 < d6()) ?
     p->scope->schema->routines_returning_type
     : p->scope->schema->parameterless_routines_returning_type;
 
@@ -187,11 +190,14 @@ void funcall::out(std::ostream &out)
 {
   out << proc->ident() << "(";
   for (auto expr = parms.begin(); expr != parms.end(); expr++) {
-    out << "cast(" << **expr << " as " << (*expr)->type->name << ")";
     indent(out);
+    out << "cast(" << **expr << " as " << (*expr)->type->name << ")";
     if (expr+1 != parms.end())
       out << ",";
   }
+
+  if (is_aggregate && (parms.begin() == parms.end()))
+    out << "*";
   out << ")";
 }
 
@@ -223,4 +229,52 @@ void atomic_subselect::out(std::ostream &out)
   out << "(select " << col->name << " from " <<
     tab->ident() << " limit 1 offset " << offset << ")"
       << std::endl;
+}
+
+void window_function::out(std::ostream &out)
+{
+  indent(out);
+  out << *aggregate << " over (partition by ";
+    
+  for (auto ref = partition_by.begin(); ref != partition_by.end(); ref++) {
+    out << **ref;
+    if (ref+1 != partition_by.end())
+      out << ",";
+  }
+
+  out << " order by ";
+    
+  for (auto ref = order_by.begin(); ref != order_by.end(); ref++) {
+    out << **ref;
+    if (ref+1 != order_by.end())
+      out << ",";
+  }
+
+  out << ")";
+}
+
+window_function::window_function(prod *p, sqltype *type_constraint)
+  : value_expr(p)
+{
+
+  aggregate = make_shared<funcall>(this, type_constraint, true);
+  type = aggregate->type;
+  partition_by.push_back(make_shared<column_reference>(this));
+  while(d6() > 4)
+    partition_by.push_back(make_shared<column_reference>(this));
+
+  order_by.push_back(make_shared<column_reference>(this));
+  while(d6() > 4)
+    order_by.push_back(make_shared<column_reference>(this));
+}
+
+bool window_function::allowed(prod *p)
+{
+  if (dynamic_cast<select_list *>(p))
+    return dynamic_cast<query_spec *>(p->pprod) ? true : false;
+  if (dynamic_cast<window_function *>(p))
+    return false;
+  if (dynamic_cast<value_expr *>(p))
+    return allowed(p->pprod);
+  return false;
 }

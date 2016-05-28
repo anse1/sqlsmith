@@ -134,6 +134,8 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
 	     "where specific_catalog = current_catalog "
 	     "and data_type not in ('event_trigger', 'trigger', 'opaque', 'internal') "
 	     "and routine_name !~ '^ri_fkey_' "
+	     "and routine_name not in ('percentile_cont', 'dense_rank', 'cume_dist', "
+	     "'rank', 'test_rank', 'percent_rank', 'percentile_disc', 'mode', 'test_percentile_disc') "
 	     "and exists (select 1 from pg_proc where proisagg "
                                 "and proname = routine_name)");
 

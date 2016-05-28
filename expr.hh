@@ -6,6 +6,7 @@
 
 using std::shared_ptr;
 using std::vector;
+using std::string;
 
 struct value_expr: prod {
   sqltype *type;
@@ -17,10 +18,11 @@ struct value_expr: prod {
 
 struct funcall : value_expr {
   routine *proc;
+  bool is_aggregate;
   vector<shared_ptr<value_expr> > parms;
   virtual void out(std::ostream &out);
   virtual ~funcall() { }
-  funcall(prod *p, sqltype *type_constraint = 0);
+  funcall(prod *p, sqltype *type_constraint = 0, bool agg = 0);
 };
 
 struct atomic_subselect : value_expr {
@@ -141,5 +143,15 @@ struct comparison_op : bool_binop {
     o << *lhs << " " << oper->name << " " << *rhs;
   }
 };
-  
+
+struct window_function : value_expr {
+  virtual void out(std::ostream &out);
+  virtual ~window_function() { }
+  window_function(prod *p, sqltype *type_constraint);
+  vector<shared_ptr<column_reference> > partition_by;
+  vector<shared_ptr<column_reference> > order_by;
+  shared_ptr<funcall> aggregate;
+  static bool allowed(prod *pprod);
+};
+
 #endif
