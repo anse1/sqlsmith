@@ -152,6 +152,14 @@ struct window_function : value_expr {
   vector<shared_ptr<column_reference> > order_by;
   shared_ptr<funcall> aggregate;
   static bool allowed(prod *pprod);
+  virtual void accept(prod_visitor *v) {
+    v->visit(this);
+    aggregate->accept(v);
+    for (auto p : partition_by)
+      p->accept(v);
+    for (auto p : order_by)
+      p->accept(v);
+  }
 };
 
 #endif
