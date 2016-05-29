@@ -1,5 +1,7 @@
 * SQLsmith
 
+: <mba> "I love the smell of coredumps in the morning"
+
 ** Description
 SQLsmith is a tool that can generate random SQL queries.  Its paragon
 is [[https://embed.cs.utah.edu/csmith/][Csmith]], which proved valuable for quality assurance in C compilers.
