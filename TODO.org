@@ -86,6 +86,12 @@ implement operators in relmodel.cc join() project() union() select()
 | 231c88a  |   34.65 |   28.1 |
 | 7ffac2d  |    39.8 |   30.3 |
 
+| combined testing    | overall | parser |
+|---------------------+---------+--------|
+| sqlsmith+make check |    65.1 |   80.4 |
+| make check          |      62 |   80.2 |
+| sqlsmith 7ffac2d    |    39.8 |   30.3 |
+
 Reference:
 |                   | overall | parser |
 |-------------------+---------+--------|
