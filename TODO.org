@@ -79,11 +79,12 @@ implement operators in relmodel.cc join() project() union() select()
 
 ** Postgresql Line Coverage
 
-| sqlsmith        | overall | parser |
-|-----------------+---------+--------|
-| a4c1989         |    26.0 |   20.4 |
-| ee099e6         |    33.8 |   25.8 |
-| 231c88a         |   34.65 |   28.1 |
+| sqlsmith | overall | parser |
+|----------+---------+--------|
+| a4c1989  |    26.0 |   20.4 |
+| ee099e6  |    33.8 |   25.8 |
+| 231c88a  |   34.65 |   28.1 |
+| 7ffac2d  |    39.8 |   30.3 |
 
 Reference:
 |                   | overall | parser |
@@ -100,6 +101,11 @@ Reference:
 : pg_ctl -D /tmp/gcov stop
 : make coverage-clean
 : pg_ctl -D /tmp/gcov start
-: sqlsmith --target='dbname=regression' --max-queries=10000
+: # since 7ffac2d: 4 instances w/25000 each instead 1 instance w/10000 queries
+: sqlsmith --target='dbname=regression' --max-queries=25000 &
+: sqlsmith --target='dbname=regression' --max-queries=25000 &
+: sqlsmith --target='dbname=regression' --max-queries=25000 &
+: sqlsmith --target='dbname=regression' --max-queries=25000 &
+: wait
 : pg_ctl -D /tmp/gcov stop
 : make coverage-html
