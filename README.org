@@ -3,15 +3,23 @@
 : <mba> "I love the smell of coredumps in the morning"
 
 ** Description
-SQLsmith is a tool that can generate random SQL queries.  Its paragon
-is [[https://embed.cs.utah.edu/csmith/][Csmith]], which proved valuable for quality assurance in C compilers.
+SQLsmith is a random SQL query generator.  Its paragon is [[https://embed.cs.utah.edu/csmith/][Csmith]],
+which proved valuable for quality assurance in C compilers.
 
-SQLsmith is still in an *early prototyping stage* but already found a
-[[https://github.com/anse1/sqlsmith/wiki][couple of minor bugs]] in Postgres.  The only supported RDBMS is
-Postgres at the moment.
+It currently supports generating queries for PostgreSQL 9.5 or later
+only.  SQLsmith was designed with testing different versions and even
+products in mind, but this has not manifested yet.
 
-It might also be useful in its current stage for putting databases
-under random load for benchmarking or stress testing.
+Besides PostgreSQL developers, users developing extensions of
+PostgreSQL might also be interested in exposing their code to
+SQLsmith's random workload.
+
+During its prototyping stage, it already found about thirty bugs in
+PostgresSQL alphas, betas and releases, including security
+vulnerabilities in released versions.  SQLsmith's score list is
+maintained by its users in a wiki:
+
+    https://github.com/anse1/sqlsmith/wiki#score-list
 
 ** Dependencies:
 - C++11
@@ -36,18 +44,18 @@ In order to build on Mac OSX, assuming you use Homebrew, run the following
 : ./configure
 : make
 
-
 ** Usage
 
 SQLsmith connects to the target database to retrieve the schema for
 query generation and to send the generated queries to.  Currently, all
 generated statements are rolled back.  Beware that SQLsmith does call
-functions that could possibly have side-effects (e.g. pg_stop_backup).
-Use a suitably *underprivileged user* for its connection to avoid this.
+functions that could possibly have side-effects
+(e.g. pg_terminate_backend).  Use a suitably *underprivileged user*
+for its connection to avoid this.
 
 Example invocation:
 
-: sqlsmith --verbose --target="host=/tmp port=65432"
+: sqlsmith --verbose --target="host=/tmp port=65432 dbname=regression"
 
 The following options are currently supported:
 
@@ -58,6 +66,7 @@ The following options are currently supported:
 | =--seed=int=         | seed RNG with specified integer instead of PID   |
 | =--dry-run=          | print queries instead of executing them          |
 | =--max-queries=long= | terminate after generating this many queries     |
+| =--dump-all-graphs=  | dump generated ASTs for debugging                |
 
 Sample output:
 
@@ -116,14 +125,14 @@ context where it sees non-index-oids, which causes it to croak:
 :                      ->  Seq Scan on pg_class c  (cost=0.00..11.76 rows=61 width=8)
 :                            Filter: (relkind = ANY ('{r,m}'::"char"[]))
 
-Now this is more of a curiosity than a bug, but maybe someday SQLsmith
-finds a real one...
+Now this is more of a curiosity than a bug, but still illustrating how
+debugging with the help of SQLsmith might look like.
 
 ** License
 
 SQLsmith is available under GPLv3.  Use it at your own risk.  It may
-*break your database* (one of the purposes of this tool /is/ to break
-things).  See the file [[COPYING]] for details.
+*damage your database* (one of the purposes of this tool /is/ to try
+and break things).  See the file [[COPYING]] for details.
 
 ** Authors
 
