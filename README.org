@@ -43,8 +43,7 @@ SQLsmith connects to the target database to retrieve the schema for
 query generation and to send the generated queries to.  Currently, all
 generated statements are rolled back.  Beware that SQLsmith does call
 functions that could possibly have side-effects (e.g. pg_stop_backup).
-Use a suitably underprivileged user for its connection to avoid this.
-
+Use a suitably *underprivileged user* for its connection to avoid this.
 
 Example invocation:
 
@@ -122,7 +121,9 @@ finds a real one...
 
 ** License
 
-See COPYING for using and distributing this code.
+SQLsmith is available under GPLv3.  Use it at your own risk.  It may
+*break your database* (one of the purposes of this tool /is/ to break
+things).  See the file [[COPYING]] for details.
 
 ** Authors
 
