@@ -30,7 +30,7 @@ maintained by its users in a wiki:
 
 : apt-get install build-essential autoconf autoconf-archive libpqxx-dev libboost-regex-dev
 : cd sqlsmith
-: autoreconf -i
+: autoreconf -i # Not needed when building from a release tarball
 : ./configure
 : make
 
@@ -40,7 +40,7 @@ In order to build on Mac OSX, assuming you use Homebrew, run the following
 
 : brew install libpqxx automake libtool autoconf autoconf-archive
 : cd sqlsmith
-: autoreconf -i
+: autoreconf -i # Not needed when building from a release tarball
 : ./configure
 : make
 
