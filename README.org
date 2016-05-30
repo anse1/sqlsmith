@@ -15,7 +15,7 @@ PostgreSQL might also be interested in exposing their code to
 SQLsmith's random workload.
 
 During its prototyping stage, it already found about thirty bugs in
-PostgresSQL alphas, betas and releases, including security
+PostgreSQL alphas, betas and releases, including security
 vulnerabilities in released versions.  SQLsmith's score list is
 maintained by its users in a wiki:
 
