@@ -1,0 +1,3 @@
+Depends: @, postgresql
+Tests: sqlsmith
+Restrictions: allow-stderr
