@@ -10,7 +10,7 @@ sqlsmith_LDADD = $(LIBPQXX_LIBS) $(BOOST_REGEX_LIB)
 AM_LDFLAGS = -Wl,--as-needed $(BOOST_LDFLAGS)
 AM_CPPFLAGS = $(BOOST_CPPFLAGS) $(PQXX_CFLAGS)  -Wall
 
-EXTRA_DIST = gitrev.h *.hh *.sql *.xsl README.org
+EXTRA_DIST = gitrev.h dump.hh expr.hh grammar.hh log.hh prod.hh random.hh relmodel.hh schema.hh filter.sql log.sql README.org TODO.org ast.png dump.xsl
 
 gitrev.h: $(HEADERS) $(SOURCES)
 	echo "#define GITREV \"$$(git describe --dirty --tags --always)\"" > $@
