@@ -1,3 +1,4 @@
+[[logo.png]]
 * SQLsmith
 
 : <mba> "I love the smell of coredumps in the morning"
