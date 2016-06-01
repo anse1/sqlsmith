@@ -8,7 +8,7 @@
 #include "relmodel.hh"
 #include "grammar.hh"
 #include "schema.hh"
-
+#include "impedance.hh"
 #include "expr.hh"
 
 using namespace std;

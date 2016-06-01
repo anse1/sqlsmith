@@ -4,7 +4,7 @@ BUILT_SOURCES = gitrev.h
 CLEANFILES = gitrev.h
 
 bin_PROGRAMS = sqlsmith
-sqlsmith_SOURCES = relmodel.cc schema.cc random.cc expr.cc grammar.cc log.cc dump.cc impedance.cc sqlsmith.cc
+sqlsmith_SOURCES = relmodel.cc schema.cc random.cc prod.cc expr.cc grammar.cc log.cc dump.cc impedance.cc sqlsmith.cc
 sqlsmith_LDADD = $(LIBPQXX_LIBS) $(BOOST_REGEX_LIB)
 
 AM_LDFLAGS = $(BOOST_LDFLAGS)

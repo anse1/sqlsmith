@@ -34,7 +34,9 @@ void impedance_feedback::error(prod &query, const pqxx::failure &e)
   query.accept(&v);
 }
 
-bool impedance::matched(type_info &id)
+namespace impedance {
+  
+bool matched(const type_info &id)
 {
   if (occurances_in_ok_query[id.name()])
     return true;
@@ -43,7 +45,7 @@ bool impedance::matched(type_info &id)
   return true;
 }
 
-void impedance::report()
+void report()
 {
   cerr << "impedance report: " << endl;
   for (auto pair : occurances_in_failed_query) {
@@ -51,4 +53,6 @@ void impedance::report()
       pair.second << "/" << occurances_in_ok_query[pair.first]
 	 << " (bad/ok)" << endl;
   }
+}
+
 }

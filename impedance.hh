@@ -24,7 +24,7 @@ struct impedance_feedback : logger {
 };
 
 namespace impedance {
-  bool matched(std::type_info &id);
+  bool matched(const std::type_info &id);
   void report();
 }
 

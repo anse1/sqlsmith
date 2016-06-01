@@ -1,4 +1,3 @@
-#include <stdexcept>
 #include <string>
 #include <iostream>
 
@@ -15,28 +14,11 @@ struct prod {
   struct scope *scope;
   int level;
   long retries = 0;
-  prod(prod *parent) : pprod(parent) {
-    if (parent) {
-      level = parent->level + 1;
-      scope = parent->scope;
-    } else {
-      scope = 0;
-      level = 0;
-    }
-  }
-  virtual void indent(std::ostream &out) {
-    out << std::endl;
-    for (int i = 0; i < level; i++)
-      out << "  ";
-  }
+  prod(prod *parent);
+  virtual void indent(std::ostream &out);
   virtual void out(std::ostream &out) = 0;
   virtual void accept(prod_visitor *v) { v->visit(this); }
-  void retry() {
-    if (retries++ > 100000)
-      throw std::runtime_error(std::string("excessive retries in ")
-			       + typeid(this).name());
-  };
-  
+  void retry();
 };
 
 inline std::ostream& operator<<(std::ostream& s, prod& p)
