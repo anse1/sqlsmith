@@ -36,6 +36,8 @@ graphml_dumper::graphml_dumper(ostream &out)
             "attr.name=\"retries\" attr.type=\"double\" />" << endl;
   o << "<key id=\"label\" for=\"node\" "
             "attr.name=\"label\" attr.type=\"string\" />" << endl;
+  o << "<key id=\"scope\" for=\"node\" "
+            "attr.name=\"scope\" attr.type=\"string\" />" << endl;
 
   o << "<graph id=\"ast\" edgedefault=\"directed\">" << endl;
   
@@ -46,6 +48,7 @@ void graphml_dumper::visit(struct prod *p)
   o << "<node id=\"" << id(p) <<  "\">";
   o << "<data key=\"retries\">" << p->retries << "</data>";
   o << "<data key=\"label\">" << type(p) << "</data>";
+  o << "<data key=\"scope\">" << p->scope << "</data>";
   o << "</node>" << endl;
   if (p->pprod) {
     o << "<edge source=\"" << id(p) << "\" target=\"" << id(p->pprod) << "\"/>";
