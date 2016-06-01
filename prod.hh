@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <string>
+#include <iostream>
 
 #ifndef PROD_HH
 #define PROD_HH

@@ -20,6 +20,7 @@ extern "C" {
 #include "log.hh"
 #include "schema.hh"
 #include "gitrev.h"
+#include "impedance.hh"
 
 using namespace std;
 using namespace pqxx;
@@ -88,6 +89,7 @@ void cerr_logger::report()
       cerr << e.second << "\t" << e.first << endl;
     }
     cerr << "error rate: " << (float)err_count/(queries) << endl;
+    impedance::report();
 }
 
 

@@ -19,11 +19,11 @@ using boost::regex_match;
 #include "grammar.hh"
 #include "relmodel.hh"
 #include "schema.hh"
-
 #include "gitrev.h"
 
 #include "log.hh"
 #include "dump.hh"
+#include "impedance.hh"
 
 using namespace std;
 using namespace pqxx;
@@ -92,6 +92,8 @@ int main(int argc, char *argv[])
 //       w.commit();
 
       vector<shared_ptr<logger> > loggers;
+
+      loggers.push_back(make_shared<impedance_feedback>());
 
       if (options.count("log-to"))
 	loggers.push_back(make_shared<pqxx_logger>(options["target"], options["log-to"], schema));
