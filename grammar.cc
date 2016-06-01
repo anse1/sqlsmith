@@ -7,7 +7,9 @@
 #include "relmodel.hh"
 #include "grammar.hh"
 #include "schema.hh"
+#include "impedance.hh"
 
+using impedance::matched;
 using namespace std;
 
 shared_ptr<table_ref> table_ref::factory(prod *p) {
@@ -322,6 +324,9 @@ update_returning::update_returning(prod *p, struct scope *s, table *v)
 upsert_stmt::upsert_stmt(prod *p, struct scope *s, table *v)
   : insert_stmt(p,s,v)
 {
+  if (!matched(this))
+    throw runtime_error("impedance mismatch");
+
   if (!victim->constraints.size())
     throw std::runtime_error("need table w/ constraint for upsert");
     

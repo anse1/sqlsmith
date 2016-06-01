@@ -24,7 +24,9 @@ struct impedance_feedback : logger {
 };
 
 namespace impedance {
-  bool matched(const std::type_info &id);
+  bool matched(const char *p);
+  inline bool matched(const std::type_info &id) { return matched(id.name()); }
+  inline bool matched(prod *p) { return matched(typeid(*p)); }
   void report();
 }
 

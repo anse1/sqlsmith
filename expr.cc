@@ -12,11 +12,13 @@
 #include "expr.hh"
 
 using namespace std;
+using impedance::matched;
 
 shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
 {
   try {
-    if (window_function::allowed(p) && 1 == d20())
+    if (window_function::allowed(p)
+	&& 1 == d20())
       return make_shared<window_function>(p, type_constraint);
     else if (1 == d20() && p->level < 6)
       return make_shared<coalesce>(p, type_constraint);
@@ -256,7 +258,8 @@ void window_function::out(std::ostream &out)
 window_function::window_function(prod *p, sqltype *type_constraint)
   : value_expr(p)
 {
-
+  if (!matched(this))
+    throw runtime_error("impedance mismatch");
   aggregate = make_shared<funcall>(this, type_constraint, true);
   type = aggregate->type;
   partition_by.push_back(make_shared<column_reference>(this));

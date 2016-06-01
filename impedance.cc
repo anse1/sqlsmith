@@ -36,11 +36,11 @@ void impedance_feedback::error(prod &query, const pqxx::failure &e)
 
 namespace impedance {
   
-bool matched(const type_info &id)
+bool matched(const char *name)
 {
-  if (occurances_in_ok_query[id.name()])
+  if (occurances_in_ok_query[name])
     return true;
-  if (500 < occurances_in_failed_query[id.name()])
+  if (100 < occurances_in_failed_query[name])
     return false;
   return true;
 }
@@ -51,8 +51,13 @@ void report()
   for (auto pair : occurances_in_failed_query) {
     cerr << "  " << pair.first << ": " <<
       pair.second << "/" << occurances_in_ok_query[pair.first]
-	 << " (bad/ok)" << endl;
+	 << " (bad/ok)";
+    if (!matched(pair.first))
+      cerr << " -> BLACKLISTED";
+    cerr << endl;
   }
 }
 
 }
+
+

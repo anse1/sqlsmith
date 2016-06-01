@@ -26,5 +26,4 @@ inline std::ostream& operator<<(std::ostream& s, prod& p)
   p.out(s); return s;
 }
 
-
 #endif
