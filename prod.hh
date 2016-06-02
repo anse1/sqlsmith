@@ -1,14 +1,19 @@
+/// @file
+/// @brief Base class for grammar productions
+
 #include <string>
 #include <iostream>
 
 #ifndef PROD_HH
 #define PROD_HH
 
+/// Base class for walking the AST
 struct prod_visitor {
   virtual void visit(struct prod *p) = 0;
   virtual ~prod_visitor() { }
 };
 
+/// Base class for AST nodes
 struct prod {
   struct prod *pprod;
   struct scope *scope;

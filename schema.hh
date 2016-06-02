@@ -1,3 +1,6 @@
+/// @file
+/// @brief schema information for grammar
+
 #ifndef SCHEMA_HH
 #define SCHEMA_HH
 

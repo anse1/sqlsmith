@@ -1,3 +1,6 @@
+/// @file
+/// @brief supporting classes for the grammar
+
 #ifndef RELMODEL_HH
 #define RELMODEL_HH
 #include <string>

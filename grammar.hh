@@ -1,3 +1,6 @@
+/// @file
+/// @brief grammar: Top-level and unsorted grammar productions
+
 #ifndef GRAMMAR_HH
 #define GRAMMAR_HH
 

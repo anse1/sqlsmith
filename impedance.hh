@@ -1,5 +1,6 @@
-/* Provide feedback to the grammar about failed queries to weed out
-   unsupported productions. */
+/// @file
+/// @brief feedback to the grammar about failed productions
+
 
 #ifndef IMPEDANCE_HH
 #define IMPEDANCE_HH
