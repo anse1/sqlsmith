@@ -188,6 +188,60 @@ void query_spec::out(std::ostream &out) {
   }
 }
 
+struct for_update_verify : prod_visitor {
+  virtual void visit(prod *p) {
+    if (dynamic_cast<window_function*>(p))
+      throw("window function");
+    joined_table* join = dynamic_cast<joined_table*>(p);
+    if (join && join->type != "inner")
+      throw("outer join");
+    table_or_query_name* tab = dynamic_cast<table_or_query_name*>(p);
+    if (tab) {
+      table *actual_table = dynamic_cast<table*>(tab->t);
+      if (actual_table && !actual_table->is_insertable)
+	throw("read only");
+    }
+    table_sample* sample = dynamic_cast<table_sample*>(p);
+    if (sample) {
+      table *actual_table = dynamic_cast<table*>(sample->t);
+      if (actual_table && !actual_table->is_insertable)
+	throw("read only");
+    }
+  } ;
+  virtual ~for_update_verify() { } ;
+};
+
+
+select_for_update::select_for_update(prod *p, struct scope *s, bool lateral)
+  : query_spec(p,s,lateral)
+{
+  static const char *modes[] = {
+    "update",
+    "no key update",
+    "share",
+    "key share",
+  };
+
+  try {
+    for_update_verify v1;
+    this->accept(&v1);
+
+  } catch (const char* reason) {
+    lockmode = 0;
+    return;
+  }
+  lockmode = modes[d12()%4];
+  set_quantifier = ""; // disallow distinct
+}
+
+void select_for_update::out(std::ostream &out) {
+  query_spec::out(out);
+  if (lockmode) {
+    indent(out);
+    out << " for " << lockmode << endl;
+  }
+}
+
 query_spec::query_spec(prod *p, struct scope *s, bool lateral) :
   prod(p)
 {
@@ -350,6 +404,8 @@ shared_ptr<prod> statement_factory(struct scope *s)
       } catch (runtime_error &e) { retries++; }
   } else if (d42() == 1)
     return make_shared<update_returning>((struct prod *)0, s);
-
+  else if (d6() < 4)
+    return make_shared<select_for_update>((struct prod *)0, s);
+  
   return make_shared<query_spec>((struct prod *)0, s);
 }

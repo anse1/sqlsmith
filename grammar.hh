@@ -25,7 +25,6 @@ struct table_or_query_name : table_ref {
   virtual void out(std::ostream &out);
   table_or_query_name(prod *p);
   virtual ~table_or_query_name() { }
-private:
   named_relation *t;
 };
 
@@ -33,8 +32,8 @@ struct table_sample : table_ref {
   virtual void out(std::ostream &out);
   table_sample(prod *p);
   virtual ~table_sample() { }
-private:
   struct table *t;
+private:
   string method;
   double percent;
 };
@@ -108,6 +107,12 @@ struct query_spec : prod {
     from_clause->accept(v);
     search->accept(v);
   }
+};
+
+struct select_for_update : query_spec {
+  const char *lockmode;
+  virtual void out(std::ostream &out);
+  select_for_update(prod *p, struct scope *s, bool lateral = 0);
 };
 
 struct prepare_stmt : prod {
