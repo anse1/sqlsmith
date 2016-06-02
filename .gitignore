@@ -4,3 +4,4 @@ config.h
 sqlsmith
 *.xml
 TAGS
+html/
