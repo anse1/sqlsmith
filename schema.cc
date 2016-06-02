@@ -1,3 +1,4 @@
+#include "config.h"
 #include "schema.hh"
 #include "relmodel.hh"
 #include <pqxx/pqxx>
@@ -10,7 +11,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
 {
   work w(c);
 
-  w.exec("set application_name to 'sqlsmith " GITREV "';");
+  w.exec("set application_name to '" PACKAGE "::schema';");
     
   result r = w.exec("select version()");
   version = r[0][0].as<string>();

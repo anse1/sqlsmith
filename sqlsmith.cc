@@ -49,7 +49,7 @@ extern "C" void cerr_log_handler(int)
 
 int main(int argc, char *argv[])
 {
-  cerr << "sqlsmith " << GITREV << endl;
+  cerr << PACKAGE_NAME " " GITREV << endl;
 
   map<string,string> options;
   regex optregex("--(help|log-to|verbose|target|version|dump-all-graphs|seed|dry-run|max-queries)(?:=((?:.|\n)*))?");
@@ -78,7 +78,6 @@ int main(int argc, char *argv[])
       "    --help               print available command line options and exit" << endl;
     return 0;
   } else if (options.count("version")) {
-    cerr << GITREV << endl;
     return 0;
   }
 
@@ -133,7 +132,7 @@ int main(int argc, char *argv[])
 	  work w(c);
 	  w.exec("set statement_timeout to '1s';"
 		 "set client_min_messages to 'ERROR';"
-		 "set application_name to 'sqlsmith';");
+		 "set application_name to '" PACKAGE "::dut';");
 	  w.commit();
 
 	  while (1) {
