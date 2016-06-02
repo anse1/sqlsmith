@@ -1,4 +1,4 @@
-AC_INIT(sqlsmith, 1.0, seltenreich@gmx.de)
+AC_INIT(SQLsmith, 1.0, seltenreich@gmx.de, sqlsmith, https://github.com/anse1/sqlsmith/)
 AC_LANG(C++)
 
 AM_INIT_AUTOMAKE(-Wall -Werror foreign)
@@ -16,5 +16,6 @@ AC_SUBST(LIBPQXX_LIBS)
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_FILES([
  Makefile
+ Doxyfile
 ])
 AC_OUTPUT
