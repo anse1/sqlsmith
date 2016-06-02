@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
 	      result r = w.exec(s.str() + ";");
 	      for (auto l : loggers)
 		l->executed(*gen);
-	      w.abort();
+// 	      w.abort();
 	    } catch (const pqxx::failure &e) {
 	      for (auto l : loggers)
 		try {
