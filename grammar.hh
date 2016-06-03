@@ -238,4 +238,12 @@ struct update_returning : update_stmt {
 
 shared_ptr<prod> statement_factory(struct scope *s);
 
+struct cte : prod {
+  vector<shared_ptr<prod> > with_queries;
+  vector<std::string> with_names;
+  virtual void out(std::ostream &out);
+  virtual void accept(prod_visitor *v);
+  cte(prod *parent, struct scope *s);
+};
+
 #endif

@@ -406,6 +406,46 @@ shared_ptr<prod> statement_factory(struct scope *s)
     return make_shared<update_returning>((struct prod *)0, s);
   else if (d6() < 4)
     return make_shared<select_for_update>((struct prod *)0, s);
+  else if (d6() < 4)
+    return make_shared<cte>((struct prod *)0, s);
   
   return make_shared<query_spec>((struct prod *)0, s);
 }
+
+
+// virtual void out(std::ostream &out);
+
+void cte::accept(prod_visitor *v)
+{
+  v->visit(this);
+  for(auto q : with_queries)
+    q->accept(v);
+}
+
+cte::cte(prod *parent, struct scope *s)
+  : prod(parent)
+{
+  scope = new struct scope(s);
+
+  with_queries.push_back(make_shared<query_spec>(this, s));
+  with_names.push_back(s->stmt_uid("jennifer"));
+  
+  while (d6() > 1) {
+    with_queries.push_back(make_shared<query_spec>(this, s));
+    with_names.push_back(s->stmt_uid("jennifer"));
+  }
+}
+
+void cte::out(std::ostream &out)
+{
+  out << "WITH " ;
+  for (size_t i = 0; i < with_queries.size(); i++) {
+    indent(out);
+    out << with_names[i] << " AS " << "(" << *with_queries[i] << ")" << endl;
+    if (i+1 != with_names.size())
+      out << ", ";
+  }
+  indent(out);
+  out << "select * from " << random_pick<>(with_names) << endl;
+}
+
