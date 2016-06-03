@@ -448,4 +448,3 @@ void cte::out(std::ostream &out)
   indent(out);
   out << "select * from " << random_pick<>(with_names) << endl;
 }
-

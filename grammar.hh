@@ -244,6 +244,7 @@ struct cte : prod {
   virtual void out(std::ostream &out);
   virtual void accept(prod_visitor *v);
   cte(prod *parent, struct scope *s);
+  virtual ~cte() { delete scope; };
 };
 
 #endif
