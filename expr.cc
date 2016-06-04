@@ -22,12 +22,12 @@ shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
       return make_shared<window_function>(p, type_constraint);
     else if (1 == d20() && p->level < 6)
       return make_shared<coalesce>(p, type_constraint);
-    else if (p->scope->refs.size() && d6() > 3)
-      return make_shared<column_reference>(p, type_constraint);
-    else if (d6()<3)
+    else if (d9()<3)
       return make_shared<funcall>(p, type_constraint);
     else if (d6()<3)
       return make_shared<atomic_subselect>(p, type_constraint);
+    else if (p->scope->refs.size() && d9() > 1)
+      return make_shared<column_reference>(p, type_constraint);
     else
       return make_shared<const_expr>(p, type_constraint);
   } catch (runtime_error &e) {

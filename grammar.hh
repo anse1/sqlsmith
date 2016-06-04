@@ -238,13 +238,14 @@ struct update_returning : update_stmt {
 
 shared_ptr<prod> statement_factory(struct scope *s);
 
-struct cte : prod {
+struct common_table_expression : prod {
   vector<shared_ptr<prod> > with_queries;
-  vector<std::string> with_names;
+  shared_ptr<prod> query;
+  vector<shared_ptr<named_relation> > refs;
   virtual void out(std::ostream &out);
   virtual void accept(prod_visitor *v);
-  cte(prod *parent, struct scope *s);
-  virtual ~cte() { delete scope; };
+  common_table_expression(prod *parent, struct scope *s);
+  virtual ~common_table_expression() { delete scope; };
 };
 
 #endif

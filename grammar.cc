@@ -38,6 +38,7 @@ table_sample::table_sample(prod *p) : table_ref(p) {
   do {
     auto pick = random_pick(scope->tables);
     t = dynamic_cast<struct table*>(pick);
+    retry();
   } while (!t || !t->is_base_table);
   
   refs.push_back(make_shared<aliased_relation>(scope->stmt_uid("sample"), t));
@@ -159,7 +160,7 @@ select_list::select_list(prod *p) : prod(p)
     ostringstream name;
     name << "c" << columns++;
     derived_table.columns().push_back(column(name.str(), e->type));
-  } while (d6() > 2);
+  } while (d6() > 1);
 }
 
 void select_list::out(std::ostream &out)
@@ -391,60 +392,80 @@ upsert_stmt::upsert_stmt(prod *p, struct scope *s, table *v)
 
 shared_ptr<prod> statement_factory(struct scope *s)
 {
-  s->new_stmt();
-  if (d42() == 1)
-    return make_shared<insert_stmt>((struct prod *)0, s);
-  else if (d42() == 1)
-    return make_shared<delete_returning>((struct prod *)0, s);
-  else if (d42() == 1) {
-    int retries = 0;
-    while (retries < 10)
-      try {
-	return make_shared<upsert_stmt>((struct prod *)0, s);
-      } catch (runtime_error &e) { retries++; }
-  } else if (d42() == 1)
-    return make_shared<update_returning>((struct prod *)0, s);
-  else if (d6() < 4)
-    return make_shared<select_for_update>((struct prod *)0, s);
-  else if (d6() < 4)
-    return make_shared<cte>((struct prod *)0, s);
-  
-  return make_shared<query_spec>((struct prod *)0, s);
+  try {
+    s->new_stmt();
+    if (d42() == 1)
+      return make_shared<insert_stmt>((struct prod *)0, s);
+    else if (d42() == 1)
+      return make_shared<delete_returning>((struct prod *)0, s);
+    else if (d42() == 1) {
+      return make_shared<upsert_stmt>((struct prod *)0, s);
+    } else if (d42() == 1)
+      return make_shared<update_returning>((struct prod *)0, s);
+    else if (d6() > 4)
+      return make_shared<select_for_update>((struct prod *)0, s);
+    else if (d6() > 5)
+      return make_shared<common_table_expression>((struct prod *)0, s);
+    return make_shared<query_spec>((struct prod *)0, s);
+  } catch (runtime_error &e) {
+    return statement_factory(s);
+  }
 }
-
 
 // virtual void out(std::ostream &out);
 
-void cte::accept(prod_visitor *v)
+void common_table_expression::accept(prod_visitor *v)
 {
   v->visit(this);
   for(auto q : with_queries)
     q->accept(v);
 }
 
-cte::cte(prod *parent, struct scope *s)
+common_table_expression::common_table_expression(prod *parent, struct scope *s)
   : prod(parent)
 {
   scope = new struct scope(s);
-
-  with_queries.push_back(make_shared<query_spec>(this, s));
-  with_names.push_back(s->stmt_uid("jennifer"));
   
-  while (d6() > 1) {
-    with_queries.push_back(make_shared<query_spec>(this, s));
-    with_names.push_back(s->stmt_uid("jennifer"));
+  do {
+    shared_ptr<query_spec> query = make_shared<query_spec>(this, s);
+    with_queries.push_back(query);
+    string alias = scope->stmt_uid("jennifer");
+    relation *relation = &query->select_list->derived_table;
+    auto aliased_rel = make_shared<aliased_relation>(alias, relation);
+    refs.push_back(aliased_rel);
+    scope->tables.push_back(&*aliased_rel);
+
+  } while (d6() > 2);
+
+ retry:
+  /* Make sure there also is a plain base table in the scope, as lots
+     of productions need to find ones. */
+  bool base_table_present = 0;
+  do {
+    auto pick = random_pick(s->tables);
+    scope->tables.push_back(pick);
+    auto t = dynamic_cast<struct table*>(pick);
+    if (t && t->is_base_table)
+      base_table_present = 1;
+  } while (d6() > 3);
+  try {
+    query = make_shared<query_spec>(this, scope);
+  } catch (runtime_error &e) {
+    retry();
+    goto retry;
   }
+
 }
 
-void cte::out(std::ostream &out)
+void common_table_expression::out(std::ostream &out)
 {
   out << "WITH " ;
   for (size_t i = 0; i < with_queries.size(); i++) {
     indent(out);
-    out << with_names[i] << " AS " << "(" << *with_queries[i] << ")" << endl;
-    if (i+1 != with_names.size())
+    out << refs[i]->ident() << " AS " << "(" << *with_queries[i] << ")" << endl;
+    if (i+1 != with_queries.size())
       out << ", ";
   }
   indent(out);
-  out << "select * from " << random_pick<>(with_names) << endl;
+  out << *query << endl;
 }
