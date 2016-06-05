@@ -44,7 +44,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
 
   for (auto t = tables.begin(); t != tables.end(); ++t) {
     string q("select column_name, "
-	     "data_type"
+	     "udt_name"
 	     " from information_schema.columns where"
 	     " table_catalog = current_catalog");
     q += " and table_schema = " + w.quote(t->schema);
@@ -92,10 +92,10 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   arraytype = sqltype::get("ARRAY");
 
   cerr << "Loading routines...";
-  r = w.exec("select specific_schema, specific_name, data_type, routine_name "
+  r = w.exec("select specific_schema, specific_name, udt_name, routine_name "
 	     "from information_schema.routines "
 	     "where specific_catalog = current_catalog "
-	     "and data_type not in ('event_trigger', 'trigger', 'opaque', 'internal') "
+	     "and udt_name not in ('event_trigger', 'trigger', 'opaque', 'internal') "
 	     "and routine_name not in ('pg_event_trigger_table_rewrite_reason') "
 	     "and routine_name !~ '^ri_fkey_' "
 	     "and not exists (select 1 from pg_proc where "
@@ -115,7 +115,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   cerr << "Loading routine parameters...";
 
   for (auto &proc : routines) {
-    string q("select data_type "
+    string q("select udt_name "
 	     "from information_schema.parameters "
 	     "where specific_catalog = current_catalog ");
     q += " and specific_name = " + w.quote(proc.specific_name);
@@ -131,10 +131,10 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   cerr << "done." << endl;
 
   cerr << "Loading aggregates...";
-  r = w.exec("select specific_schema, specific_name, data_type, routine_name "
+  r = w.exec("select specific_schema, specific_name, udt_name, routine_name "
 	     "from information_schema.routines "
 	     "where specific_catalog = current_catalog "
-	     "and data_type not in ('event_trigger', 'trigger', 'opaque', 'internal') "
+	     "and udt_name not in ('event_trigger', 'trigger', 'opaque', 'internal') "
 	     "and routine_name !~ '^ri_fkey_' "
 	     "and routine_name not in ('percentile_cont', 'dense_rank', 'cume_dist', "
 	     "'rank', 'test_rank', 'percent_rank', 'percentile_disc', 'mode', 'test_percentile_disc') "
@@ -154,7 +154,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   cerr << "Loading aggregate parameters...";
 
   for (auto &proc : aggregates) {
-    string q("select data_type "
+    string q("select udt_name "
 	     "from information_schema.parameters "
 	     "where specific_catalog = current_catalog ");
     q += " and specific_name = " + w.quote(proc.specific_name);
