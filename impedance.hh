@@ -8,6 +8,7 @@
 #include <typeinfo>
 #include <map>
 #include "prod.hh"
+#include "util.hh"
 #include "log.hh"
 
 struct impedance_visitor : prod_visitor {

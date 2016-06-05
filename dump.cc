@@ -1,25 +1,15 @@
-#include <typeinfo>
 #include <string>
 #include <sstream>
 
 #include "dump.hh"
+#include "util.hh"
 
 using namespace std;
-
-std::string graphml_dumper::type(struct prod *p)
-{
-  ostringstream os;
-  os << typeid(*p).name();
-  string s = os.str();
-  while(s[0] <= '9')
-    s.erase(s.begin());
-  return s;
-}
 
 std::string graphml_dumper::id(struct prod *p)
 {
   ostringstream os;
-  os << type(p) << "_" << p;
+  os << pretty_type(p) << "_" << p;
   return os.str();
 }
 
@@ -47,7 +37,7 @@ void graphml_dumper::visit(struct prod *p)
 {
   o << "<node id=\"" << id(p) <<  "\">";
   o << "<data key=\"retries\">" << p->retries << "</data>";
-  o << "<data key=\"label\">" << type(p) << "</data>";
+  o << "<data key=\"label\">" << pretty_type(p) << "</data>";
   o << "<data key=\"scope\">" << p->scope << "</data>";
   o << "</node>" << endl;
   if (p->pprod) {

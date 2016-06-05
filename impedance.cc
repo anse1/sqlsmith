@@ -49,7 +49,7 @@ void report()
 {
   cerr << "impedance report: " << endl;
   for (auto pair : occurances_in_failed_query) {
-    cerr << "  " << pair.first << ": " <<
+    cerr << "  " << pretty_type(pair.first) << ": " <<
       pair.second << "/" << occurances_in_ok_query[pair.first]
 	 << " (bad/ok)";
     if (!matched(pair.first))
