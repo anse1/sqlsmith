@@ -204,12 +204,16 @@ struct for_update_verify : prod_visitor {
       table *actual_table = dynamic_cast<table*>(tab->t);
       if (actual_table && !actual_table->is_insertable)
 	throw("read only");
+      if (actual_table->name.find("pg_"))
+	throw("catalog");
     }
     table_sample* sample = dynamic_cast<table_sample*>(p);
     if (sample) {
       table *actual_table = dynamic_cast<table*>(sample->t);
       if (actual_table && !actual_table->is_insertable)
 	throw("read only");
+      if (actual_table->name.find("pg_"))
+	throw("catalog");
     }
   } ;
   virtual ~for_update_verify() { } ;
@@ -441,15 +445,9 @@ common_table_expression::common_table_expression(prod *parent, struct scope *s)
   } while (d6() > 2);
 
  retry:
-  /* Make sure there also is a plain base table in the scope, as lots
-     of productions need to find ones. */
-  bool base_table_present = 0;
   do {
     auto pick = random_pick(s->tables);
     scope->tables.push_back(pick);
-    auto t = dynamic_cast<struct table*>(pick);
-    if (t && t->is_base_table)
-      base_table_present = 1;
   } while (d6() > 3);
   try {
     query = make_shared<query_spec>(this, scope);
