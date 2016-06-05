@@ -119,6 +119,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
 	     "from information_schema.parameters "
 	     "where specific_catalog = current_catalog ");
     q += " and specific_name = " + w.quote(proc.specific_name);
+    q += " and parameter_mode <> 'OUT'";
     q += " and specific_schema = " + w.quote(proc.schema);
     q += " order by ordinal_position asc ";
       
