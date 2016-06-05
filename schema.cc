@@ -92,15 +92,12 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   arraytype = sqltype::get("ARRAY");
 
   cerr << "Loading routines...";
-  r = w.exec("select specific_schema, specific_name, udt_name, routine_name "
-	     "from information_schema.routines "
-	     "where specific_catalog = current_catalog "
-	     "and udt_name not in ('event_trigger', 'trigger', 'opaque', 'internal') "
-	     "and routine_name not in ('pg_event_trigger_table_rewrite_reason') "
-	     "and routine_name !~ '^ri_fkey_' "
-	     "and not exists (select 1 from pg_proc where "
-    	     "(proretset or proisagg or proiswindow) "
-	     "and proname = routine_name)");
+  r = w.exec("select pronamespace::regnamespace, oid, prorettype::regtype, proname "
+	     "from pg_proc "
+	     "where prorettype::regtype not in ('event_trigger', 'trigger', 'opaque', 'internal') "
+	     "and proname not in ('pg_event_trigger_table_rewrite_reason') "
+	     "and proname !~ '^ri_fkey_' "
+	     "and not (proretset or proisagg or proiswindow) ");
 
   for (auto row : r) {
     routine proc(row[0].as<string>(),
@@ -115,13 +112,9 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   cerr << "Loading routine parameters...";
 
   for (auto &proc : routines) {
-    string q("select udt_name "
-	     "from information_schema.parameters "
-	     "where specific_catalog = current_catalog ");
-    q += " and specific_name = " + w.quote(proc.specific_name);
-    q += " and parameter_mode <> 'OUT'";
-    q += " and specific_schema = " + w.quote(proc.schema);
-    q += " order by ordinal_position asc ";
+    string q("select unnest(proargtypes)::regtype "
+	     "from pg_proc ");
+    q += " where oid = " + w.quote(proc.specific_name);
       
     r = w.exec(q);
     for (auto row : r) {
@@ -131,15 +124,15 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   cerr << "done." << endl;
 
   cerr << "Loading aggregates...";
-  r = w.exec("select specific_schema, specific_name, udt_name, routine_name "
-	     "from information_schema.routines "
-	     "where specific_catalog = current_catalog "
-	     "and udt_name not in ('event_trigger', 'trigger', 'opaque', 'internal') "
-	     "and routine_name !~ '^ri_fkey_' "
-	     "and routine_name not in ('percentile_cont', 'dense_rank', 'cume_dist', "
+  r = w.exec("select pronamespace::regnamespace, oid, prorettype::regtype, proname "
+	     "from pg_proc "
+	     "where prorettype::regtype not in ('event_trigger', 'trigger', 'opaque', 'internal') "
+	     "and proname not in ('pg_event_trigger_table_rewrite_reason') "
+	     "and proname not in ('percentile_cont', 'dense_rank', 'cume_dist', "
 	     "'rank', 'test_rank', 'percent_rank', 'percentile_disc', 'mode', 'test_percentile_disc') "
-	     "and exists (select 1 from pg_proc where proisagg "
-                                "and proname = routine_name)");
+	     "and proname !~ '^ri_fkey_' "
+	     "and not (proretset or proiswindow) "
+	     "and proisagg");
 
   for (auto row : r) {
     routine proc(row[0].as<string>(),
@@ -154,12 +147,9 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   cerr << "Loading aggregate parameters...";
 
   for (auto &proc : aggregates) {
-    string q("select udt_name "
-	     "from information_schema.parameters "
-	     "where specific_catalog = current_catalog ");
-    q += " and specific_name = " + w.quote(proc.specific_name);
-    q += " and specific_schema = " + w.quote(proc.schema);
-    q += " order by ordinal_position asc ";
+    string q("select unnest(proargtypes)::regtype "
+	     "from pg_proc ");
+    q += " where oid = " + w.quote(proc.specific_name);
       
     r = w.exec(q);
     for (auto row : r) {
