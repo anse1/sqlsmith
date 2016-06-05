@@ -24,7 +24,7 @@ void prod::indent(std::ostream &out)
 
 void prod::retry()
 {
-  if (retries++ > 100000)
+  if (retries++ > 10000)
     throw std::runtime_error(std::string("excessive retries in ")
 			     + typeid(*this).name());
 }
