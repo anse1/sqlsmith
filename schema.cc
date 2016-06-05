@@ -95,7 +95,8 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   r = w.exec("select pronamespace::regnamespace, oid, prorettype::regtype, proname "
 	     "from pg_proc "
 	     "where prorettype::regtype not in ('event_trigger', 'trigger', 'opaque', 'internal') "
-	     "and proname not in ('pg_event_trigger_table_rewrite_reason') "
+	     "and proname <> 'pg_event_trigger_table_rewrite_reason' "
+	     "and proname <> 'pg_event_trigger_table_rewrite_oid' "
 	     "and proname !~ '^ri_fkey_' "
 	     "and not (proretset or proisagg or proiswindow) ");
 
