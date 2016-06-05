@@ -196,6 +196,9 @@ struct for_update_verify : prod_visitor {
     joined_table* join = dynamic_cast<joined_table*>(p);
     if (join && join->type != "inner")
       throw("outer join");
+    query_spec* subquery = dynamic_cast<query_spec*>(p);
+    if (subquery)
+      subquery->set_quantifier = "";
     table_or_query_name* tab = dynamic_cast<table_or_query_name*>(p);
     if (tab) {
       table *actual_table = dynamic_cast<table*>(tab->t);
