@@ -6,6 +6,9 @@
 
 using namespace std;
 
+/* TODO: The strings are implementation-defined.  How do they look in
+   clang? */
+
 inline std::string pretty_type(const char *raw)
 {
   ostringstream os;
