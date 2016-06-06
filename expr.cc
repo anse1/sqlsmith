@@ -17,8 +17,7 @@ using impedance::matched;
 shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
 {
   try {
-    if (window_function::allowed(p)
-	&& 1 == d20() && p->level < 6)
+    if (1 == d20() && p->level < 6 && window_function::allowed(p))
       return make_shared<window_function>(p, type_constraint);
     else if (1 == d20() && p->level < 6)
       return make_shared<coalesce>(p, type_constraint);
