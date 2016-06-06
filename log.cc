@@ -153,7 +153,7 @@ pqxx_logger::pqxx_logger(std::string target, std::string conninfo, struct schema
   w.exec("insert into stat (id) values (" + to_string(id) + ")");
   c->prepare("stat",
 	     "update stat set generated=$1, level=$2, nodes=$3, updated=now() "
-	     ", retries = $4 "
+	     ", retries = $4, impedance = $5 "
 	     "where id = " + to_string(id));
 
   w.commit();
@@ -174,7 +174,9 @@ void pqxx_logger::generated(prod &query)
   stats_collecting_logger::generated(query);
   if (999 == (queries%1000)) {
     work w(*c);
-    w.prepared("stat")(queries)(sum_height/queries)(sum_nodes/queries)(sum_retries/queries).exec();
+    ostringstream s;
+    impedance::report(s);
+    w.prepared("stat")(queries)(sum_height/queries)(sum_nodes/queries)(sum_retries/queries)(s.str()).exec();
     w.commit();
   }
 }

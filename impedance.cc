@@ -58,6 +58,18 @@ void report()
   }
 }
 
+void report(std::ostream &out)
+{
+  out << "<impedance>" << endl;
+  for (auto pair : occurances_in_failed_query) {
+    out << "<" << pretty_type(pair.first) << " "
+	<< "bad=\"" << pair.second << "\""
+	<< " ok=\"" << occurances_in_ok_query[pair.first] << "\""
+	<< " />" << endl;
+  }
+  out << "</impedance>" << endl;
+}
+
 }
 
 
