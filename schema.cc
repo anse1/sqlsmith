@@ -60,7 +60,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
     q = "select conname from pg_class t "
       "join pg_constraint c on (t.oid = c.conrelid) "
       "where contype in ('f', 'u', 'p') ";
-    q += " and relnamespace = " + w.quote(t->schema) + "::regnamespace ";
+    q += " and relnamespace = " " (select oid from pg_namespace where nspname = " + w.quote(t->schema) + ")";
     q += " and relname = " + w.quote(t->name);
 
     for (auto row : w.exec(q)) {
@@ -92,7 +92,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   arraytype = sqltype::get("ARRAY");
 
   cerr << "Loading routines...";
-  r = w.exec("select pronamespace::regnamespace, oid, prorettype::regtype, proname "
+  r = w.exec("select (select nspname from pg_namespace where oid = pronamespace), oid, prorettype::regtype, proname "
 	     "from pg_proc "
 	     "where prorettype::regtype not in ('event_trigger', 'trigger', 'opaque', 'internal') "
 	     "and proname <> 'pg_event_trigger_table_rewrite_reason' "
@@ -125,7 +125,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   cerr << "done." << endl;
 
   cerr << "Loading aggregates...";
-  r = w.exec("select pronamespace::regnamespace, oid, prorettype::regtype, proname "
+  r = w.exec("select (select nspname from pg_namespace where oid = pronamespace), oid, prorettype::regtype, proname "
 	     "from pg_proc "
 	     "where prorettype::regtype not in ('event_trigger', 'trigger', 'opaque', 'internal') "
 	     "and proname not in ('pg_event_trigger_table_rewrite_reason') "
