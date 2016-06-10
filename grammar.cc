@@ -35,6 +35,9 @@ void table_or_query_name::out(std::ostream &out) {
 }
 
 table_sample::table_sample(prod *p) : table_ref(p) {
+  if (!matched(this))
+    throw runtime_error("impedance mismatch");
+
   do {
     auto pick = random_pick(scope->tables);
     t = dynamic_cast<struct table*>(pick);

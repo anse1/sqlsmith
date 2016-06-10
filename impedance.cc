@@ -38,9 +38,11 @@ namespace impedance {
   
 bool matched(const char *name)
 {
-  if (occurances_in_ok_query[name])
+  if (100 > occurances_in_failed_query[name])
     return true;
-  if (100 < occurances_in_failed_query[name])
+  double error_rate = (double)occurances_in_failed_query[name]
+    / (occurances_in_failed_query[name] + occurances_in_ok_query[name]);
+  if (error_rate > 0.99)
     return false;
   return true;
 }
