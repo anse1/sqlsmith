@@ -88,7 +88,7 @@ grammar, there will be a burst of syntax errors on startup.  These
 should disappear after some time as SQLsmith blacklists productions
 that consistently lead to errors.
 
-=--verbose= will also periodically emits error reports.  In the
+=--verbose= will also periodically emit error reports.  In the
 following example, these are mostly caused by the primitive type
 system.
 
