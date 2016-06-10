@@ -426,6 +426,7 @@ void common_table_expression::accept(prod_visitor *v)
   v->visit(this);
   for(auto q : with_queries)
     q->accept(v);
+  query->accept(v);
 }
 
 common_table_expression::common_table_expression(prod *parent, struct scope *s)
