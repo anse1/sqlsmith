@@ -83,8 +83,14 @@ following ones are generated:
 | c      | broken connection | These happen when a query crashes the server  |
 | e      | other error       |                                               |
 
-It also periodically emits error reports.  In the following example,
-these are mostly caused by the primitive type system.
+When you test against a RDBMS that doesn't support some of SQLsmith's
+grammar, there will be a burst of syntax errors on startup.  These
+should disappear after some time as SQLsmith blacklists productions
+that consistently lead to errors.
+
+=--verbose= will also periodically emits error reports.  In the
+following example, these are mostly caused by the primitive type
+system.
 
 : queries: 39000 (202.399 gen/s, 298.942 exec/s)
 : AST stats (avg): height = 5.599 nodes = 37.8489
