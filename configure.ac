@@ -1,4 +1,4 @@
-AC_INIT(SQLsmith, 1.0, seltenreich@gmx.de, sqlsmith, https://github.com/anse1/sqlsmith/)
+AC_INIT(SQLsmith, 1.1, seltenreich@gmx.de, sqlsmith, https://github.com/anse1/sqlsmith/)
 AC_LANG(C++)
 
 AM_INIT_AUTOMAKE(-Wall -Werror foreign)
