@@ -102,6 +102,7 @@ void cerr_logger::generated(prod &p)
 
 void cerr_logger::executed(prod &query)
 {
+  (void)query;
   if (columns-1 == (queries%columns)) {
     cerr << endl;
   }
@@ -110,9 +111,10 @@ void cerr_logger::executed(prod &query)
 
 void cerr_logger::error(prod &query, const pqxx::failure &e)
 {
+  (void)query;
   istringstream err(e.what());
   string line;
-  
+
   if (columns-1 == (queries%columns)) {
     cerr << endl;
   }

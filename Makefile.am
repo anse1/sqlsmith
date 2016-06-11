@@ -8,7 +8,7 @@ sqlsmith_SOURCES = relmodel.cc schema.cc random.cc prod.cc expr.cc grammar.cc lo
 sqlsmith_LDADD = $(LIBPQXX_LIBS) $(BOOST_REGEX_LIB)
 
 AM_LDFLAGS = $(BOOST_LDFLAGS)
-AM_CPPFLAGS = $(BOOST_CPPFLAGS) $(PQXX_CFLAGS)  -Wall
+AM_CPPFLAGS = $(BOOST_CPPFLAGS) $(PQXX_CFLAGS)  -Wall -Wextra
 
 EXTRA_DIST = gitrev.h dump.hh expr.hh grammar.hh log.hh prod.hh random.hh relmodel.hh schema.hh impedance.hh filter.sql log.sql README.org TODO.org ast.png dump.xsl
 

@@ -12,9 +12,11 @@
 
 /// logger base class
 struct logger {
-  virtual void generated(prod &query) { }
-  virtual void executed(prod &query) { }
-  virtual void error(prod &query, const pqxx::failure &e) { }
+  virtual void generated(prod &query) {(void)query; }
+  virtual void executed(prod &query) {(void)query; }
+  virtual void error(prod &query, const pqxx::failure &e) {
+    (void)query, (void)e;
+  }
 };
 
 /// logger for statistics collection
