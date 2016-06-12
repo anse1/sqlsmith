@@ -94,7 +94,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   cerr << "Loading routines...";
   r = w.exec("select (select nspname from pg_namespace where oid = pronamespace), oid, prorettype::regtype, proname "
 	     "from pg_proc "
-	     "where prorettype::regtype not in ('event_trigger', 'trigger', 'opaque', 'internal') "
+	     "where prorettype::regtype::text not in ('event_trigger', 'trigger', 'opaque', 'internal') "
 	     "and proname <> 'pg_event_trigger_table_rewrite_reason' "
 	     "and proname <> 'pg_event_trigger_table_rewrite_oid' "
 	     "and proname !~ '^ri_fkey_' "
@@ -127,7 +127,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   cerr << "Loading aggregates...";
   r = w.exec("select (select nspname from pg_namespace where oid = pronamespace), oid, prorettype::regtype, proname "
 	     "from pg_proc "
-	     "where prorettype::regtype not in ('event_trigger', 'trigger', 'opaque', 'internal') "
+	     "where prorettype::regtype::text not in ('event_trigger', 'trigger', 'opaque', 'internal') "
 	     "and proname not in ('pg_event_trigger_table_rewrite_reason') "
 	     "and proname not in ('percentile_cont', 'dense_rank', 'cume_dist', "
 	     "'rank', 'test_rank', 'percent_rank', 'percentile_disc', 'mode', 'test_percentile_disc') "

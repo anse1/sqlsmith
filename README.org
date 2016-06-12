@@ -7,9 +7,9 @@
 SQLsmith is a random SQL query generator.  Its paragon is [[https://embed.cs.utah.edu/csmith/][Csmith]],
 which proved valuable for quality assurance in C compilers.
 
-It currently supports generating queries for PostgreSQL 9.4 or later
-only.  SQLsmith was designed with testing different versions and even
-products in mind, but this has not manifested yet.
+It currently supports generating queries for PostgreSQL 9.1 or later
+only.  SQLsmith was designed with testing different products in mind,
+but this has not manifested yet.
 
 Besides PostgreSQL developers, users developing extensions of
 PostgreSQL might also be interested in exposing their code to
