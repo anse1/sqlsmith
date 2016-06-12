@@ -27,3 +27,4 @@ install-sh
 latex/
 missing
 stamp-h1
+sqlsmith-*.tar.gz
