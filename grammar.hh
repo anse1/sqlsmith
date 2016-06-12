@@ -47,6 +47,11 @@ struct table_subquery : table_ref {
   virtual void accept(prod_visitor *v);
 };
 
+struct lateral_subquery : table_subquery {
+  lateral_subquery(prod *p)
+    : table_subquery(p, true) {  }
+};
+
 struct joined_table : table_ref {
   virtual void out(std::ostream &out);  
   joined_table(prod *p);

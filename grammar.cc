@@ -1,3 +1,4 @@
+#include <typeinfo>
 #include <numeric>
 #include <algorithm>
 #include <stdexcept>
@@ -55,9 +56,6 @@ void table_sample::out(std::ostream &out) {
     " tablesample " << method <<
     " (" << percent << ") ";
 }
-
-
-int table_subquery::instances;
 
 table_subquery::table_subquery(prod *p, bool lateral)
   : table_ref(p), is_lateral(lateral) {
@@ -149,7 +147,9 @@ from_clause::from_clause(prod *p) : prod(p) {
 
   while (d6() > 5) {
     // add a lateral subquery
-    reflist.push_back(make_shared<table_subquery>(this, true));
+    if (!matched(typeid(lateral_subquery)))
+      break;
+    reflist.push_back(make_shared<lateral_subquery>(this));
     for (auto r : reflist.back()->refs)
       scope->refs.push_back(&*r);
   }
