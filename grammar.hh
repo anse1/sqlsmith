@@ -43,7 +43,6 @@ struct table_subquery : table_ref {
   virtual void out(std::ostream &out);
   shared_ptr<struct query_spec> query;
   table_subquery(prod *p, bool lateral = false);
-  static int instances;
   virtual ~table_subquery();
   virtual void accept(prod_visitor *v);
 };
