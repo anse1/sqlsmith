@@ -1,3 +1,5 @@
+/// @file
+/// @brief Base class for grammar productions
 #include <typeinfo>
 #include <stdexcept>
 #include "prod.hh"

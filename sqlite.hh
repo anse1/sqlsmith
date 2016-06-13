@@ -1,3 +1,6 @@
+/// @file
+/// @brief schema and dut classes for SQLite 3
+
 #ifndef SQLITE_HH
 #define SQLITE_HH
 

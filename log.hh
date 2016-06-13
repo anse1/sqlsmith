@@ -9,12 +9,13 @@
 #include <string>
 
 #include "prod.hh"
+#include "dut.hh"
 
 /// logger base class
 struct logger {
   virtual void generated(prod &query) {(void)query; }
   virtual void executed(prod &query) {(void)query; }
-  virtual void error(prod &query, const pqxx::failure &e) {
+  virtual void error(prod &query, const dut::failure &e) {
     (void)query, (void)e;
   }
 };
@@ -35,7 +36,7 @@ struct cerr_logger : stats_collecting_logger {
   virtual void report();
   virtual void generated(prod &query);
   virtual void executed(prod &query);
-  virtual void error(prod &query, const pqxx::failure &e);
+  virtual void error(prod &query, const dut::failure &e);
   void report(prod &p);
 };
 
@@ -45,7 +46,7 @@ struct pqxx_logger : stats_collecting_logger {
   std::shared_ptr<pqxx::connection> c;
   pqxx_logger(std::string target, std::string conninfo, struct schema &s);
   virtual void generated(prod &query);
-  virtual void error(prod &query, const pqxx::failure &e);
+  virtual void error(prod &query, const dut::failure &e);
 };
 
 #endif

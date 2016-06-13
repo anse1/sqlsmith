@@ -10,6 +10,7 @@
 #include "prod.hh"
 #include "util.hh"
 #include "log.hh"
+#include "dut.hh"
 
 struct impedance_visitor : prod_visitor {
   std::map<const char*, long> &_occured;
@@ -21,7 +22,7 @@ struct impedance_visitor : prod_visitor {
 
 struct impedance_feedback : logger {
   virtual void executed(prod &query);
-  virtual void error(prod &query, const pqxx::failure &e);
+  virtual void error(prod &query, const dut::failure &e);
   impedance_feedback() { }
 };
 

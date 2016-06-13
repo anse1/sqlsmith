@@ -1,5 +1,5 @@
 /// @file
-/// @brief schema information for grammar
+/// @brief Base class providing schema information to grammar
 
 #ifndef SCHEMA_HH
 #define SCHEMA_HH
@@ -68,16 +68,6 @@ struct schema {
   schema() { }
   void generate_indexes();
 };
-
-struct schema_pqxx : public schema {
-  pqxx::connection c;
-  virtual std::string quote_name(const std::string &id) {
-    return c.quote_name(id);
-  }
-  schema_pqxx(std::string &conninfo);
-};
-  
-extern schema_pqxx schema;
 
 #endif
 

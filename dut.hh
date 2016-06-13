@@ -1,8 +1,12 @@
+/// @file
+/// @brief Base class for device under test
+
 #ifndef DUT_HH
 #define DUT_HH
-#include <cerrno>
 #include <stdexcept>
-#include <cstring>
+#include <string>
+
+#include "prod.hh"
 
 namespace dut {
   
@@ -12,18 +16,32 @@ struct failure : public std::exception {
   {
     return errstr.c_str();
   }
-  failure(std::string &s) throw() {
+  failure(const char *s) throw() {
     errstr = s;
   };
 };
 
 struct broken : failure {
-  broken(std::string &s) throw()
+  broken(const char *s) throw()
     : failure(s) { }
 };
 
-struct dut {
-  virtual void test(prod *stmt) = 0;
+struct timeout : failure {
+  timeout(const char *s) throw()
+    : failure(s) { }
 };
+
+struct syntax : failure {
+  syntax(const char *s) throw()
+    : failure(s) { }
+};
+
+}
+
+struct dut_base {
+  std::string version;
+  virtual void test(const std::string &stmt) = 0;
+};
+
 
 #endif

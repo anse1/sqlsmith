@@ -64,9 +64,6 @@ void stats_collecting_logger::generated(prod &query)
   sum_retries += v.retries;
 }
 
-static regex e_timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
-static regex e_syntax("ERROR:  syntax error at or near(\n|.)*");
-
 void cerr_logger::report()
 {
     cerr << endl << "queries: " << queries << endl;
@@ -109,7 +106,7 @@ void cerr_logger::executed(prod &query)
   cerr << ".";
 }
 
-void cerr_logger::error(prod &query, const pqxx::failure &e)
+void cerr_logger::error(prod &query, const dut::failure &e)
 {
   (void)query;
   istringstream err(e.what());
@@ -120,11 +117,11 @@ void cerr_logger::error(prod &query, const pqxx::failure &e)
   }
   getline(err, line);
   errors[line]++;
-  if (regex_match(e.what(), e_timeout))
+  if (dynamic_cast<const dut::timeout *>(&e))
     cerr << "t";
-  else if (regex_match(e.what(), e_syntax))
+  else if (dynamic_cast<const dut::syntax *>(&e))
     cerr << "s";
-  else if (dynamic_cast<const pqxx::broken_connection *>(&e))
+  else if (dynamic_cast<const dut::broken *>(&e))
     cerr << "c";
   else
     cerr << "e";
@@ -162,7 +159,7 @@ pqxx_logger::pqxx_logger(std::string target, std::string conninfo, struct schema
 
 }
 
-void pqxx_logger::error(prod &query, const pqxx::failure &e)
+void pqxx_logger::error(prod &query, const dut::failure &e)
 {
   work w(*c);
   ostringstream s;

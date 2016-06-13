@@ -28,7 +28,7 @@ void impedance_feedback::executed(prod &query)
   query.accept(&v);
 }
 
-void impedance_feedback::error(prod &query, const pqxx::failure &e)
+void impedance_feedback::error(prod &query, const dut::failure &e)
 {
   (void)e;
   impedance_visitor v(occurances_in_failed_query);

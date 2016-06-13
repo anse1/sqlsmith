@@ -1,7 +1,6 @@
 #include "config.h"
 
 #include <iostream>
-#include <pqxx/pqxx>
 #include <chrono>
 
 #ifndef HAVE_BOOST_REGEX
@@ -19,15 +18,16 @@ using boost::regex_match;
 #include "grammar.hh"
 #include "relmodel.hh"
 #include "schema.hh"
-#include "sqlite.hh"
 #include "gitrev.h"
 
 #include "log.hh"
 #include "dump.hh"
 #include "impedance.hh"
+#include "dut.hh"
+#include "sqlite.hh"
+#include "postgres.hh"
 
 using namespace std;
-using namespace pqxx;
 
 using namespace std::chrono;
 
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
   try
     {
       struct schema *schema;
-      if (options.count("sqlite"))
+      if (options.count("sqlite")) 
 	schema = new schema_sqlite(options["sqlite"]);
       else
 	schema = new schema_pqxx(options["target"]);
@@ -130,18 +130,14 @@ int main(int argc, char *argv[])
 	      return 0;
 	}
       }
+
+      dut_base *dut;
       
-      connection c(options["target"]);
+      dut = new dut_pqxx(options["target"]);
 
       while (1)
       {
 	try {
-	  work w(c);
-	  w.exec("set statement_timeout to '1s';"
-		 "set client_min_messages to 'ERROR';"
-		 "set application_name to '" PACKAGE "::dut';");
-	  w.commit();
-
 	  while (1) {
 	    if (options.count("max-queries")
 		&& (++queries_generated > stol(options["max-queries"]))) {
@@ -150,8 +146,6 @@ int main(int argc, char *argv[])
 	      return 0;
 	    }
 	    
-	    work w(c);
-
 	    /* Invoke top-level production to generate AST */
 	    shared_ptr<prod> gen = statement_factory(&scope);
 
@@ -164,11 +158,10 @@ int main(int argc, char *argv[])
 
 	    /* Try to execute it */
 	    try {
-	      result r = w.exec(s.str() + ";");
+	      dut->test(s.str());
 	      for (auto l : loggers)
 		l->executed(*gen);
-// 	      w.abort();
-	    } catch (const pqxx::failure &e) {
+	    } catch (const dut::failure &e) {
 	      for (auto l : loggers)
 		try {
 		  l->error(*gen, e);
@@ -176,14 +169,14 @@ int main(int argc, char *argv[])
 		  cerr << endl << "log failed: " << typeid(*l).name() << ": "
 		       << e.what() << endl;
 		}
-	      if ((dynamic_cast<const broken_connection *>(&e))) {
+	      if ((dynamic_cast<const dut::broken *>(&e))) {
 		/* re-throw to outer loop to recover session. */
 		throw;
 	      }
 	    }
 	  }
 	}
-	catch (const broken_connection &e) {
+	catch (const dut::broken &e) {
 	  /* Give server some time to recover. */
 	  this_thread::sleep_for(milliseconds(1000));
 	}
