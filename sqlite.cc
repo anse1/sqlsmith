@@ -2,8 +2,19 @@
 #include <cassert>
 #include "sqlite.hh"
 #include <iostream>
+
+#ifndef HAVE_BOOST_REGEX
+#include <regex>
+#else
+#include <boost/regex.hpp>
+using boost::regex;
+using boost::smatch;
+using boost::regex_match;
+#endif
+
 using namespace std;
 
+static regex e_syntax("near \".*\": syntax error");
 
 extern "C"  {
 #include <sqlite3.h>
@@ -143,9 +154,15 @@ void dut_sqlite::test(const std::string &stmt)
 {
   rc = sqlite3_exec(db, stmt.c_str(), dut_callback, 0, &zErrMsg);
   if( rc!=SQLITE_OK ){
-    auto e = dut::failure(zErrMsg);
-    sqlite3_free(zErrMsg);
-    throw e;
+    try {
+      if (regex_match(zErrMsg, e_syntax))
+	throw dut::syntax(zErrMsg);
+      else 
+	throw dut::failure(zErrMsg);
+    } catch (dut::failure &e) {
+      sqlite3_free(zErrMsg);
+      throw;
+    }
   }
 }
 
