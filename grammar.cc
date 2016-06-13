@@ -309,12 +309,17 @@ delete_stmt::delete_stmt(prod *p, struct scope *s, table *v)
 
 delete_returning::delete_returning(prod *p, struct scope *s, table *victim)
   : delete_stmt(p, s, victim) {
+  if (!matched(this))
+    throw runtime_error("impedance mismatch");
   select_list = make_shared<struct select_list>(this);
 }
 
 insert_stmt::insert_stmt(prod *p, struct scope *s, table *v)
   : modifying_stmt(p, s, v)
 {
+  if (!matched(this))
+    throw runtime_error("impedance mismatch");
+
   for (auto col : victim->columns()) {
     auto expr = value_expr::factory(this, col.type);
     value_exprs.push_back(expr);
@@ -382,6 +387,9 @@ void update_stmt::out(std::ostream &out)
 
 update_returning::update_returning(prod *p, struct scope *s, table *v)
   : update_stmt(p, s, v) {
+  if (!matched(this))
+    throw runtime_error("impedance mismatch");
+
   select_list = make_shared<struct select_list>(this);
 }
 
