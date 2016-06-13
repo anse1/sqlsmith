@@ -35,6 +35,9 @@ struct schema {
 
   string version;
 
+  const char *true_literal = "true";
+  const char *false_literal = "false";
+  
   virtual std::string quote_name(const std::string &id) = 0;
   
   void summary() {

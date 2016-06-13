@@ -101,6 +101,9 @@ schema_sqlite::schema_sqlite(std::string &conninfo)
   internaltype = sqltype::get("internal");
   arraytype = sqltype::get("ARRAY");
 
+  true_literal = "1";
+  false_literal = "0";
+
 //   cerr << "Loading routines...";
 //   cerr << "done." << endl;
 

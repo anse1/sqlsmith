@@ -79,7 +79,7 @@ struct truth_value : bool_expr {
   const char *op;
   virtual void out(std::ostream &out) { out << op; }
   truth_value(prod *p) : bool_expr(p) {
-    op = ( (d6() < 4) ? "true" : "false");
+    op = ( (d6() < 4) ? scope->schema->true_literal : scope->schema->false_literal);
   }
 };
 
