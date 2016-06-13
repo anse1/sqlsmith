@@ -28,6 +28,7 @@ extern "C" int my_sqlite3_busy_handler(void *, int)
 extern "C" int callback(void *arg, int argc, char **argv, char **azColName)
 {
   (void)arg;
+
   int i;
   for(i=0; i<argc; i++){
     printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
@@ -38,6 +39,7 @@ extern "C" int callback(void *arg, int argc, char **argv, char **azColName)
 
 extern "C" int table_callback(void *arg, int argc, char **argv, char **azColName)
 {
+  (void) argc; (void) azColName;
   auto tables = (vector<table> *)arg;
   tables->push_back(table(argv[2], "main", true, true));
   return 0;
@@ -45,6 +47,7 @@ extern "C" int table_callback(void *arg, int argc, char **argv, char **azColName
 
 extern "C" int column_callback(void *arg, int argc, char **argv, char **azColName)
 {
+  (void) argc; (void) azColName;
   table *tab = (table *)arg;
   column c(argv[1], argv[2]);
   tab->columns().push_back(c);
@@ -143,10 +146,7 @@ dut_sqlite::dut_sqlite(std::string &conninfo)
 
 extern "C" int dut_callback(void *arg, int argc, char **argv, char **azColName)
 {
-  (void) arg;
-  (void) argc;
-  (void) argv;
-  (void) azColName;
+  (void) arg; (void) argc; (void) argv; (void) azColName;
   return 0;
 }
 
