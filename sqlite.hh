@@ -10,6 +10,7 @@ extern "C"  {
 
 #include "schema.hh"
 #include "relmodel.hh"
+#include "dut.hh"
 
 struct schema_sqlite : schema {
   sqlite3 *db;
@@ -21,6 +22,15 @@ struct schema_sqlite : schema {
   virtual std::string quote_name(const std::string &id) {
     return id;
   }
+};
+
+struct dut_sqlite : dut_base {
+  sqlite3 *db;
+  char *zErrMsg = 0;
+  int rc;
+  virtual void test(const std::string &stmt);
+  dut_sqlite(std::string &conninfo);
+  ~dut_sqlite();
 };
 
 #endif

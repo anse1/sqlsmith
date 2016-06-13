@@ -16,7 +16,8 @@ struct failure : public std::exception {
   {
     return errstr.c_str();
   }
-  failure(const char *s) throw() {
+  failure(const char *s) throw()
+    : errstr() {
     errstr = s;
   };
 };

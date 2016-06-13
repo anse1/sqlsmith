@@ -13,6 +13,7 @@ using boost::regex_match;
 #endif
 
 #include <thread>
+#include <typeinfo>
 
 #include "random.hh"
 #include "grammar.hh"
@@ -133,7 +134,10 @@ int main(int argc, char *argv[])
 
       dut_base *dut;
       
-      dut = new dut_pqxx(options["target"]);
+      if (options.count("sqlite"))
+	dut = new dut_sqlite(options["sqlite"]);
+      else
+	dut = new dut_pqxx(options["target"]);
 
       while (1)
       {

@@ -4,6 +4,7 @@
 #include <iostream>
 using namespace std;
 
+
 extern "C"  {
 #include <sqlite3.h>
 }
@@ -101,7 +102,8 @@ schema_sqlite::schema_sqlite(std::string &conninfo)
   cerr << "Generating indexes...";
   generate_indexes();
   cerr << "done." << endl;
-
+  sqlite3_close(db);
+  db = 0;
 }
 
 void schema_sqlite::q(const char *query)
@@ -116,5 +118,34 @@ void schema_sqlite::q(const char *query)
 
 schema_sqlite::~schema_sqlite()
 {
-  sqlite3_close(db);
+  if (db)
+    sqlite3_close(db);
 }
+
+dut_sqlite::dut_sqlite(std::string &conninfo)
+{
+  rc = sqlite3_open_v2(conninfo.c_str(), &db, SQLITE_OPEN_READONLY, 0);
+  if (rc) {
+    throw std::runtime_error(sqlite3_errmsg(db));
+  }
+}
+
+extern "C" int dut_callback(void *arg, int argc, char **argv, char **azColName)
+{
+  (void) arg;
+  (void) argc;
+  (void) argv;
+  (void) azColName;
+  return 0;
+}
+
+void dut_sqlite::test(const std::string &stmt)
+{
+  rc = sqlite3_exec(db, stmt.c_str(), dut_callback, 0, &zErrMsg);
+  if( rc!=SQLITE_OK ){
+    auto e = dut::failure(zErrMsg);
+    sqlite3_free(zErrMsg);
+    throw e;
+  }
+}
+
