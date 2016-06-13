@@ -8,12 +8,13 @@ SQLsmith is a random SQL query generator.  Its paragon is [[https://embed.cs.uta
 which proved valuable for quality assurance in C compilers.
 
 It currently supports generating queries for PostgreSQL 9.1 or later
-only.  SQLsmith was designed with testing different products in mind,
-but this has not manifested yet.
+and SQLite 3.  To add support for another RDBMS, you need to implement
+two classes providing schema information about and connectivity to the
+device under test.
 
-Besides PostgreSQL developers, users developing extensions of
-PostgreSQL might also be interested in exposing their code to
-SQLsmith's random workload.
+Besides developers of the RDBMS products, users developing extensions
+might also be interested in exposing their code to SQLsmith's random
+workload.
 
 During its prototyping stage, it already found about thirty bugs in
 PostgreSQL alphas, betas and releases, including security
