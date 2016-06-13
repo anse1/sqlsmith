@@ -16,6 +16,11 @@ AC_SUBST(LIBPQXX_LIBS)
 AC_SUBST(CONFIG_GIT_REVISION,
 	[m4_esyscmd_s([git describe --dirty --tags --always])])
 
+AC_SEARCH_LIBS(sqlite3_open_v2, sqlite3)
+
+dnl , [ACTION-IF-FOUND],
+dnl          [ACTION-IF-NOT-FOUND], [OTHER-LIBRARIES])
+
 AC_SUBST(REVISION)
 
 

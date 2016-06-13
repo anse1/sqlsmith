@@ -19,6 +19,7 @@ using boost::regex_match;
 #include "grammar.hh"
 #include "relmodel.hh"
 #include "schema.hh"
+#include "sqlite.hh"
 #include "gitrev.h"
 
 #include "log.hh"
@@ -52,7 +53,7 @@ int main(int argc, char *argv[])
   cerr << PACKAGE_NAME " " GITREV << endl;
 
   map<string,string> options;
-  regex optregex("--(help|log-to|verbose|target|version|dump-all-graphs|seed|dry-run|max-queries)(?:=((?:.|\n)*))?");
+  regex optregex("--(help|log-to|verbose|target|sqlite|version|dump-all-graphs|seed|dry-run|max-queries)(?:=((?:.|\n)*))?");
   
   for(char **opt = argv+1 ;opt < argv+argc; opt++) {
     smatch match;
@@ -68,7 +69,8 @@ int main(int argc, char *argv[])
   if (options.count("help")) {
     cerr <<
       "    --log-to=connstr     log errors to database" << endl <<
-      "    --target=connstr     database to send queries to" << endl <<
+      "    --target=connstr     postgres database to send queries to" << endl <<
+      "    --sqlite=connstr     sqlite database to send queries to" << endl <<
       "    --seed=int           seed RNG with specified int instead of PID" << endl <<
       "    --dump-all-graphs    dump generated ASTs" << endl <<
       "    --dry-run            print queries instead of executing them" << endl <<
@@ -83,10 +85,15 @@ int main(int argc, char *argv[])
 
   try
     {
-      schema_pqxx schema(options["target"]);
+      struct schema *schema;
+      if (options.count("sqlite"))
+	schema = new schema_sqlite(options["sqlite"]);
+      else
+	schema = new schema_pqxx(options["target"]);
+
       scope scope;
       long queries_generated = 0;
-      schema.fill_scope(scope);
+      schema->fill_scope(scope);
 //       work w(c);
 //       w.commit();
 
@@ -95,7 +102,7 @@ int main(int argc, char *argv[])
       loggers.push_back(make_shared<impedance_feedback>());
 
       if (options.count("log-to"))
-	loggers.push_back(make_shared<pqxx_logger>(options["target"], options["log-to"], schema));
+	loggers.push_back(make_shared<pqxx_logger>(options["target"], options["log-to"], *schema));
 
       if (options.count("verbose")) {
 	auto l = make_shared<cerr_logger>();
