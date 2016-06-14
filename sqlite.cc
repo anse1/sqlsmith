@@ -189,6 +189,25 @@ schema_sqlite::schema_sqlite(std::string &conninfo)
   FUNC3(replace, TEXT, TEXT, TEXT, TEXT);
 
 
+#define AGG(n,r, a) do {						\
+    routine proc("", "", sqltype::get(#r), #n);				\
+    proc.argtypes.push_back(sqltype::get(#a));				\
+    register_aggregate(proc);						\
+  } while(0)
+
+  AGG(avg, INTEGER, INTEGER);
+  AGG(avg, REAL, REAL);
+  AGG(count, INTEGER, REAL);
+  AGG(count, INTEGER, TEXT);
+  AGG(count, INTEGER, INTEGER);
+  AGG(group_concat, TEXT, TEXT);
+  AGG(max, REAL, REAL);
+  AGG(max, INTEGER, INTEGER);
+  AGG(sum, REAL, REAL);
+  AGG(sum, INTEGER, INTEGER);
+  AGG(total, REAL, INTEGER);
+  AGG(total, REAL, REAL);
+
   booltype = sqltype::get("INTEGER");
   inttype = sqltype::get("INTEGER");
 
