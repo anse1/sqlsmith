@@ -92,17 +92,38 @@ schema_sqlite::schema_sqlite(std::string &conninfo)
 
   cerr << "done." << endl;
 
-//   cerr << "Loading operators...";
-//   cerr << "done." << endl;
+  cerr << "Loading operators...";
+#define BINOP(n,t) do {op o(#n,#t,#t,#t); register_operator(o); } while(0)
 
-  booltype = sqltype::get("int");
-  inttype = sqltype::get("int");
+  BINOP(||, TEXT);
+  BINOP(*, INTEGER);
+  BINOP(/, INTEGER);
 
-  internaltype = sqltype::get("internal");
-  arraytype = sqltype::get("ARRAY");
+  BINOP(+, INTEGER);
+  BINOP(-, INTEGER);
 
-  true_literal = "1";
-  false_literal = "0";
+  BINOP(>>, INTEGER);
+  BINOP(<<, INTEGER);
+
+  BINOP(&, INTEGER);
+  BINOP(|, INTEGER);
+
+  BINOP(<, INTEGER);
+  BINOP(<=, INTEGER);
+  BINOP(>, INTEGER);
+  BINOP(>=, INTEGER);
+
+  BINOP(=, INTEGER);
+  BINOP(<>, INTEGER);
+  BINOP(IS, INTEGER);
+  BINOP(IS NOT, INTEGER);
+
+  BINOP(AND, INTEGER);
+  BINOP(OR, INTEGER);
+
+#undef BINOP
+  
+  cerr << "done." << endl;
 
 //   cerr << "Loading routines...";
 //   cerr << "done." << endl;
@@ -115,6 +136,15 @@ schema_sqlite::schema_sqlite(std::string &conninfo)
 
 //   cerr << "Loading aggregate parameters...";
 //   cerr << "done." << endl;
+
+  booltype = sqltype::get("INTEGER");
+  inttype = sqltype::get("INTEGER");
+
+  internaltype = sqltype::get("internal");
+  arraytype = sqltype::get("ARRAY");
+
+  true_literal = "1";
+  false_literal = "0";
 
   cerr << "Generating indexes...";
   generate_indexes();
