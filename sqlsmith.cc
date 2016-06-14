@@ -25,7 +25,11 @@ using boost::regex_match;
 #include "dump.hh"
 #include "impedance.hh"
 #include "dut.hh"
+
+#ifdef HAVE_LIBSQLITE3
 #include "sqlite.hh"
+#endif
+
 #include "postgres.hh"
 
 using namespace std;
@@ -71,7 +75,9 @@ int main(int argc, char *argv[])
     cerr <<
       "    --log-to=connstr     log errors to database" << endl <<
       "    --target=connstr     postgres database to send queries to" << endl <<
+#ifdef HAVE_SQLITE3
       "    --sqlite=connstr     sqlite database to send queries to" << endl <<
+#endif
       "    --seed=int           seed RNG with specified int instead of PID" << endl <<
       "    --dump-all-graphs    dump generated ASTs" << endl <<
       "    --dry-run            print queries instead of executing them" << endl <<
@@ -87,8 +93,14 @@ int main(int argc, char *argv[])
   try
     {
       struct schema *schema;
-      if (options.count("sqlite")) 
+      if (options.count("sqlite")) {
+#ifdef HAVE_LIBSQLITE3
 	schema = new schema_sqlite(options["sqlite"]);
+#else
+	cerr << "Sorry, " PACKAGE_NAME " was compiled without SQLite support." << endl;
+	return 1;
+#endif
+      }
       else
 	schema = new schema_pqxx(options["target"]);
 
@@ -134,8 +146,14 @@ int main(int argc, char *argv[])
 
       dut_base *dut;
       
-      if (options.count("sqlite"))
+      if (options.count("sqlite")) {
+#ifdef HAVE_LIBSQLITE3
 	dut = new dut_sqlite(options["sqlite"]);
+#else
+	cerr << "Sorry, " PACKAGE_NAME " was compiled without SQLite support." << endl;
+	return 1;
+#endif
+      }
       else
 	dut = new dut_pqxx(options["target"]);
 

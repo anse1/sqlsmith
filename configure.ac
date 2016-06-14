@@ -16,13 +16,10 @@ AC_SUBST(LIBPQXX_LIBS)
 AC_SUBST(CONFIG_GIT_REVISION,
 	[m4_esyscmd_s([git describe --dirty --tags --always])])
 
-AC_SEARCH_LIBS(sqlite3_open_v2, sqlite3)
-
-dnl , [ACTION-IF-FOUND],
-dnl          [ACTION-IF-NOT-FOUND], [OTHER-LIBRARIES])
+AC_CHECK_LIB(sqlite3, sqlite3_open_v2)
+AM_CONDITIONAL([DUT_SQLITE], [test x$ac_cv_lib_sqlite3_sqlite3_open_v2 = xyes])
 
 AC_SUBST(REVISION)
-
 
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_FILES([
