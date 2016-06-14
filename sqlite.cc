@@ -15,7 +15,8 @@ using boost::regex_match;
 using namespace std;
 
 static regex e_syntax("near \".*\": syntax error");
-
+static regex e_user_abort("callback requested query abort");
+  
 extern "C"  {
 #include <sqlite3.h>
 }
@@ -180,7 +181,7 @@ dut_sqlite::dut_sqlite(std::string &conninfo)
 extern "C" int dut_callback(void *arg, int argc, char **argv, char **azColName)
 {
   (void) arg; (void) argc; (void) argv; (void) azColName;
-  return 0;
+  return SQLITE_ABORT;
 }
 
 void dut_sqlite::test(const std::string &stmt)
@@ -190,6 +191,8 @@ void dut_sqlite::test(const std::string &stmt)
     try {
       if (regex_match(zErrMsg, e_syntax))
 	throw dut::syntax(zErrMsg);
+      else if (regex_match(zErrMsg, e_user_abort))
+	return;
       else 
 	throw dut::failure(zErrMsg);
     } catch (dut::failure &e) {
