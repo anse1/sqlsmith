@@ -121,7 +121,12 @@ struct routine {
   string name;
   routine(string schema, string specific_name, sqltype* data_type, string name)
     : specific_name(specific_name), schema(schema), restype(data_type), name(name) { }
-  virtual string ident() { return schema + "." + name; }
+  virtual string ident() {
+    if (schema.size())
+      return schema + "." + name;
+    else
+      return name;
+  }
 };
 
 #endif

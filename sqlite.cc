@@ -93,7 +93,6 @@ schema_sqlite::schema_sqlite(std::string &conninfo)
 
   cerr << "done." << endl;
 
-  cerr << "Loading operators...";
 #define BINOP(n,t) do {op o(#n,#t,#t,#t); register_operator(o); } while(0)
 
   BINOP(||, TEXT);
@@ -121,22 +120,74 @@ schema_sqlite::schema_sqlite(std::string &conninfo)
 
   BINOP(AND, INTEGER);
   BINOP(OR, INTEGER);
-
-#undef BINOP
   
   cerr << "done." << endl;
 
-//   cerr << "Loading routines...";
-//   cerr << "done." << endl;
+#define FUNC(n,r) do {							\
+    routine proc("", "", sqltype::get(#r), #n);				\
+    register_routine(proc);						\
+  } while(0)
 
-//   cerr << "Loading routine parameters...";
-//   cerr << "done." << endl;
+#define FUNC1(n,r,a) do {						\
+    routine proc("", "", sqltype::get(#r), #n);				\
+    proc.argtypes.push_back(sqltype::get(#a));				\
+    register_routine(proc);						\
+  } while(0)
 
-//   cerr << "Loading aggregates...";
-//   cerr << "done." << endl;
+#define FUNC2(n,r,a,b) do {						\
+    routine proc("", "", sqltype::get(#r), #n);				\
+    proc.argtypes.push_back(sqltype::get(#a));				\
+    proc.argtypes.push_back(sqltype::get(#b));				\
+    register_routine(proc);						\
+  } while(0)
 
-//   cerr << "Loading aggregate parameters...";
-//   cerr << "done." << endl;
+#define FUNC3(n,r,a,b,c) do {						\
+    routine proc("", "", sqltype::get(#r), #n);				\
+    proc.argtypes.push_back(sqltype::get(#a));				\
+    proc.argtypes.push_back(sqltype::get(#b));				\
+    proc.argtypes.push_back(sqltype::get(#c));				\
+    register_routine(proc);						\
+  } while(0)
+
+  FUNC(last_insert_rowid, INTEGER);
+  FUNC(random, INTEGER);
+  FUNC(sqlite_source_id, TEXT);
+  FUNC(sqlite_version, TEXT);
+  FUNC(total_changes, INTEGER);
+
+  FUNC1(abs, INTEGER, REAL);
+  FUNC1(hex, TEXT, TEXT);
+  FUNC1(length, INTEGER, TEXT);
+  FUNC1(lower, TEXT, TEXT);
+  FUNC1(ltrim, TEXT, TEXT);
+  FUNC1(quote, TEXT, TEXT);
+  FUNC1(randomblob, TEXT, INTEGER);
+  FUNC1(round, INTEGER, REAL);
+  FUNC1(rtrim, TEXT, TEXT);
+  FUNC1(soundex, TEXT, TEXT);
+  FUNC1(sqlite_compileoption_get, TEXT, INTEGER);
+  FUNC1(sqlite_compileoption_used, INTEGER, TEXT);
+  FUNC1(trim, TEXT, TEXT);
+  FUNC1(typeof, TEXT, INTEGER);
+  FUNC1(typeof, TEXT, NUMERIC);
+  FUNC1(typeof, TEXT, REAL);
+  FUNC1(typeof, TEXT, TEXT);
+  FUNC1(unicode, INTEGER, TEXT);
+  FUNC1(upper, TEXT, TEXT);
+  FUNC1(zeroblob, TEXT, INTEGER);
+
+  FUNC2(glob, INTEGER, TEXT, TEXT);
+  FUNC2(instr, INTEGER, TEXT, TEXT);
+  FUNC2(like, INTEGER, TEXT, TEXT);
+  FUNC2(ltrim, TEXT, TEXT, TEXT);
+  FUNC2(rtrim, TEXT, TEXT, TEXT);
+  FUNC2(trim, TEXT, TEXT, TEXT);
+  FUNC2(round, INTEGER, REAL, INTEGER);
+  FUNC2(substr, TEXT, TEXT, INTEGER);
+
+  FUNC3(substr, TEXT, TEXT, INTEGER, INTEGER);
+  FUNC3(replace, TEXT, TEXT, TEXT, TEXT);
+
 
   booltype = sqltype::get("INTEGER");
   inttype = sqltype::get("INTEGER");
