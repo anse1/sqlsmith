@@ -35,7 +35,7 @@ create table stat (
    nodes float,         -- avg. number of nodes in ASTs
    retries float,       -- avg. number of retries needed for ASTs
    updated timestamptz,
-   impedance xml        -- impedance report
+   impedance jsonb      -- impedance report
 );
 
 comment on table stat is 'statistics about ASTs';
