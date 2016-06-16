@@ -40,11 +40,11 @@ shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
 case_expr::case_expr(prod *p, sqltype *type_constraint)
   : value_expr(p)
 {
-  condition = bool_expr::factory(p);
-  true_expr = value_expr::factory(p, type_constraint);
+  condition = bool_expr::factory(this);
+  true_expr = value_expr::factory(this, type_constraint);
   type = true_expr->type;
   assert(!type_constraint || (type == type_constraint));
-  false_expr = value_expr::factory(p, type);
+  false_expr = value_expr::factory(this, type);
   assert(false_expr->type == type);
 }
 
