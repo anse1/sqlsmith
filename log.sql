@@ -38,7 +38,7 @@ create table stat (
    impedance jsonb      -- impedance report
 );
 
-comment on table stat is 'statistics about ASTs';
+comment on table stat is 'statistics about ASTs and productions';
 
 -- grant role smith just enough rights to do the logging
 create role smith login;
@@ -112,3 +112,11 @@ create trigger discard_known before insert on error
 
 -- YMMV.
 create index on error(t);
+
+create view impedance as
+    select id, generated, level, nodes, updated, retries, prod, ok, bad
+    from stat, jsonb_to_recordset(impedance->'impedance')
+        js(prod text, ok int, bad int)
+    where impedance is not null;
+
+comment on view impedance is 'stat table with normalized jsonb';
