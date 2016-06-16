@@ -162,7 +162,7 @@ void coalesce::out(std::ostream &out)
   for (auto expr = value_exprs.begin(); expr != value_exprs.end(); expr++) {
     out << **expr;
     if (expr+1 != value_exprs.end())
-      out << "," << endl,indent(out);
+      out << ",", indent(out);
   }
   out << ")";
   out << " as " << type->name << ")";
