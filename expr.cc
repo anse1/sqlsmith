@@ -180,7 +180,7 @@ const_expr::const_expr(prod *p, sqltype *type_constraint)
   else if (dynamic_cast<insert_stmt*>(p) && (d6() > 3))
     expr += "default";
   else
-    expr += "null";
+    expr += "cast(null as " + type->name + ")";
 }
 
 funcall::funcall(prod *p, sqltype *type_constraint, bool agg)
