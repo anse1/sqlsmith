@@ -27,12 +27,41 @@ shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
       return make_shared<atomic_subselect>(p, type_constraint);
     else if (p->scope->refs.size() && d9() > 1)
       return make_shared<column_reference>(p, type_constraint);
+    else if (p->level<6 && d6()<3)
+      return make_shared<case_expr>(p, type_constraint);
     else
       return make_shared<const_expr>(p, type_constraint);
   } catch (runtime_error &e) {
   }
   p->retry();
   return factory(p, type_constraint);
+}
+
+case_expr::case_expr(prod *p, sqltype *type_constraint)
+  : value_expr(p)
+{
+  condition = bool_expr::factory(p);
+  true_expr = value_expr::factory(p, type_constraint);
+  type = true_expr->type;
+  assert(!type_constraint || (type == type_constraint));
+  false_expr = value_expr::factory(p, type);
+  assert(false_expr->type == type);
+}
+
+void case_expr::out(std::ostream &out)
+{
+  out << "case when " << *condition;
+  out << " then " << *true_expr;
+  out << " else " << *true_expr;
+  out << " end" << endl;
+}
+
+void case_expr::accept(prod_visitor *v)
+{
+  v->visit(this);
+  condition->accept(v);
+  true_expr->accept(v);
+  false_expr->accept(v);
 }
 
 column_reference::column_reference(prod *p, sqltype *type_constraint) : value_expr(p)

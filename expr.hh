@@ -19,6 +19,15 @@ struct value_expr: prod {
   static shared_ptr<value_expr> factory(prod *p, sqltype *type_constraint = 0);
 };
 
+struct case_expr : value_expr {
+  shared_ptr<value_expr> condition;
+  shared_ptr<value_expr> true_expr;
+  shared_ptr<value_expr> false_expr;
+  case_expr(prod *p, sqltype *type_constraint = 0);
+  virtual void out(std::ostream &out);
+  virtual void accept(prod_visitor *v);
+};
+
 struct funcall : value_expr {
   routine *proc;
   bool is_aggregate;
