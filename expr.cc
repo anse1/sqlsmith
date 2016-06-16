@@ -53,7 +53,8 @@ void case_expr::out(std::ostream &out)
   out << "case when " << *condition;
   out << " then " << *true_expr;
   out << " else " << *true_expr;
-  out << " end" << endl;
+  out << " end";
+  indent(out);
 }
 
 void case_expr::accept(prod_visitor *v)
@@ -257,8 +258,8 @@ atomic_subselect::atomic_subselect(prod *p, sqltype *type_constraint)
 void atomic_subselect::out(std::ostream &out)
 {
   out << "(select " << col->name << " from " <<
-    tab->ident() << " limit 1 offset " << offset << ")"
-      << std::endl;
+    tab->ident() << " limit 1 offset " << offset << ")";
+  indent(out);
 }
 
 void window_function::out(std::ostream &out)

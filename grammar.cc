@@ -249,7 +249,7 @@ void select_for_update::out(std::ostream &out) {
   query_spec::out(out);
   if (lockmode) {
     indent(out);
-    out << " for " << lockmode << endl;
+    out << " for " << lockmode;
   }
 }
 
@@ -475,10 +475,11 @@ void common_table_expression::out(std::ostream &out)
   out << "WITH " ;
   for (size_t i = 0; i < with_queries.size(); i++) {
     indent(out);
-    out << refs[i]->ident() << " AS " << "(" << *with_queries[i] << ")" << endl;
+    out << refs[i]->ident() << " AS " << "(" << *with_queries[i] << ")";
     if (i+1 != with_queries.size())
       out << ", ";
+    indent(out);
   }
+  out << *query;
   indent(out);
-  out << *query << endl;
 }
