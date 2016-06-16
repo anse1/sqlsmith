@@ -14,8 +14,8 @@ using impedance::matched;
 using namespace std;
 
 shared_ptr<table_ref> table_ref::factory(prod *p) {
-  if (p->level < d6()) {
-    if (d6() <= 3)
+  if (p->level < d9()) {
+    if (d6() < 3)
       return make_shared<table_subquery>(p);
     else
       return make_shared<joined_table>(p);
