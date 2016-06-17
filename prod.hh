@@ -22,6 +22,7 @@ struct prod {
   prod(prod *parent);
   virtual void indent(std::ostream &out);
   virtual void out(std::ostream &out) = 0;
+  virtual void match();
   virtual void accept(prod_visitor *v) { v->visit(this); }
   void retry();
 };

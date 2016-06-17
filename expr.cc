@@ -287,8 +287,7 @@ void window_function::out(std::ostream &out)
 window_function::window_function(prod *p, sqltype *type_constraint)
   : value_expr(p)
 {
-  if (!matched(this))
-    throw runtime_error("impedance mismatch");
+  match();
   aggregate = make_shared<funcall>(this, type_constraint, true);
   type = aggregate->type;
   partition_by.push_back(make_shared<column_reference>(this));

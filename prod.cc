@@ -31,3 +31,9 @@ void prod::retry()
     throw std::runtime_error(std::string("excessive retries in ")
 			     + typeid(*this).name());
 }
+
+void prod::match()
+{
+  if (!impedance::matched(this))
+    throw runtime_error("impedance mismatch");
+}

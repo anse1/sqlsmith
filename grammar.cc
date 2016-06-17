@@ -10,7 +10,6 @@
 #include "schema.hh"
 #include "impedance.hh"
 
-using impedance::matched;
 using namespace std;
 
 shared_ptr<table_ref> table_ref::factory(prod *p) {
@@ -36,8 +35,7 @@ void table_or_query_name::out(std::ostream &out) {
 }
 
 table_sample::table_sample(prod *p) : table_ref(p) {
-  if (!matched(this))
-    throw runtime_error("impedance mismatch");
+  match();
 
   do {
     auto pick = random_pick(scope->tables);
@@ -147,7 +145,7 @@ from_clause::from_clause(prod *p) : prod(p) {
 
   while (d6() > 5) {
     // add a lateral subquery
-    if (!matched(typeid(lateral_subquery)))
+    if (!impedance::matched(typeid(lateral_subquery)))
       break;
     reflist.push_back(make_shared<lateral_subquery>(this));
     for (auto r : reflist.back()->refs)
@@ -309,16 +307,14 @@ delete_stmt::delete_stmt(prod *p, struct scope *s, table *v)
 
 delete_returning::delete_returning(prod *p, struct scope *s, table *victim)
   : delete_stmt(p, s, victim) {
-  if (!matched(this))
-    throw runtime_error("impedance mismatch");
+  match();
   select_list = make_shared<struct select_list>(this);
 }
 
 insert_stmt::insert_stmt(prod *p, struct scope *s, table *v)
   : modifying_stmt(p, s, v)
 {
-  if (!matched(this))
-    throw runtime_error("impedance mismatch");
+  match();
 
   for (auto col : victim->columns()) {
     auto expr = value_expr::factory(this, col.type);
@@ -387,8 +383,7 @@ void update_stmt::out(std::ostream &out)
 
 update_returning::update_returning(prod *p, struct scope *s, table *v)
   : update_stmt(p, s, v) {
-  if (!matched(this))
-    throw runtime_error("impedance mismatch");
+  match();
 
   select_list = make_shared<struct select_list>(this);
 }
@@ -397,8 +392,7 @@ update_returning::update_returning(prod *p, struct scope *s, table *v)
 upsert_stmt::upsert_stmt(prod *p, struct scope *s, table *v)
   : insert_stmt(p,s,v)
 {
-  if (!matched(this))
-    throw runtime_error("impedance mismatch");
+  match();
 
   if (!victim->constraints.size())
     throw std::runtime_error("need table w/ constraint for upsert");
