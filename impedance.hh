@@ -36,6 +36,9 @@ namespace impedance {
   void limit(const char *p);
   inline void limit(const std::type_info &id) { return limit(id.name()); }
   inline void limit(prod *p) { return limit(typeid(*p)); }
+  void fail(const char *p);
+  inline void fail(const std::type_info &id) { return fail(id.name()); }
+  inline void fail(prod *p) { return fail(typeid(*p)); }
   void report();
   void report(std::ostream &out);
 }

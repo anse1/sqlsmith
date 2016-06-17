@@ -43,5 +43,6 @@ void prod::match()
 
 void prod::fail(const char *reason)
 {
+  impedance::fail(this);
   throw std::runtime_error(reason);
 }
