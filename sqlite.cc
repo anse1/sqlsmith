@@ -57,6 +57,7 @@ extern "C" int column_callback(void *arg, int argc, char **argv, char **azColNam
 
 schema_sqlite::schema_sqlite(std::string &conninfo)
 {
+  version = "SQLite " SQLITE_VERSION " " SQLITE_SOURCE_ID;
   rc = sqlite3_open_v2(conninfo.c_str(), &db, SQLITE_OPEN_READONLY, 0);
   if (rc) {
     throw std::runtime_error(sqlite3_errmsg(db));

@@ -115,7 +115,9 @@ int main(int argc, char *argv[])
       loggers.push_back(make_shared<impedance_feedback>());
 
       if (options.count("log-to"))
-	loggers.push_back(make_shared<pqxx_logger>(options["target"], options["log-to"], *schema));
+	loggers.push_back(make_shared<pqxx_logger>(
+	     options.count("sqlite") ? options["sqlite"] : options["target"],
+	     options["log-to"], *schema));
 
       if (options.count("verbose")) {
 	auto l = make_shared<cerr_logger>();
