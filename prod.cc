@@ -27,9 +27,12 @@ void prod::indent(std::ostream &out)
 void prod::retry()
 {
   impedance::retry(this);
-  if (retries++ > 200)
-    throw std::runtime_error(std::string("excessive retries in ")
-			     + typeid(*this).name());
+  if (retries++ <= 200)
+    return;
+  
+  impedance::limit(this);
+  throw std::runtime_error(std::string("excessive retries in ")
+			   + typeid(*this).name());
 }
 
 void prod::match()

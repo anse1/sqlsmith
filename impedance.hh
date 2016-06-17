@@ -33,6 +33,9 @@ namespace impedance {
   void retry(const char *p);
   inline void retry(const std::type_info &id) { return retry(id.name()); }
   inline void retry(prod *p) { return retry(typeid(*p)); }
+  void limit(const char *p);
+  inline void limit(const std::type_info &id) { return limit(id.name()); }
+  inline void limit(prod *p) { return limit(typeid(*p)); }
   void report();
   void report(std::ostream &out);
 }

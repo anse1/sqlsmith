@@ -115,9 +115,9 @@ create index on error(t);
 
 create view impedance as
     select id, generated, level, nodes, updated,
-    	   prod, ok, bad, js.retries
+    	   prod, ok, bad, js.retries, limited
     from stat, jsonb_to_recordset(impedance->'impedance')
-    	 js(prod text, ok int, bad int, retries int)
+    	 js(prod text, ok int, bad int, retries int, limited int)
     where impedance is not null;
 
 comment on view impedance is 'stat table with normalized jsonb';

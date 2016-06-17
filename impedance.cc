@@ -7,6 +7,7 @@ using namespace std;
 static map<const char*, long> occurances_in_failed_query;
 static map<const char*, long> occurances_in_ok_query;
 static map<const char*, long> retries;
+static map<const char*, long> limited;
 
 impedance_visitor::impedance_visitor(map<const char*, long> &occured)
   :   _occured(occured)
@@ -72,6 +73,7 @@ void report(std::ostream &out)
     out << "{\"prod\": \"" << pretty_type(pair->first) << "\","
 	<< "\"bad\": " << pair->second << ", "
 	<< "\"ok\": " << occurances_in_ok_query[pair->first] << ", "
+	<< "\"limited\": " << limited[pair->first] << ", "
 	<< "\"retries\": " << retries[pair->first] << "} ";
 
     if (next(pair) != occurances_in_failed_query.end())
@@ -83,6 +85,11 @@ void report(std::ostream &out)
 void retry(const char *p)
 {
   retries[p]++;
+}
+
+void limit(const char *p)
+{
+  limited[p]++;
 }
 
 }
