@@ -217,7 +217,6 @@ struct for_update_verify : prod_visitor {
 	throw("catalog");
     }
   } ;
-  virtual ~for_update_verify() { } ;
 };
 
 
@@ -239,7 +238,7 @@ select_for_update::select_for_update(prod *p, struct scope *s, bool lateral)
     lockmode = 0;
     return;
   }
-  lockmode = modes[d12()%4];
+  lockmode = modes[d12()%sizeof(modes)];
   set_quantifier = ""; // disallow distinct
 }
 
@@ -423,8 +422,6 @@ shared_ptr<prod> statement_factory(struct scope *s)
     return statement_factory(s);
   }
 }
-
-// virtual void out(std::ostream &out);
 
 void common_table_expression::accept(prod_visitor *v)
 {
