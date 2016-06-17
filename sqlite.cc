@@ -57,21 +57,40 @@ extern "C" int column_callback(void *arg, int argc, char **argv, char **azColNam
   return 0;
 }
 
-schema_sqlite::schema_sqlite(std::string &conninfo)
+sqlite_connection::sqlite_connection(std::string &conninfo)
 {
   assert(sqlite3_libversion_number()==SQLITE_VERSION_NUMBER);
   assert(strcmp(sqlite3_sourceid(),SQLITE_SOURCE_ID)==0);
   assert(strcmp(sqlite3_libversion(),SQLITE_VERSION)==0);
-  
-  version = "SQLite " SQLITE_VERSION " " SQLITE_SOURCE_ID;
   rc = sqlite3_open_v2(conninfo.c_str(), &db, SQLITE_OPEN_READWRITE|SQLITE_OPEN_URI, 0);
   if (rc) {
     throw std::runtime_error(sqlite3_errmsg(db));
   }
+}
+
+void sqlite_connection::q(const char *query)
+{
+  rc = sqlite3_exec(db, query, callback, 0, &zErrMsg);
+  if( rc!=SQLITE_OK ){
+    auto e = std::runtime_error(zErrMsg);
+    sqlite3_free(zErrMsg);
+    throw e;
+  }
+}
+
+sqlite_connection::~sqlite_connection()
+{
+  if (db)
+    sqlite3_close(db);
+}
+
+schema_sqlite::schema_sqlite(std::string &conninfo)
+  : sqlite_connection(conninfo)
+{
+  
+  version = "SQLite " SQLITE_VERSION " " SQLITE_SOURCE_ID;
 
 //   sqlite3_busy_handler(db, my_sqlite3_busy_handler, 0);
-//   q("PRAGMA busy_timeout = 1000;");
-  
   cerr << "Loading tables...";
 
   rc = sqlite3_exec(db, "SELECT * FROM main.sqlite_master where type in ('table', 'view')", table_callback, (void *)&tables, &zErrMsg);
@@ -227,28 +246,10 @@ schema_sqlite::schema_sqlite(std::string &conninfo)
   db = 0;
 }
 
-void schema_sqlite::q(const char *query)
-{
-  rc = sqlite3_exec(db, query, callback, 0, &zErrMsg);
-  if( rc!=SQLITE_OK ){
-    auto e = std::runtime_error(zErrMsg);
-    sqlite3_free(zErrMsg);
-    throw e;
-  }
-}
-
-schema_sqlite::~schema_sqlite()
-{
-  if (db)
-    sqlite3_close(db);
-}
-
 dut_sqlite::dut_sqlite(std::string &conninfo)
+  : sqlite_connection(conninfo)
 {
-  rc = sqlite3_open_v2(conninfo.c_str(), &db, SQLITE_OPEN_URI|SQLITE_OPEN_READWRITE, 0);
-  if (rc) {
-    throw std::runtime_error(sqlite3_errmsg(db));
-  }
+  q("PRAGMA main.auto_vacuum = 2");
 }
 
 extern "C" int dut_callback(void *arg, int argc, char **argv, char **azColName)
