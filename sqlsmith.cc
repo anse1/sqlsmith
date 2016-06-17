@@ -73,11 +73,11 @@ int main(int argc, char *argv[])
 
   if (options.count("help")) {
     cerr <<
-      "    --log-to=connstr     log errors to database" << endl <<
       "    --target=connstr     postgres database to send queries to" << endl <<
 #ifdef HAVE_SQLITE3
-      "    --sqlite=connstr     sqlite database to send queries to" << endl <<
+      "    --sqlite=URI         SQLite database to send queries to" << endl <<
 #endif
+      "    --log-to=connstr     log errors to postgres database" << endl <<
       "    --seed=int           seed RNG with specified int instead of PID" << endl <<
       "    --dump-all-graphs    dump generated ASTs" << endl <<
       "    --dry-run            print queries instead of executing them" << endl <<

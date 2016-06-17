@@ -55,20 +55,24 @@ functions that could possibly have side-effects
 (e.g. pg_terminate_backend).  Use a suitably *underprivileged user*
 for its connection to avoid this.
 
-Example invocation:
+Example invocations:
 
+: # testing Postgres
 : sqlsmith --verbose --target="host=/tmp port=65432 dbname=regression"
+: # testing SQLite
+: sqlsmith --verbose --sqlite="file:$HOME/.mozilla/firefox/places.sqlite?mode=ro"
 
 The following options are currently supported:
 
-| =--target=connstr=   | target database (default: libpq defaults)        |
-| =--log-to=connstr=   | database for logging errors (default: don't log) |
-| =--verbose=          | emit progress output                             |
-| =--version=          | show version information                         |
-| =--seed=int=         | seed RNG with specified integer instead of PID   |
-| =--dry-run=          | print queries instead of executing them          |
-| =--max-queries=long= | terminate after generating this many queries     |
-| =--dump-all-graphs=  | dump generated ASTs for debugging                |
+| =--target=connstr=   | target postgres database (default: libpq defaults)       |
+| =--sqlite=URI=       | target SQLite3 database                                  |
+| =--log-to=connstr=   | postgres db for logging errors into (default: don't log) |
+| =--verbose=          | emit progress output                                     |
+| =--version=          | show version information                                 |
+| =--seed=int=         | seed RNG with specified integer instead of PID           |
+| =--dry-run=          | print queries instead of executing them                  |
+| =--max-queries=long= | terminate after generating this many queries             |
+| =--dump-all-graphs=  | dump generated ASTs for debugging                        |
 
 Sample output:
 
