@@ -57,6 +57,10 @@ extern "C" int column_callback(void *arg, int argc, char **argv, char **azColNam
 
 schema_sqlite::schema_sqlite(std::string &conninfo)
 {
+  assert(sqlite3_libversion_number()==SQLITE_VERSION_NUMBER);
+  assert(strcmp(sqlite3_sourceid(),SQLITE_SOURCE_ID)==0);
+  assert(strcmp(sqlite3_libversion(),SQLITE_VERSION)==0);
+  
   version = "SQLite " SQLITE_VERSION " " SQLITE_SOURCE_ID;
   rc = sqlite3_open_v2(conninfo.c_str(), &db, SQLITE_OPEN_READWRITE|SQLITE_OPEN_URI, 0);
   if (rc) {
