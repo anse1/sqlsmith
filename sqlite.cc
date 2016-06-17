@@ -262,9 +262,10 @@ void dut_sqlite::test(const std::string &stmt)
     try {
       if (regex_match(zErrMsg, e_syntax))
 	throw dut::syntax(zErrMsg);
-      else if (regex_match(zErrMsg, e_user_abort))
+      else if (regex_match(zErrMsg, e_user_abort)) {
+	sqlite3_free(zErrMsg);
 	return;
-      else 
+      } else 
 	throw dut::failure(zErrMsg);
     } catch (dut::failure &e) {
       sqlite3_free(zErrMsg);
