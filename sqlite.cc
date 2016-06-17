@@ -69,7 +69,7 @@ schema_sqlite::schema_sqlite(std::string &conninfo)
     throw std::runtime_error(sqlite3_errmsg(db));
   }
 
-  sqlite3_busy_handler(db, my_sqlite3_busy_handler, 0);
+//   sqlite3_busy_handler(db, my_sqlite3_busy_handler, 0);
 //   q("PRAGMA busy_timeout = 1000;");
   
   cerr << "Loading tables...";
