@@ -42,7 +42,9 @@ extern "C" int table_callback(void *arg, int argc, char **argv, char **azColName
 {
   (void) argc; (void) azColName;
   auto tables = (vector<table> *)arg;
-  tables->push_back(table(argv[2], "main", true, true));
+  bool view = (string("view") == argv[0]);
+  table tab(argv[2], "main", !view, !view);
+  tables->push_back(tab);
   return 0;
 }
 
@@ -72,7 +74,7 @@ schema_sqlite::schema_sqlite(std::string &conninfo)
   
   cerr << "Loading tables...";
 
-  rc = sqlite3_exec(db, "SELECT * FROM main.sqlite_master where type='table'", table_callback, (void *)&tables, &zErrMsg);
+  rc = sqlite3_exec(db, "SELECT * FROM main.sqlite_master where type in ('table', 'view')", table_callback, (void *)&tables, &zErrMsg);
   if (rc!=SQLITE_OK) {
     auto e = std::runtime_error(zErrMsg);
     sqlite3_free(zErrMsg);
