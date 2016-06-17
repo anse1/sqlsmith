@@ -204,6 +204,6 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
     }
   }
   cerr << "done." << endl;
-
+  c.disconnect();
   generate_indexes();
 }
