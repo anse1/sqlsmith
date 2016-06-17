@@ -24,6 +24,7 @@ struct prod {
   virtual void out(std::ostream &out) = 0;
   virtual void match();
   virtual void accept(prod_visitor *v) { v->visit(this); }
+  virtual void fail(const char *reason);
   void retry();
 };
 

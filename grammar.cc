@@ -395,7 +395,7 @@ upsert_stmt::upsert_stmt(prod *p, struct scope *s, table *v)
   match();
 
   if (!victim->constraints.size())
-    throw std::runtime_error("need table w/ constraint for upsert");
+    fail("need table w/ constraint for upsert");
     
   set_list = std::make_shared<struct set_list>(this);
   search = bool_expr::factory(this);

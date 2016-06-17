@@ -38,5 +38,10 @@ void prod::retry()
 void prod::match()
 {
   if (!impedance::matched(this))
-    throw runtime_error("impedance mismatch");
+    throw std::runtime_error("impedance mismatch");
+}
+
+void prod::fail(const char *reason)
+{
+  throw std::runtime_error(reason);
 }

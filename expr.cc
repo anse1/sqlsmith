@@ -143,7 +143,7 @@ comparison_op::comparison_op(prod *p) : bool_binop(p)
 coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
 {
   if (type_constraint == scope->schema->arraytype)
-    throw std::runtime_error("cannot coalesce ARRAY");
+    fail("cannot coalesce ARRAY");
 
   shared_ptr<value_expr> first_expr;
   do {
@@ -188,7 +188,7 @@ funcall::funcall(prod *p, sqltype *type_constraint, bool agg)
   : value_expr(p), is_aggregate(agg)
 {
   if (type_constraint == scope->schema->internaltype)
-    throw runtime_error("cannot call functions involving internal type");
+    fail("cannot call functions involving internal type");
 
   auto &idx = agg ? p->scope->schema->aggregates_returning_type
     : (4 < d6()) ?
@@ -250,8 +250,7 @@ atomic_subselect::atomic_subselect(prod *p, sqltype *type_constraint)
       break;
     }
   }
-  if (!col)
-    throw logic_error("bogus index entry");
+  assert(col);
   type = col->type;
 }
 
