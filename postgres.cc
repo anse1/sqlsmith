@@ -205,9 +205,5 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   }
   cerr << "done." << endl;
 
-
-  cerr << "Generating indexes...";
   generate_indexes();
-  cerr << "done." << endl;
-
 }

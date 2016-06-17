@@ -1,3 +1,4 @@
+#include <typeinfo>
 #include "config.h"
 #include "schema.hh"
 #include "relmodel.hh"
@@ -8,6 +9,8 @@ using namespace std;
 using namespace pqxx;
 
 void schema::generate_indexes() {
+  cerr << "Generating indexes...";
+
   for(auto &r: routines) {
     routines_returning_type.insert(pair<sqltype*, routine*>(r.restype, &r));
     if(!r.argtypes.size())
@@ -23,4 +26,5 @@ void schema::generate_indexes() {
       tables_with_columns_of_type.insert(pair<sqltype*, table*>(c.type, &t));
     }
   }
+  cerr << "done." << endl;
 }

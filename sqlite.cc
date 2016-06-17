@@ -122,8 +122,6 @@ schema_sqlite::schema_sqlite(std::string &conninfo)
   BINOP(AND, INTEGER);
   BINOP(OR, INTEGER);
   
-  cerr << "done." << endl;
-
 #define FUNC(n,r) do {							\
     routine proc("", "", sqltype::get(#r), #n);				\
     register_routine(proc);						\
@@ -218,9 +216,7 @@ schema_sqlite::schema_sqlite(std::string &conninfo)
   true_literal = "1";
   false_literal = "0";
 
-  cerr << "Generating indexes...";
   generate_indexes();
-  cerr << "done." << endl;
   sqlite3_close(db);
   db = 0;
 }
