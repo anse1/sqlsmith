@@ -114,9 +114,10 @@ create trigger discard_known before insert on error
 create index on error(t);
 
 create view impedance as
-    select id, generated, level, nodes, updated, retries, prod, ok, bad
+    select id, generated, level, nodes, updated, stat.retries as total_retries,
+    	   prod, ok, bad, js.retries
     from stat, jsonb_to_recordset(impedance->'impedance')
-        js(prod text, ok int, bad int)
+    	 js(prod text, ok int, bad int, retries int)
     where impedance is not null;
 
 comment on view impedance is 'stat table with normalized jsonb';

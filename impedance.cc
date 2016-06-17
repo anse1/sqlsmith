@@ -6,6 +6,7 @@ using namespace std;
 
 static map<const char*, long> occurances_in_failed_query;
 static map<const char*, long> occurances_in_ok_query;
+static map<const char*, long> retries;
 
 impedance_visitor::impedance_visitor(map<const char*, long> &occured)
   :   _occured(occured)
@@ -70,7 +71,8 @@ void report(std::ostream &out)
        ++pair) {
     out << "{\"prod\": \"" << pretty_type(pair->first) << "\","
 	<< "\"bad\": " << pair->second << ", "
-	<< "\"ok\": " << occurances_in_ok_query[pair->first] << "} ";
+	<< "\"ok\": " << occurances_in_ok_query[pair->first] << ", "
+	<< "\"retries\": " << retries[pair->first] << "} ";
 
     if (next(pair) != occurances_in_failed_query.end())
       out << "," << endl;
@@ -78,6 +80,9 @@ void report(std::ostream &out)
   out << "]}" << endl;
 }
 
+void retry(const char *p)
+{
+  retries[p]++;
 }
 
-
+}

@@ -30,6 +30,9 @@ namespace impedance {
   bool matched(const char *p);
   inline bool matched(const std::type_info &id) { return matched(id.name()); }
   inline bool matched(prod *p) { return matched(typeid(*p)); }
+  void retry(const char *p);
+  inline void retry(const std::type_info &id) { return retry(id.name()); }
+  inline void retry(prod *p) { return retry(typeid(*p)); }
   void report();
   void report(std::ostream &out);
 }
