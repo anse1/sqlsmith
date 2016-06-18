@@ -238,7 +238,7 @@ select_for_update::select_for_update(prod *p, struct scope *s, bool lateral)
     lockmode = 0;
     return;
   }
-  lockmode = modes[d12()%sizeof(modes)];
+  lockmode = modes[d12()%(sizeof(modes)/sizeof(*modes))];
   set_quantifier = ""; // disallow distinct
 }
 
