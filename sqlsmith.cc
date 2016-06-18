@@ -92,17 +92,17 @@ int main(int argc, char *argv[])
 
   try
     {
-      struct schema *schema;
+      shared_ptr<schema> schema;
       if (options.count("sqlite")) {
 #ifdef HAVE_LIBSQLITE3
-	schema = new schema_sqlite(options["sqlite"]);
+	schema = make_shared<schema_sqlite>(options["sqlite"]);
 #else
 	cerr << "Sorry, " PACKAGE_NAME " was compiled without SQLite support." << endl;
 	return 1;
 #endif
       }
       else
-	schema = new schema_pqxx(options["target"]);
+	schema = make_shared<schema_pqxx>(options["target"]);
 
       scope scope;
       long queries_generated = 0;
@@ -146,18 +146,18 @@ int main(int argc, char *argv[])
 	}
       }
 
-      dut_base *dut;
+      shared_ptr<dut_base> dut;
       
       if (options.count("sqlite")) {
 #ifdef HAVE_LIBSQLITE3
-	dut = new dut_sqlite(options["sqlite"]);
+	dut = make_shared<dut_sqlite>(options["sqlite"]);
 #else
 	cerr << "Sorry, " PACKAGE_NAME " was compiled without SQLite support." << endl;
 	return 1;
 #endif
       }
       else
-	dut = new dut_pqxx(options["target"]);
+	dut = make_shared<dut_pqxx>(options["target"]);
 
       while (1)
       {
