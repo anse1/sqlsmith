@@ -432,10 +432,9 @@ void common_table_expression::accept(prod_visitor *v)
 }
 
 common_table_expression::common_table_expression(prod *parent, struct scope *s)
-  : prod(parent)
+  : prod(parent), myscope(s)
 {
-  scope = new struct scope(s);
-  
+  scope = &myscope;
   do {
     shared_ptr<query_spec> query = make_shared<query_spec>(this, s);
     with_queries.push_back(query);

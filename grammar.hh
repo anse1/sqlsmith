@@ -246,10 +246,10 @@ struct common_table_expression : prod {
   vector<shared_ptr<prod> > with_queries;
   shared_ptr<prod> query;
   vector<shared_ptr<named_relation> > refs;
+  struct scope myscope;
   virtual void out(std::ostream &out);
   virtual void accept(prod_visitor *v);
   common_table_expression(prod *parent, struct scope *s);
-  virtual ~common_table_expression() { delete scope; };
 };
 
 #endif
