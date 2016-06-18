@@ -67,14 +67,14 @@ int main(int argc, char *argv[])
       options[string(match[1])] = match[2];
     } else {
       cerr << "Cannot parse option: " << *opt << endl;
-      return 1;
+      options["help"] = "";
     }
   }
 
   if (options.count("help")) {
     cerr <<
       "    --target=connstr     postgres database to send queries to" << endl <<
-#ifdef HAVE_SQLITE3
+#ifdef HAVE_LIBSQLITE3
       "    --sqlite=URI         SQLite database to send queries to" << endl <<
 #endif
       "    --log-to=connstr     log errors to postgres database" << endl <<
