@@ -251,9 +251,9 @@ void select_for_update::out(std::ostream &out) {
 }
 
 query_spec::query_spec(prod *p, struct scope *s, bool lateral) :
-  prod(p)
+  prod(p), myscope(s)
 {
-  scope = new struct scope(s);
+  scope = &myscope;
   scope->tables = s->tables;
 
   if (lateral)
@@ -288,9 +288,9 @@ void modifying_stmt::pick_victim()
 }
 
 modifying_stmt::modifying_stmt(prod *p, struct scope *s, table *victim)
-  : prod(p)
+  : prod(p), myscope(s)
 {
-  scope = new struct scope(s);
+  scope = &myscope;
   scope->tables = s->tables;
 
   if (!victim)

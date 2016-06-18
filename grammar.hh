@@ -102,9 +102,9 @@ struct query_spec : prod {
   shared_ptr<struct select_list> select_list;
   shared_ptr<bool_expr> search;
   std::string limit_clause;
+  struct scope myscope;
   virtual void out(std::ostream &out);
   query_spec(prod *p, struct scope *s, bool lateral = 0);
-  virtual ~query_spec() { delete scope; }
   virtual void accept(prod_visitor *v) {
     v->visit(this);
     select_list->accept(v);
@@ -137,9 +137,9 @@ struct prepare_stmt : prod {
 
 struct modifying_stmt : prod {
   table *victim;
+  struct scope myscope;
   modifying_stmt(prod *p, struct scope *s, struct table *victim = 0);
 //   shared_ptr<modifying_stmt> modifying_stmt::factory(prod *p, struct scope *s);
-  virtual ~modifying_stmt() { delete scope; }
   virtual void pick_victim();
 };
 
