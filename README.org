@@ -33,7 +33,7 @@ optional:
 
 ** Building on Debian Jessie
 
-: apt-get install build-essential autoconf autoconf-archive libpqxx-dev libboost-regex-dev
+: apt-get install build-essential autoconf autoconf-archive libpqxx-dev libboost-regex-dev libsqlite3-dev
 : cd sqlsmith
 : autoreconf -i # Not needed when building from a release tarball
 : ./configure
