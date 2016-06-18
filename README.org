@@ -23,10 +23,13 @@ maintained by its users in a wiki:
 
     https://github.com/anse1/sqlsmith/wiki#score-list
 
-** Dependencies:
+** Dependencies
 - C++11
 - libpqxx
+
+optional:
 - boost::regex in case your std::regex is broken
+- SQLite3
 
 ** Building on Debian Jessie
 
