@@ -19,6 +19,7 @@ struct prod {
   struct scope *scope;
   int level;
   long retries = 0;
+  long retry_limit = 200;
   prod(prod *parent);
   virtual void indent(std::ostream &out);
   virtual void out(std::ostream &out) = 0;

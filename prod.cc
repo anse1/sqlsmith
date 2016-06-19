@@ -27,7 +27,7 @@ void prod::indent(std::ostream &out)
 void prod::retry()
 {
   impedance::retry(this);
-  if (retries++ <= 200)
+  if (retries++ <= retry_limit)
     return;
   
   impedance::limit(this);
