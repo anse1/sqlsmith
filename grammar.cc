@@ -13,14 +13,21 @@
 using namespace std;
 
 shared_ptr<table_ref> table_ref::factory(prod *p) {
-  if (p->level + 3 < d9())
-    return make_shared<table_subquery>(p);
-  if (p->level < 3 + d6())
-    return make_shared<joined_table>(p);
-  if (d6() > 3)
-    return make_shared<table_or_query_name>(p);
-  else
-    return make_shared<table_sample>(p);
+  try {
+    if (p->level < 3 + d6()) {
+      if (d6() > 3 && p->level < d6())
+	return make_shared<table_subquery>(p);
+      if (d6() > 3)
+	return make_shared<joined_table>(p);
+    }
+    if (d6() > 3)
+      return make_shared<table_or_query_name>(p);
+    else
+      return make_shared<table_sample>(p);
+  } catch (runtime_error &e) {
+    p->retry();
+  }
+  return factory(p);
 }
 
 table_or_query_name::table_or_query_name(prod *p) : table_ref(p) {
