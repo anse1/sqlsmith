@@ -121,3 +121,15 @@ create view impedance as
     where impedance is not null;
 
 comment on view impedance is 'stat table with normalized jsonb';
+
+create view impedance_report as
+  select rev, prod,
+  	 sum(generated) as generated, sum(ok) as ok,
+	 sum(bad) as bad,
+	 sum(retries) as retries,
+	 sum(limited)as limited,
+	 sum(failed) as failed
+  from impedance natural join instance
+  where rev = (select max(rev) from instance where version ~* 'postgres')
+  group by rev, prod
+  order by retries;
