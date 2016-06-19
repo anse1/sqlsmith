@@ -59,6 +59,7 @@ implement operators in relmodel.cc join() project() union() select()
 | ee099e6  |    33.8 |   25.8 |
 | 231c88a  |   34.65 |   28.1 |
 | 7ffac2d  |    39.8 |   30.3 |
+| dad2ce0  |    34.5 |   29.5 |
 
 | combined testing    | overall | parser |
 |---------------------+---------+--------|
