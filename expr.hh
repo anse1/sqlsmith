@@ -46,7 +46,7 @@ struct atomic_subselect : value_expr {
   table *tab;
   column *col;
   int offset;
-  virtual ~atomic_subselect() { }
+  routine *agg;
   atomic_subselect(prod *p, sqltype *type_constraint = 0);
   virtual void out(std::ostream &out);
 };
