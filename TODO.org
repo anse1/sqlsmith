@@ -15,23 +15,6 @@ use a custom class instead that abstracts different products
 *** TODO [#A] add proper identifier quoting
 sqlsmiths fails horribly with databases containing identifiers that
 require quoting.
-*** TODO [#A] Allow productions to fail in factories
-- Make productions throw a smith::no_candidate : std::runtime_error
-- Catch it and randomly pick another one.
-- Need to count errors and escalate at some point
-*** TODO Add functions 						     :schema:
-- convenient for pulling values out of nowhere (version(), now(), etc)
-- Should be some coverage wrt. fuzzing (to_char...)
-*** TODO Add aggregates 					     :schema:
-- in window functions
-- in group by
-- need to find a way to constrain column-referencing exprs to contain
-  an aggregate *somewhere*
-  expr->agg->expr agg->expr expr->agg
-  - maybe use needs_aggreate bool default argument to expr constructors
-*** TODO UPDATE
-*** TODO INSERT
-*** TODO DELETE
 *** TODO [#C] Generate data for literal use in queries
 *** TODO Improve random generation
 - Add Attributes to rules so factories can pick candidates in a
@@ -46,19 +29,10 @@ require quoting.
 *** TODO DTRT with arrays
 - review standard so we don't drift into non-standard pg stuff
 *** TODO composite/record types
-** TODO [#C] support more RDMBSs
-- Should add more than products early to avoid a point of no return
-- Allow blacklisting of productions for RDBMs with gaps wrt standards
-  conformance (probably depends on improved random generation)
-- Should be easy to prune unsupported productions automatically on syntax errors.
-  Or maybe it's better to add a calibration phase? -> conflicts with hard-coded grammar
-- Allow automatic detection of problematic productions via stats visitor.
-- Alternate approach: add a test_compat() method to rules
 ** relmodel
 *** TODO [#C] operations on Tuples
 instead of hacking up tuples inside productions it's more sensible to
 implement operators in relmodel.cc join() project() union() select()
-*** TODO [#C] primitive cost model
 *** TODO Load samples at startup to have a pool of values for literals
 - how to do it in a reproducible fashion? TABLESAMPLE? ORDER BY?
 - maybe use atomic value subselects to fetch compatible values
