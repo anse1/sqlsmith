@@ -120,7 +120,8 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
 
   r = w.exec("select oprname, oprleft::regtype,"
 		    "oprright::regtype, oprresult::regtype "
-		    "from pg_catalog.pg_operator;");
+		    "from pg_catalog.pg_operator "
+                    "where 0 not in (oprresult, oprright, oprleft) ");
   for (auto row : r) {
     op o(row[0].as<string>(),
 	 row[1].as<string>(),
