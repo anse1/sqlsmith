@@ -26,5 +26,9 @@ void schema::generate_indexes() {
       tables_with_columns_of_type.insert(pair<sqltype*, table*>(c.type, &t));
     }
   }
-  cerr << "done." << endl;
+
+  for (auto &o: operators) {
+    operators_returning_type.insert(pair<sqltype*, op*>(o.result, &o));
+  }
+cerr << "done." << endl;
 }

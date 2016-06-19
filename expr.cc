@@ -127,17 +127,13 @@ distinct_pred::distinct_pred(prod *p) : bool_binop(p)
 
 comparison_op::comparison_op(prod *p) : bool_binop(p)
 {
-  retry:
-  lhs = value_expr::factory(this);
-  rhs = value_expr::factory(this);
+  auto &idx = p->scope->schema->operators_returning_type;
 
-  auto op_iter =
-    scope->schema->find_operator(lhs->type, rhs->type, scope->schema->booltype);
+  auto iters = idx.equal_range(scope->schema->booltype);
+  oper = random_pick<>(iters)->second;
 
-  if (op_iter == scope->schema->index.end())
-    { p->retry(); goto retry; }
-
-  oper = &op_iter->second;
+  lhs = value_expr::factory(this, oper->left);
+  rhs = value_expr::factory(this, oper->right);
 }
 
 coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
