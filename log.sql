@@ -133,3 +133,5 @@ create view impedance_report as
   where rev = (select max(rev) from instance where version ~* 'postgres')
   group by rev, prod
   order by retries;
+
+comment on view impedance_report is 'impedance report for latest revision';
