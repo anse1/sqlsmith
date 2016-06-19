@@ -231,22 +231,24 @@ void funcall::out(std::ostream &out)
 atomic_subselect::atomic_subselect(prod *p, sqltype *type_constraint)
   : value_expr(p), offset(d42())
 {
-  auto &idx = p->scope->schema->tables_with_columns_of_type;
+  if (type_constraint) {
+    auto &idx = scope->schema->tables_with_columns_of_type;
+    col = 0;
+    auto iters = idx.equal_range(type_constraint);
+    tab = random_pick<>(iters)->second;
 
-  col = 0;
-  if (!type_constraint)
-    type_constraint = p->scope->schema->inttype;
-
-  auto iters = idx.equal_range(type_constraint);
-  tab = random_pick<>(iters)->second;
-
-  for (auto &cand : tab->columns()) {
-    if (cand.type == type_constraint) {
-      col = &cand;
-      break;
+    for (auto &cand : tab->columns()) {
+      if (cand.type == type_constraint) {
+	col = &cand;
+	break;
+      }
     }
+    assert(col);
+  } else {
+    tab = &random_pick<>(scope->schema->tables);
+    col = &random_pick<>(tab->columns());
   }
-  assert(col);
+  
   type = col->type;
 }
 
