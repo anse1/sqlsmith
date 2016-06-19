@@ -25,7 +25,12 @@ dut_pqxx::dut_pqxx(std::string conninfo)
 void dut_pqxx::test(const std::string &stmt)
 {
   if (reset_gucs) {
+
+    if(!c.is_open())
+      c.activate();
+
     pqxx::work w(c);
+
     w.exec("set statement_timeout to '1s';"
 	   "set client_min_messages to 'ERROR';"
 	   "set application_name to '" PACKAGE "::dut';");
