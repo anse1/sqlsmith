@@ -38,10 +38,11 @@ void dut_pqxx::test(const std::string &stmt)
     reset_gucs = false;
   }
 
+  pqxx::work w(c);
   try {
-    pqxx::work w(c);
     w.exec(stmt.c_str());
   } catch (const pqxx::failure &e) {
+    w.abort();
     if ((dynamic_cast<const pqxx::broken_connection *>(&e))) {
       /* re-throw to outer loop to recover session. */
       reset_gucs = true;
