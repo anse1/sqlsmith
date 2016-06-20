@@ -322,6 +322,7 @@ insert_stmt::insert_stmt(prod *p, struct scope *s, table *v)
 
   for (auto col : victim->columns()) {
     auto expr = value_expr::factory(this, col.type);
+    assert(expr->type == col.type);
     value_exprs.push_back(expr);
   }
 }
