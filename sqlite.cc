@@ -19,6 +19,7 @@ static regex e_user_abort("callback requested query abort");
   
 extern "C"  {
 #include <sqlite3.h>
+#include <unistd.h>
 }
 
 extern "C" int my_sqlite3_busy_handler(void *, int)
@@ -100,6 +101,10 @@ schema_sqlite::schema_sqlite(std::string &conninfo)
     throw e;
   }
 
+  // sqlite_master doesn't list itself, do it manually
+  table tab("sqlite_master", "main", false, false);
+  tables.push_back(tab);
+  
   cerr << "done." << endl;
 
   cerr << "Loading columns and constraints...";
@@ -260,6 +265,7 @@ extern "C" int dut_callback(void *arg, int argc, char **argv, char **azColName)
 
 void dut_sqlite::test(const std::string &stmt)
 {
+  alarm(6);
   rc = sqlite3_exec(db, stmt.c_str(), dut_callback, 0, &zErrMsg);
   if( rc!=SQLITE_OK ){
     try {
