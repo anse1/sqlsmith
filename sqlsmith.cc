@@ -30,6 +30,10 @@ using boost::regex_match;
 #include "sqlite.hh"
 #endif
 
+#ifdef HAVE_LIBMYSQLCLIENT
+#include "mysql.hh"
+#endif
+
 #include "postgres.hh"
 
 using namespace std;
@@ -58,7 +62,7 @@ int main(int argc, char *argv[])
   cerr << PACKAGE_NAME " " GITREV << endl;
 
   map<string,string> options;
-  regex optregex("--(help|log-to|verbose|target|sqlite|version|dump-all-graphs|seed|dry-run|max-queries)(?:=((?:.|\n)*))?");
+  regex optregex("--(help|log-to|verbose|target|sqlite|mysql|version|dump-all-graphs|seed|dry-run|max-queries)(?:=((?:.|\n)*))?");
   
   for(char **opt = argv+1 ;opt < argv+argc; opt++) {
     smatch match;
@@ -77,6 +81,9 @@ int main(int argc, char *argv[])
 #ifdef HAVE_LIBSQLITE3
       "    --sqlite=URI         SQLite database to send queries to" << endl <<
 #endif
+#ifdef HAVE_LIBMYSQLCLIENT
+      "    --mysql=conninfo     MySQL database to send queries to" << endl <<
+#endif
       "    --log-to=connstr     log errors to postgres database" << endl <<
       "    --seed=int           seed RNG with specified int instead of PID" << endl <<
       "    --dump-all-graphs    dump generated ASTs" << endl <<
@@ -94,15 +101,26 @@ int main(int argc, char *argv[])
     {
       shared_ptr<schema> schema;
       if (options.count("sqlite")) {
+
 #ifdef HAVE_LIBSQLITE3
 	schema = make_shared<schema_sqlite>(options["sqlite"]);
 #else
 	cerr << "Sorry, " PACKAGE_NAME " was compiled without SQLite support." << endl;
 	return 1;
 #endif
-      }
-      else
+
+      } else if (options.count("mysql")) {
+
+#ifdef HAVE_LIBMYSQLCLIENT
+	schema = make_shared<schema_mysql>(options["mysql"]);
+#else
+	cerr << "Sorry, " PACKAGE_NAME " was compiled without MySQL support." << endl;
+	return 1;
+#endif
+
+      } else {
 	schema = make_shared<schema_pqxx>(options["target"]);
+      }
 
       scope scope;
       long queries_generated = 0;
@@ -156,7 +174,14 @@ int main(int argc, char *argv[])
 	return 1;
 #endif
       }
-      else
+      else if (options.count("mysql")) {
+#ifdef HAVE_LIBMYSQLCLIENT
+	dut = make_shared<dut_mysql>(options["sqlite"]);
+#else
+	cerr << "Sorry, " PACKAGE_NAME " was compiled without MySQL support." << endl;
+	return 1;
+#endif
+      } else
 	dut = make_shared<dut_pqxx>(options["target"]);
 
       while (1)
@@ -207,7 +232,8 @@ int main(int argc, char *argv[])
       }
     }
   catch (const exception &e) {
-    cerr << e.what() << endl;
+    cerr << endl << "caught exception: " << typeid(e).name() << ": "
+	 << e.what() << endl;
     return 1;
   }
 }
