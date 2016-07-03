@@ -2,11 +2,38 @@
 
 alter table stat add column impedance jsonb;
 
-create view impedance as
-    select id, generated, level, nodes, updated, stat.retries as total_retries,
-    	   prod, ok, bad, js.retries
-    from stat, jsonb_to_recordset(impedance->'impedance')
-    	 js(prod text, ok int, bad int, retries int)
-    where impedance is not null;
+create or replace view impedance as
+ SELECT stat.id,
+    stat.generated,
+    stat.level,
+    stat.nodes,
+    stat.updated,
+    js.prod,
+    js.ok,
+    js.bad,
+    js.retries,
+    js.limited,
+    js.failed
+   FROM stat,
+    LATERAL jsonb_to_recordset(stat.impedance -> 'impedance'::text) js(prod text, ok integer, bad integer, retries integer, limited integer, failed integer)
+  WHERE stat.impedance IS NOT NULL;
 
 comment on view impedance is 'stat table with normalized jsonb';
+
+create view impedance_report as
+ SELECT instance.rev,
+    impedance.prod,
+    sum(impedance.generated) AS generated,
+    sum(impedance.ok) AS ok,
+    sum(impedance.bad) AS bad,
+    sum(impedance.retries) AS retries,
+    sum(impedance.limited) AS limited,
+    sum(impedance.failed) AS failed
+   FROM impedance
+     JOIN instance USING (id)
+  WHERE instance.rev = (( SELECT instance_1.rev
+           FROM instance instance_1
+          ORDER BY instance_1.t DESC
+         LIMIT 1))
+  GROUP BY instance.rev, impedance.prod
+  ORDER BY sum(impedance.retries);
