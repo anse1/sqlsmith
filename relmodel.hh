@@ -21,6 +21,7 @@ struct sqltype {
   static map<string, struct sqltype*> typemap;
   static struct sqltype *get(string s);
   sqltype(string n) : name(n) { }
+  virtual bool consistent(struct sqltype *rvalue);
 };
 
 struct column {
