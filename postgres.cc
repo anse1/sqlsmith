@@ -16,6 +16,7 @@ using namespace std;
 static regex e_timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
 static regex e_syntax("ERROR:  syntax error at or near(\n|.)*");
 
+
 dut_pqxx::dut_pqxx(std::string conninfo)
   : c(conninfo)
 {

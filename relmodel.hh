@@ -83,7 +83,7 @@ struct scope {
     vector<pair<named_relation*, column> > result;
     for (auto r : refs)
       for (auto c : r->columns())
-	if (c.type == t)
+	if (t->consistent(c.type))
 	  result.push_back(make_pair(r,c));
     return result;
   }

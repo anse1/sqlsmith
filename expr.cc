@@ -43,7 +43,7 @@ case_expr::case_expr(prod *p, sqltype *type_constraint)
   condition = bool_expr::factory(this);
   true_expr = value_expr::factory(this, type_constraint);
   type = true_expr->type;
-  assert(!type_constraint || (type == type_constraint));
+  assert(!type_constraint || type_constraint->consistent(type));
   false_expr = value_expr::factory(this, type);
   assert(false_expr->type == type);
 }
@@ -69,13 +69,11 @@ column_reference::column_reference(prod *p, sqltype *type_constraint) : value_ex
 {
   if (type_constraint) {
     auto pairs = scope->refs_of_type(type_constraint);
-    for (auto p : pairs)
-      assert(p.second.type == type_constraint);
     auto picked = random_pick(pairs);
     reference += picked.first->ident()
       + "." + picked.second.name;
     type = picked.second.type;
-    assert(type == type_constraint);
+    assert(type_constraint->consistent(type));
   } else {
     named_relation *r = random_pick(scope->refs);
 
@@ -138,17 +136,12 @@ comparison_op::comparison_op(prod *p) : bool_binop(p)
 
 coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
 {
-  if (type_constraint == scope->schema->arraytype)
-    fail("cannot coalesce ARRAY");
-
   shared_ptr<value_expr> first_expr;
-  do {
-    first_expr = value_expr::factory(this, type_constraint);
-  } while (first_expr->type == scope->schema->arraytype);
+  first_expr = value_expr::factory(this, type_constraint);
+  assert(!type_constraint || type_constraint->consistent(first_expr->type));
   value_exprs.push_back(first_expr);
   
   type = value_exprs[0]->type;
-  assert(!type_constraint || type == type_constraint);
   value_exprs.push_back(value_expr::factory(this, type));
   assert(value_exprs[1]->type == value_exprs[0]->type);
 }
@@ -198,16 +191,20 @@ funcall::funcall(prod *p, sqltype *type_constraint, bool agg)
   } else {
     auto iters = idx.equal_range(type_constraint);
     proc = random_pick<>(iters)->second;
-    assert(!proc || proc->restype == type_constraint);
+    assert(!proc || type_constraint->consistent(proc->restype));
   }
   type = proc->restype;
 
-  if (type == scope->schema->internaltype)
+  if (type == scope->schema->internaltype) {
+    retry();
     goto retry;
+  }
   for (auto type : proc->argtypes)
     if (type == scope->schema->internaltype
-	|| type == scope->schema->arraytype)
+	|| type == scope->schema->arraytype) {
+      retry();
       goto retry;
+    }
   
   for (auto type : proc->argtypes)
     parms.push_back(value_expr::factory(this, type));
@@ -254,7 +251,7 @@ atomic_subselect::atomic_subselect(prod *p, sqltype *type_constraint)
     tab = random_pick<>(iters)->second;
 
     for (auto &cand : tab->columns()) {
-      if (cand.type == type_constraint) {
+      if (type_constraint->consistent(cand.type)) {
 	col = &cand;
 	break;
       }
