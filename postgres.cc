@@ -95,6 +95,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
     pg_type *t = new pg_type(name,oid,typdelim[0],typrelid, typelem, typarray, typtype[0]);
     oid2type[oid] = t;
     name2type[name] = t;
+    types.push_back(t);
   }
 
   cerr << "done." << endl;

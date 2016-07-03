@@ -18,6 +18,8 @@ struct schema {
   sqltype *inttype;
   sqltype *internaltype;
   sqltype *arraytype;
+
+  std::vector<sqltype *> types;
   
   std::vector<table> tables;
   std::vector<op> operators;
