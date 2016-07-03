@@ -10,8 +10,34 @@
 
 #include <pqxx/pqxx>
 
+#define OID long
+
+struct pg_type : sqltype {
+  OID oid_;
+  char typdelim_;
+  OID typrelid_;
+  OID typelem_;
+  OID typarray_;
+  char typtype_;
+  pg_type(string name,
+	  OID oid,
+	  char typdelim,
+	  OID typrelid,
+	  OID typelem,
+	  OID typarray,
+	  char typtype)
+    : sqltype(name), oid_(oid), typdelim_(typdelim), typrelid_(typrelid),
+      typelem_(typelem), typarray_(typarray), typtype_(typtype) { }
+
+  virtual bool consistent(struct sqltype *rvalue);
+};
+
+
 struct schema_pqxx : public schema {
   pqxx::connection c;
+  map<OID, pg_type*> oid2type;
+  map<string, pg_type*> name2type;
+
   virtual std::string quote_name(const std::string &id) {
     return c.quote_name(id);
   }

@@ -16,6 +16,11 @@ using namespace std;
 static regex e_timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
 static regex e_syntax("ERROR:  syntax error at or near(\n|.)*");
 
+bool pg_type::consistent(sqltype *rvalue)
+{
+  pg_type *t = dynamic_cast<pg_type*>(rvalue);
+  return this == t;
+}
 
 dut_pqxx::dut_pqxx(std::string conninfo)
   : c(conninfo)
@@ -68,7 +73,32 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
     
   pqxx::result r = w.exec("select version()");
   version = r[0][0].as<string>();
+
+  cerr << "Loading types...";
+
+  r = w.exec("select typname, oid, typdelim, typrelid, typelem, typarray, typtype "
+	     "from pg_type ");
   
+  for (auto row = r.begin(); row != r.end(); ++row) {
+    string name(row[0].as<string>());
+    OID oid(row[1].as<OID>());
+    string typdelim(row[2].as<string>());
+    OID typrelid(row[3].as<OID>());
+    OID typelem(row[4].as<OID>());
+    OID typarray(row[5].as<OID>());
+    string typtype(row[6].as<string>());
+    //       if (schema == "pg_catalog")
+    // 	continue;
+    //       if (schema == "information_schema")
+    // 	continue;
+
+    pg_type *t = new pg_type(name,oid,typdelim[0],typrelid, typelem, typarray, typtype[0]);
+    oid2type[oid] = t;
+    name2type[name] = t;
+  }
+
+  cerr << "done." << endl;
+
   cerr << "Loading tables...";
   r = w.exec("select table_name, "
 		    "table_schema, "
@@ -106,7 +136,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
 
     r = w.exec(q);
     for (auto row : r) {
-      column c(row[0].as<string>(), row[1].as<string>());
+      column c(row[0].as<string>(), name2type[row[1].as<string>()]);
       t->columns().push_back(c);
     }
 
