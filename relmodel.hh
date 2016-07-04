@@ -8,6 +8,7 @@
 #include <map>
 #include <utility>
 #include <memory>
+#include <cassert>
 
 using std::string;
 using std::vector;
@@ -28,10 +29,9 @@ struct column {
   string name;
   sqltype *type;
   column(string name) : name(name) { }
-  column(string name, string t) : name(name) {
-    type = sqltype::get(t);
+  column(string name, sqltype *t) : name(name), type(t) {
+    assert(t);
   }
-  column(string name, sqltype *t) : name(name), type(t) {  }
 };
 
 struct relation {
@@ -105,12 +105,6 @@ struct op {
   sqltype *result;
   op(string n,sqltype *l,sqltype *r, sqltype *res)
     : name(n), left(l), right(r), result(res) { }
-  op(string n, string l, string r, string res)
-    : name(n) {
-    left = sqltype::get(l);
-    right = sqltype::get(r);
-    result = sqltype::get(res);
-  }
   op() { }
 };
 
@@ -121,7 +115,9 @@ struct routine {
   sqltype *restype;
   string name;
   routine(string schema, string specific_name, sqltype* data_type, string name)
-    : specific_name(specific_name), schema(schema), restype(data_type), name(name) { }
+    : specific_name(specific_name), schema(schema), restype(data_type), name(name) {
+    assert(data_type);
+  }
   virtual string ident() {
     if (schema.size())
       return schema + "." + name;

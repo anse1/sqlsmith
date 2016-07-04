@@ -21,14 +21,27 @@ void schema::generate_indexes() {
     aggregates_returning_type.insert(pair<sqltype*, routine*>(r.restype, &r));
   }
 
-  for (auto &t: tables) {
-    for (auto &c: t.columns()) {
-      tables_with_columns_of_type.insert(pair<sqltype*, table*>(c.type, &t));
+  for (auto &type: types) {
+    for (auto &t: tables) {
+      for (auto &c: t.columns()) {
+	if (type->consistent(c.type)) 
+	  tables_with_columns_of_type.insert(pair<sqltype*, table*>(type, &t));
+      }
+    }
+
+    for (auto &concrete: types) {
+      if (type->consistent(concrete))
+	concrete_type.insert(pair<sqltype*, sqltype*>(type, concrete));
     }
   }
 
   for (auto &o: operators) {
     operators_returning_type.insert(pair<sqltype*, op*>(o.result, &o));
   }
-cerr << "done." << endl;
+  cerr << "done." << endl;
+
+  assert(booltype);
+  assert(inttype);
+  assert(internaltype);
+  assert(arraytype);
 }

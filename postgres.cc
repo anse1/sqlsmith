@@ -16,10 +16,54 @@ using namespace std;
 static regex e_timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
 static regex e_syntax("ERROR:  syntax error at or near(\n|.)*");
 
+
 bool pg_type::consistent(sqltype *rvalue)
 {
+  bool result = consistent_(rvalue);
+  return result;
+}
+
+ bool pg_type::consistent_(sqltype *rvalue)
+{
   pg_type *t = dynamic_cast<pg_type*>(rvalue);
-  return this == t;
+
+  if (!t) {
+    cerr << "unknown type: " << rvalue->name  << endl;
+    return false;
+  }
+  
+  switch(typtype_) {
+  case 'b': /* base type */
+  case 'c': /* composite type */
+  case 'd': /* domain */
+  case 'r': /* range */
+  case 'e': /* enum */
+    return this == t;
+    
+  case 'p':
+    if (name == "anyarray") {
+      return t->typelem_ != InvalidOid;
+    } else if (name == "anynonarray") {
+      return t->typelem_ == InvalidOid;
+    } else if(name == "anyenum") {
+      return t->typtype_ == 'e';
+    } else if (name == "any") {
+      return true;
+    } else if (name == "anyelement") {
+      return t->typarray_ != InvalidOid;
+    } else if (name == "anyrange") {
+      return t->typtype_ == 'r';
+    } else if (name == "record") {
+      return t->typtype_ == 'c';
+    } else if (name == "cstring") {
+      return this == t;
+    } else {
+      return false;
+    }
+      
+  default:
+    throw std::logic_error("unknown typtype");
+  }
 }
 
 dut_pqxx::dut_pqxx(std::string conninfo)
@@ -98,6 +142,12 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
     types.push_back(t);
   }
 
+  booltype = name2type["bool"];
+  inttype = name2type["int4"];
+
+  internaltype = name2type["internal"];
+  arraytype = name2type["anyarray"];
+
   cerr << "done." << endl;
 
   cerr << "Loading tables...";
@@ -156,28 +206,22 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
 
   cerr << "Loading operators...";
 
-  r = w.exec("select oprname, oprleft::regtype,"
-		    "oprright::regtype, oprresult::regtype "
+  r = w.exec("select oprname, oprleft,"
+		    "oprright, oprresult "
 		    "from pg_catalog.pg_operator "
                     "where 0 not in (oprresult, oprright, oprleft) ");
   for (auto row : r) {
     op o(row[0].as<string>(),
-	 row[1].as<string>(),
-	 row[2].as<string>(),
-	 row[3].as<string>());
+	 oid2type[row[1].as<OID>()],
+	 oid2type[row[2].as<OID>()],
+	 oid2type[row[3].as<OID>()]);
     register_operator(o);
   }
 
   cerr << "done." << endl;
 
-  booltype = sqltype::get("boolean");
-  inttype = sqltype::get("integer");
-
-  internaltype = sqltype::get("internal");
-  arraytype = sqltype::get("ARRAY");
-
   cerr << "Loading routines...";
-  r = w.exec("select (select nspname from pg_namespace where oid = pronamespace), oid, prorettype::regtype, proname "
+  r = w.exec("select (select nspname from pg_namespace where oid = pronamespace), oid, prorettype, proname "
 	     "from pg_proc "
 	     "where prorettype::regtype::text not in ('event_trigger', 'trigger', 'opaque', 'internal') "
 	     "and proname <> 'pg_event_trigger_table_rewrite_reason' "
@@ -188,7 +232,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   for (auto row : r) {
     routine proc(row[0].as<string>(),
 		 row[1].as<string>(),
-		 sqltype::get(row[2].as<string>()),
+		 oid2type[row[2].as<long>()],
 		 row[3].as<string>());
     register_routine(proc);
   }
@@ -204,13 +248,13 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
       
     r = w.exec(q);
     for (auto row : r) {
-      proc.argtypes.push_back(sqltype::get(row[0].as<string>()));
+      proc.argtypes.push_back(name2type[row[0].as<string>()]);
     }
   }
   cerr << "done." << endl;
 
   cerr << "Loading aggregates...";
-  r = w.exec("select (select nspname from pg_namespace where oid = pronamespace), oid, prorettype::regtype, proname "
+  r = w.exec("select (select nspname from pg_namespace where oid = pronamespace), oid, prorettype, proname "
 	     "from pg_proc "
 	     "where prorettype::regtype::text not in ('event_trigger', 'trigger', 'opaque', 'internal') "
 	     "and proname not in ('pg_event_trigger_table_rewrite_reason') "
@@ -223,7 +267,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   for (auto row : r) {
     routine proc(row[0].as<string>(),
 		 row[1].as<string>(),
-		 sqltype::get(row[2].as<string>()),
+		 oid2type[row[2].as<OID>()],
 		 row[3].as<string>());
     register_aggregate(proc);
   }
@@ -233,13 +277,13 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   cerr << "Loading aggregate parameters...";
 
   for (auto &proc : aggregates) {
-    string q("select unnest(proargtypes)::regtype "
+    string q("select unnest(proargtypes) "
 	     "from pg_proc ");
     q += " where oid = " + w.quote(proc.specific_name);
       
     r = w.exec(q);
     for (auto row : r) {
-      proc.argtypes.push_back(sqltype::get(row[0].as<string>()));
+      proc.argtypes.push_back(oid2type[row[0].as<OID>()]);
     }
   }
   cerr << "done." << endl;

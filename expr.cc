@@ -41,11 +41,17 @@ case_expr::case_expr(prod *p, sqltype *type_constraint)
   : value_expr(p)
 {
   condition = bool_expr::factory(this);
-  true_expr = value_expr::factory(this, type_constraint);
-  type = true_expr->type;
-  assert(!type_constraint || type_constraint->consistent(type));
-  false_expr = value_expr::factory(this, type);
-  assert(false_expr->type == type);
+  retry_limit = 20;
+  do {
+    true_expr = value_expr::factory(this, type_constraint);
+    type = true_expr->type;
+    retry();
+  } while (!type_constraint || type_constraint->consistent(type));
+
+  do {
+    false_expr = value_expr::factory(this, type);
+    retry();
+  } while (!(false_expr->type == type));
 }
 
 void case_expr::out(std::ostream &out)
@@ -137,13 +143,17 @@ comparison_op::comparison_op(prod *p) : bool_binop(p)
 coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
 {
   shared_ptr<value_expr> first_expr;
-  first_expr = value_expr::factory(this, type_constraint);
-  assert(!type_constraint || type_constraint->consistent(first_expr->type));
+
+  do {
+    first_expr = value_expr::factory(this, type_constraint);
+    retry();
+  } while (type_constraint && !type_constraint->consistent(first_expr->type));
+  
   value_exprs.push_back(first_expr);
   
   type = value_exprs[0]->type;
   value_exprs.push_back(value_expr::factory(this, type));
-  assert(value_exprs[1]->type == value_exprs[0]->type);
+//   assert(value_exprs[1]->type == value_exprs[0]->type);
 }
  
 void coalesce::out(std::ostream &out)
@@ -191,8 +201,17 @@ funcall::funcall(prod *p, sqltype *type_constraint, bool agg)
   } else {
     auto iters = idx.equal_range(type_constraint);
     proc = random_pick<>(iters)->second;
-    assert(!proc || type_constraint->consistent(proc->restype));
+    if (proc && !type_constraint->consistent(proc->restype)) {
+      retry();
+      goto retry;
+    }
   }
+
+  if (!proc) {
+    retry();
+    goto retry;
+  }
+
   type = proc->restype;
 
   if (type == scope->schema->internaltype) {

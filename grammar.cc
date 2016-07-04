@@ -165,7 +165,9 @@ select_list::select_list(prod *p) : prod(p)
     value_exprs.push_back(e);
     ostringstream name;
     name << "c" << columns++;
-    derived_table.columns().push_back(column(name.str(), e->type));
+    sqltype *t=e->type;
+    assert(t);
+    derived_table.columns().push_back(column(name.str(), t));
   } while (d6() > 1);
 }
 

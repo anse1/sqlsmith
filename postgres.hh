@@ -11,6 +11,7 @@
 #include <pqxx/pqxx>
 
 #define OID long
+#define InvalidOid 0
 
 struct pg_type : sqltype {
   OID oid_;
@@ -30,6 +31,7 @@ struct pg_type : sqltype {
       typelem_(typelem), typarray_(typarray), typtype_(typtype) { }
 
   virtual bool consistent(struct sqltype *rvalue);
+  bool consistent_(sqltype *rvalue);
 };
 
 
