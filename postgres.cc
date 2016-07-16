@@ -16,14 +16,7 @@ using namespace std;
 static regex e_timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
 static regex e_syntax("ERROR:  syntax error at or near(\n|.)*");
 
-
 bool pg_type::consistent(sqltype *rvalue)
-{
-  bool result = consistent_(rvalue);
-  return result;
-}
-
- bool pg_type::consistent_(sqltype *rvalue)
 {
   pg_type *t = dynamic_cast<pg_type*>(rvalue);
 
