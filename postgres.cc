@@ -43,7 +43,7 @@ bool pg_type::consistent(sqltype *rvalue)
     } else if (name == "any") {
       return true;
     } else if (name == "anyelement") {
-      return t->typarray_ != InvalidOid;
+      return t->typelem_ == InvalidOid;
     } else if (name == "anyrange") {
       return t->typtype_ == 'r';
     } else if (name == "record") {
