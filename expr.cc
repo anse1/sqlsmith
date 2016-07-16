@@ -138,6 +138,18 @@ comparison_op::comparison_op(prod *p) : bool_binop(p)
 
   lhs = value_expr::factory(this, oper->left);
   rhs = value_expr::factory(this, oper->right);
+
+  if (oper->left == oper->right
+      && lhs->type != rhs->type) {
+
+    // Looks like more concrete types have been picked for the
+    // operators.  Try to match them.
+
+    if (lhs->type->consistent(rhs->type))
+      lhs = value_expr::factory(this, rhs->type);
+    else
+      rhs = value_expr::factory(this, lhs->type);
+  }
 }
 
 coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
@@ -212,12 +224,16 @@ funcall::funcall(prod *p, sqltype *type_constraint, bool agg)
     goto retry;
   }
 
-  type = proc->restype;
+  if (type_constraint)
+    type = type_constraint;
+  else
+    type = proc->restype;
 
   if (type == scope->schema->internaltype) {
     retry();
     goto retry;
   }
+
   for (auto type : proc->argtypes)
     if (type == scope->schema->internaltype
 	|| type == scope->schema->arraytype) {
@@ -225,8 +241,11 @@ funcall::funcall(prod *p, sqltype *type_constraint, bool agg)
       goto retry;
     }
   
-  for (auto type : proc->argtypes)
-    parms.push_back(value_expr::factory(this, type));
+  for (auto argtype : proc->argtypes) {
+    assert(argtype);
+    auto expr = value_expr::factory(this, argtype);
+    parms.push_back(expr);
+  }
 }
 
 void funcall::out(std::ostream &out)

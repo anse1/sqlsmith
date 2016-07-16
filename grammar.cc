@@ -43,7 +43,7 @@ table_sample::table_sample(prod *p) : table_ref(p) {
   match();
   retry_limit = 1000; /* retries are cheap here */
   do {
-    auto pick = random_pick(scope->tables);
+    auto pick = random_pick(scope->schema->base_tables);
     t = dynamic_cast<struct table*>(pick);
     retry();
   } while (!t || !t->is_base_table);

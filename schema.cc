@@ -9,23 +9,30 @@ using namespace std;
 using namespace pqxx;
 
 void schema::generate_indexes() {
+
   cerr << "Generating indexes...";
 
-  for(auto &r: routines) {
-    routines_returning_type.insert(pair<sqltype*, routine*>(r.restype, &r));
-    if(!r.argtypes.size())
-      parameterless_routines_returning_type.insert(pair<sqltype*, routine*>(r.restype, &r));
-  }
-
-  for(auto &r: aggregates) {
-    aggregates_returning_type.insert(pair<sqltype*, routine*>(r.restype, &r));
-  }
-
   for (auto &type: types) {
+    assert(type);
+    for(auto &r: aggregates) {
+      if (type->consistent(r.restype))
+	aggregates_returning_type.insert(pair<sqltype*, routine*>(type, &r));
+    }
+
+    for(auto &r: routines) {
+      if (!type->consistent(r.restype))
+	continue;
+      routines_returning_type.insert(pair<sqltype*, routine*>(type, &r));
+      if(!r.argtypes.size())
+	parameterless_routines_returning_type.insert(pair<sqltype*, routine*>(type, &r));
+    }
+    
     for (auto &t: tables) {
       for (auto &c: t.columns()) {
-	if (type->consistent(c.type)) 
+	if (type->consistent(c.type)) {
 	  tables_with_columns_of_type.insert(pair<sqltype*, table*>(type, &t));
+	  break;
+	}
       }
     }
 
@@ -33,15 +40,23 @@ void schema::generate_indexes() {
       if (type->consistent(concrete))
 	concrete_type.insert(pair<sqltype*, sqltype*>(type, concrete));
     }
+
+    for (auto &o: operators) {
+      if (type->consistent(o.result))
+	operators_returning_type.insert(pair<sqltype*, op*>(type, &o));
+    }
   }
 
-  for (auto &o: operators) {
-    operators_returning_type.insert(pair<sqltype*, op*>(o.result, &o));
+  for (auto &t: tables) {
+    if (t.is_base_table)
+      base_tables.push_back(&t);
   }
+  
   cerr << "done." << endl;
 
   assert(booltype);
   assert(inttype);
   assert(internaltype);
   assert(arraytype);
+
 }

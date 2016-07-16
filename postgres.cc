@@ -24,7 +24,7 @@ bool pg_type::consistent(sqltype *rvalue)
     cerr << "unknown type: " << rvalue->name  << endl;
     return false;
   }
-  
+
   switch(typtype_) {
   case 'b': /* base type */
   case 'c': /* composite type */
