@@ -174,7 +174,9 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
 	     "atttypid "
 	     "from pg_attribute join pg_class c on( c.oid = attrelid ) "
 	     "join pg_namespace n on n.oid = relnamespace "
-	     "where not attisdropped ");
+	     "where not attisdropped "
+	     "and attname not in "
+	     "('xmin', 'xmax', 'ctid', 'cmin', 'cmax', 'tableoid', 'oid') ");
     q += " and relname = " + w.quote(t->name);
     q += " and nspname = " + w.quote(t->schema);
 
