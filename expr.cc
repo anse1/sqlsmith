@@ -164,8 +164,16 @@ coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
   value_exprs.push_back(first_expr);
   
   type = value_exprs[0]->type;
+
   value_exprs.push_back(value_expr::factory(this, type));
-//   assert(value_exprs[1]->type == value_exprs[0]->type);
+
+  if (value_exprs[1]->type != type) {
+    assert(type->consistent(value_exprs[1]->type));
+    // It seems we have a concrete type now.  Re-compute the first
+    // expr.
+    type = value_exprs[1]->type;
+    value_exprs[0] = value_expr::factory(this, type);
+  }
 }
  
 void coalesce::out(std::ostream &out)
