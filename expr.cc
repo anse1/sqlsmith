@@ -139,11 +139,13 @@ comparison_op::comparison_op(prod *p) : bool_binop(p)
   lhs = value_expr::factory(this, oper->left);
   rhs = value_expr::factory(this, oper->right);
 
-  if (oper->left == oper->right
-      && lhs->type != rhs->type) {
-
+  retry_limit = 10;
+  while (oper->left == oper->right
+	 && lhs->type != rhs->type) {
     // Looks like more concrete types have been picked for the
     // operators.  Try to match them.
+
+    retry();
 
     if (lhs->type->consistent(rhs->type))
       lhs = value_expr::factory(this, rhs->type);
@@ -169,8 +171,8 @@ coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
 
   if (value_exprs[1]->type != type) {
     assert(type->consistent(value_exprs[1]->type));
-    // It seems we have a concrete type now.  Re-compute the first
-    // expr.
+    // It seems we have a more concrete type now.  Re-compute the
+    // first expr.
     type = value_exprs[1]->type;
     value_exprs[0] = value_expr::factory(this, type);
   }
