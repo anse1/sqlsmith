@@ -170,17 +170,17 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   cerr << "Loading columns and constraints...";
 
   for (auto t = tables.begin(); t != tables.end(); ++t) {
-    string q("select column_name, "
-	     "udt_name"
-	     " from information_schema.columns where"
-	     " table_catalog = current_catalog");
-    q += " and table_schema = " + w.quote(t->schema);
-    q += " and table_name = " + w.quote(t->name);
-    q += ";";
+    string q("select attname, "
+	     "atttypid "
+	     "from pg_attribute join pg_class c on( c.oid = attrelid ) "
+	     "join pg_namespace n on n.oid = relnamespace "
+	     "where not attisdropped ");
+    q += " and relname = " + w.quote(t->name);
+    q += " and nspname = " + w.quote(t->schema);
 
     r = w.exec(q);
     for (auto row : r) {
-      column c(row[0].as<string>(), name2type[row[1].as<string>()]);
+      column c(row[0].as<string>(), oid2type[row[1].as<OID>()]);
       t->columns().push_back(c);
     }
 
@@ -235,13 +235,15 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   cerr << "Loading routine parameters...";
 
   for (auto &proc : routines) {
-    string q("select unnest(proargtypes)::regtype "
+    string q("select unnest(proargtypes) "
 	     "from pg_proc ");
     q += " where oid = " + w.quote(proc.specific_name);
       
     r = w.exec(q);
     for (auto row : r) {
-      proc.argtypes.push_back(name2type[row[0].as<string>()]);
+      sqltype *t = oid2type[row[0].as<OID>()];
+      assert(t);
+      proc.argtypes.push_back(t);
     }
   }
   cerr << "done." << endl;
@@ -276,7 +278,9 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
       
     r = w.exec(q);
     for (auto row : r) {
-      proc.argtypes.push_back(oid2type[row[0].as<OID>()]);
+      sqltype *t = oid2type[row[0].as<OID>()];
+      assert(t);
+      proc.argtypes.push_back(t);
     }
   }
   cerr << "done." << endl;
