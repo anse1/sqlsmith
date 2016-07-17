@@ -113,7 +113,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
 
   cerr << "Loading types...";
 
-  r = w.exec("select typname, oid, typdelim, typrelid, typelem, typarray, typtype "
+  r = w.exec("select quote_ident(typname), oid, typdelim, typrelid, typelem, typarray, typtype "
 	     "from pg_type ");
   
   for (auto row = r.begin(); row != r.end(); ++row) {
