@@ -42,16 +42,18 @@ case_expr::case_expr(prod *p, sqltype *type_constraint)
 {
   condition = bool_expr::factory(this);
   retry_limit = 20;
-  do {
-    true_expr = value_expr::factory(this, type_constraint);
-    type = true_expr->type;
-    retry();
-  } while (!type_constraint || type_constraint->consistent(type));
 
-  do {
-    false_expr = value_expr::factory(this, type);
+  true_expr = value_expr::factory(this, type_constraint);
+  false_expr = value_expr::factory(this, true_expr->type);
+
+  while(false_expr->type != true_expr->type) {
     retry();
-  } while (!(false_expr->type == type));
+    if (true_expr->type->consistent(false_expr->type))
+      true_expr = value_expr::factory(this, false_expr->type);
+    else 
+      false_expr = value_expr::factory(this, true_expr->type);
+  }
+  type = true_expr->type;
 }
 
 void case_expr::out(std::ostream &out)
@@ -156,26 +158,21 @@ comparison_op::comparison_op(prod *p) : bool_binop(p)
 
 coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
 {
-  shared_ptr<value_expr> first_expr;
+  auto first_expr = value_expr::factory(this, type_constraint);
+  auto second_expr = value_expr::factory(this, first_expr->type);
 
-  do {
-    first_expr = value_expr::factory(this, type_constraint);
+  retry_limit = 20;
+  while(first_expr->type != second_expr->type) {
     retry();
-  } while (type_constraint && !type_constraint->consistent(first_expr->type));
-  
-  value_exprs.push_back(first_expr);
-  
-  type = value_exprs[0]->type;
-
-  value_exprs.push_back(value_expr::factory(this, type));
-
-  if (value_exprs[1]->type != type) {
-    assert(type->consistent(value_exprs[1]->type));
-    // It seems we have a more concrete type now.  Re-compute the
-    // first expr.
-    type = value_exprs[1]->type;
-    value_exprs[0] = value_expr::factory(this, type);
+    if (first_expr->type->consistent(second_expr->type))
+      first_expr = value_expr::factory(this, second_expr->type);
+    else 
+      second_expr = value_expr::factory(this, first_expr->type);
   }
+  type = second_expr->type;
+
+  value_exprs.push_back(first_expr);
+  value_exprs.push_back(second_expr);
 }
  
 void coalesce::out(std::ostream &out)
