@@ -271,7 +271,7 @@ void funcall::out(std::ostream &out)
 }
 
 atomic_subselect::atomic_subselect(prod *p, sqltype *type_constraint)
-  : value_expr(p), offset(d42())
+  : value_expr(p), offset((d6() == 6) ? d100() : d6())
 {
   if (d6() < 3) {
     if (type_constraint) {
