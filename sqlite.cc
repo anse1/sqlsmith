@@ -53,7 +53,7 @@ extern "C" int column_callback(void *arg, int argc, char **argv, char **azColNam
 {
   (void) argc; (void) azColName;
   table *tab = (table *)arg;
-  column c(argv[1], argv[2]);
+  column c(argv[1], sqltype::get(argv[2]));
   tab->columns().push_back(c);
   return 0;
 }
@@ -124,7 +124,7 @@ schema_sqlite::schema_sqlite(std::string &conninfo)
 
   cerr << "done." << endl;
 
-#define BINOP(n,t) do {op o(#n,#t,#t,#t); register_operator(o); } while(0)
+#define BINOP(n,t) do {op o(#n,sqltype::get(#t),sqltype::get(#t),sqltype::get(#t)); register_operator(o); } while(0)
 
   BINOP(||, TEXT);
   BINOP(*, INTEGER);
