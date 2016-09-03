@@ -1,4 +1,4 @@
--- update SQLsmith logging schema from 1.0 to 1.1
+-- upgrade SQLsmith logging schema from 1.0 to 1.1
 
 alter table stat add column impedance jsonb;
 
@@ -15,7 +15,13 @@ create or replace view impedance as
     js.limited,
     js.failed
    FROM stat,
-    LATERAL jsonb_to_recordset(stat.impedance -> 'impedance'::text) js(prod text, ok integer, bad integer, retries integer, limited integer, failed integer)
+    LATERAL jsonb_to_recordset(stat.impedance -> 'impedance')
+    	    js(prod text,
+	       ok integer,
+	       bad integer,
+	       retries integer,
+	       limited integer,
+	       failed integer)
   WHERE stat.impedance IS NOT NULL;
 
 comment on view impedance is 'stat table with normalized jsonb';
@@ -37,3 +43,5 @@ create view impedance_report as
          LIMIT 1))
   GROUP BY instance.rev, impedance.prod
   ORDER BY sum(impedance.retries);
+
+comment on view impedance_report is 'impedance report for latest revision';
