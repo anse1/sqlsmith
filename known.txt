@@ -1,0 +1,613 @@
+ERROR:  "char" out of range
+ERROR:  <datatype>key_in() not implemented
+ERROR:  COALESCE could not convert type "char" to character
+ERROR:  COALESCE could not convert type character to "char"
+ERROR:  COALESCE could not convert type unknown to anyenum
+ERROR:  CREATE RULE is not allowed in a non-volatile function
+ERROR:  Cannot decrypt with public key
+ERROR:  Corrupt ascii-armor
+ERROR:  DELETE is not allowed in a non-volatile function
+ERROR:  IF.orion.eth0        does not exist
+ERROR:  INSERT with ON CONFLICT clause cannot be used with table that has INSERT or UPDATE rules
+ERROR:  Illegal argument to function
+ERROR:  LIKE pattern must not end with escape character
+ERROR:  Length not in range
+ERROR:  NOTIFY is not allowed in a non-volatile function
+ERROR:  NULL elements in initial value not implemented yet.
+ERROR:  NULL input values not supported
+ERROR:  No encryption key found
+ERROR:  Not implemented
+ERROR:  OID out of range
+ERROR:  ORDER/GROUP BY expression not found in targetlist
+ERROR:  Only V4 key packets are supported
+ERROR:  PL/pgSQL functions cannot accept type cstring
+ERROR:  PL/pgSQL functions cannot accept type record[]
+ERROR:  PL/pgSQL functions cannot return type language_handler
+ERROR:  Patchfield "PF0_2" does not exist
+ERROR:  Refusing to encrypt with secret key
+ERROR:  SET requires parameter name
+ERROR:  Some PX error (not specified)
+ERROR:  TABLESAMPLE clause can only be applied to tables and materialized views
+ERROR:  UPDATE is not allowed in a non-volatile function
+ERROR:  Unexpected packet in key data
+ERROR:  WAL level not sufficient for creating a restore point
+ERROR:  WAL level not sufficient for making an online backup
+ERROR:  Wrong key or corrupt data
+ERROR:  _intbig_in() not implemented
+ERROR:  a backup is already in progress
+ERROR:  a backup is already in progress in this session
+ERROR:  a backup is not in progress
+ERROR:  a negative number raised to a non-integer power yields a complex result
+ERROR:  aggregate function called in non-aggregate context
+ERROR:  argument declared "anyarray" is not an array but type anyarray
+ERROR:  argument declared "anyrange" is not a range type but type anyrange
+ERROR:  argument exceeds the maximum length of 255 bytes
+ERROR:  argument must be empty or one-dimensional array
+ERROR:  array must have even number of elements
+ERROR:  array of weight is too short
+ERROR:  array size exceeds the maximum allowed (134217727)
+ERROR:  arrays must contain identical number of items
+ERROR:  attempt to redefine parameter "plpgsql.variable_conflict"
+ERROR:  backlink between two phone lines does not make sense
+ERROR:  backup label too long (max 1024 bytes)
+ERROR:  bad cube representation
+ERROR:  bad seg representation
+ERROR:  bigint out of range
+ERROR:  bogus varlevelsup: 0 offset 0
+ERROR:  bogus varno: 2
+ERROR:  btree opfamily 1976 has a partial set of operators for datatypes bigint and int8alias1
+ERROR:  cache lookup failed for function 1048
+ERROR:  cache lookup failed for function 184
+ERROR:  cache lookup failed for function 2803
+ERROR:  cache lookup failed for function 401
+ERROR:  cache lookup failed for index 12322
+ERROR:  cache lookup failed for index 1259
+ERROR:  cache lookup failed for index 16434
+ERROR:  cache lookup failed for index 16862
+ERROR:  cache lookup failed for index 16886
+ERROR:  cache lookup failed for index 17164
+ERROR:  cache lookup failed for index 17179
+ERROR:  cache lookup failed for index 2600
+ERROR:  cache lookup failed for index 2619
+ERROR:  cache lookup failed for index 2691
+ERROR:  cache lookup failed for index 28418
+ERROR:  cache lookup failed for index 28458
+ERROR:  cache lookup failed for index 28505
+ERROR:  cache lookup failed for index 826
+ERROR:  cache lookup failed for type 1042
+ERROR:  cache lookup failed for type 16
+ERROR:  cache lookup failed for type 17
+ERROR:  cache lookup failed for type 23
+ERROR:  cache lookup failed for type 25
+ERROR:  canceling statement due to conflict with recovery
+ERROR:  canceling statement due to statement timeout
+ERROR:  canceling statement due to user request
+ERROR:  cannot AND bit strings of different sizes
+ERROR:  cannot AND inet values of different sizes
+ERROR:  cannot OR bit strings of different sizes
+ERROR:  cannot OR inet values of different sizes
+ERROR:  cannot XOR bit strings of different sizes
+ERROR:  cannot accept a value of type internal
+ERROR:  cannot accept a value of type language_handler
+ERROR:  cannot accumulate arrays of different dimensionality
+ERROR:  cannot accumulate empty arrays
+ERROR:  cannot accumulate null arrays
+ERROR:  cannot assign TransactionIds during recovery
+ERROR:  cannot cast type name to anyarray
+ERROR:  cannot cast type text to anyarray
+ERROR:  cannot cast type text to anyenum
+ERROR:  cannot cast type text to anyrange
+ERROR:  cannot cast type unknown to anyenum
+ERROR:  cannot compare arrays of different element types
+ERROR:  cannot concatenate incompatible arrays
+ERROR:  cannot convert NaN to bigint
+ERROR:  cannot convert NaN to integer
+ERROR:  cannot convert NaN to smallint
+ERROR:  cannot convert abstime "invalid" to timestamp
+ERROR:  cannot convert circle with radius zero to polygon
+ERROR:  cannot convert reltime "invalid" to interval
+ERROR:  cannot convert reserved abstime value to date
+ERROR:  cannot delete from object using integer index
+ERROR:  cannot delete from scalar
+ERROR:  cannot display a value of type anyelement
+ERROR:  cannot display a value of type anynonarray
+ERROR:  cannot display a value of type fdw_handler
+ERROR:  cannot execute ANALYZE during recovery
+ERROR:  cannot execute CREATE TABLE in a read-only transaction
+ERROR:  cannot execute DELETE in a read-only transaction
+ERROR:  cannot execute DROP TABLE in a read-only transaction
+ERROR:  cannot execute INSERT in a read-only transaction
+ERROR:  cannot execute NOTIFY during recovery
+ERROR:  cannot execute SELECT FOR KEY SHARE in a read-only transaction
+ERROR:  cannot execute SELECT FOR NO KEY SHARE  in a read-only transaction
+ERROR:  cannot execute SELECT FOR NO KEY SHARE in a read-only transaction
+ERROR:  cannot execute SELECT FOR NO KEY UPDATE  in a read-only transaction
+ERROR:  cannot execute SELECT FOR NO KEY UPDATE in a read-only transaction
+ERROR:  cannot execute SELECT FOR SHARE  in a read-only transaction
+ERROR:  cannot execute SELECT FOR SHARE in a read-only transaction
+ERROR:  cannot execute SELECT FOR UPDATE  in a read-only transaction
+ERROR:  cannot execute SELECT FOR UPDATE in a read-only transaction
+ERROR:  cannot execute SELECT in a read-only transaction
+ERROR:  cannot execute UPDATE in a read-only transaction
+ERROR:  cannot execute txid_current() during recovery
+ERROR:  cannot get array length of a non-array
+ERROR:  cannot get array length of a scalar
+ERROR:  cannot make new WAL entries during recovery
+ERROR:  cannot merge addresses from different families
+ERROR:  cannot open BEGIN query as cursor
+ERROR:  cannot open CREATE INDEX query as cursor
+ERROR:  cannot open CREATE RULE query as cursor
+ERROR:  cannot open INSERT query as cursor
+ERROR:  cannot open ROLLBACK query as cursor
+ERROR:  cannot open multi-query plan as cursor
+ERROR:  cannot perform UPDATE RETURNING on relation "rules_src"
+ERROR:  cannot query or manipulate replication origin when max_replication_slots = 0
+ERROR:  cannot replace existing key
+ERROR:  cannot set path in scalar
+ERROR:  cannot subtract inet values of different sizes
+ERROR:  cannot subtract infinite dates
+ERROR:  cannot subtract infinite timestamps
+ERROR:  cannot take logarithm of a negative number
+ERROR:  cannot take logarithm of zero
+ERROR:  cannot take square root of a negative number
+ERROR:  cannot use "PR" and "S"/"PL"/"MI"/"SG" together
+ERROR:  cannot use "S" and "MI" together
+ERROR:  cannot use "S" and "PL" together
+ERROR:  cannot use "S" and "PL"/"MI"/"SG"/"PR" together
+ERROR:  cannot use "S" twice
+ERROR:  cannot use "V" and decimal point together
+ERROR:  channel name cannot be empty
+ERROR:  channel name too long
+ERROR:  collations are not supported by type "
+ERROR:  conflicting values for "D" field in formatting string
+ERROR:  conflicting values for "i" field in formatting string
+ERROR:  connection not available
+ERROR:  constraint in ON CONFLICT clause has no associated index
+ERROR:  control reached end of function without RETURN
+ERROR:  could not determine polymorphic type because input has type "unknown"
+ERROR:  could not determine which collation to use for string comparison
+ERROR:  could not find array type for data type anyarray
+ERROR:  could not find array type for data type anyelement
+ERROR:  could not find array type for data type anynonarray
+ERROR:  could not find array type for data type text[]
+ERROR:  could not find commutator for operator 34572
+ERROR:  could not find commutator for operator 34592
+ERROR:  could not find commutator for operator 34616
+ERROR:  could not find commutator for operator 34638
+ERROR:  could not find commutator for operator 34640
+ERROR:  could not find commutator for operator 34777
+ERROR:  could not find commutator for operator 34779
+ERROR:  could not find commutator for operator 34790
+ERROR:  could not find commutator for operator 34793
+ERROR:  could not find commutator for operator 34812
+ERROR:  could not find commutator for operator 34858
+ERROR:  could not find commutator for operator 35096
+ERROR:  could not find commutator for operator 35098
+ERROR:  could not find member 1(34554,34554) of opfamily 1976
+ERROR:  could not find member 1(34572,34572) of opfamily 1976
+ERROR:  could not find member 1(34574,34574) of opfamily 1976
+ERROR:  could not find member 1(34598,34598) of opfamily 1976
+ERROR:  could not find member 1(34620,34620) of opfamily 1976
+ERROR:  could not find member 1(34622,34622) of opfamily 1976
+ERROR:  could not find member 1(34759,34759) of opfamily 1976
+ERROR:  could not find member 1(34761,34761) of opfamily 1976
+ERROR:  could not find member 1(34773,34773) of opfamily 1976
+ERROR:  could not find member 1(34775,34775) of opfamily 1976
+ERROR:  could not find member 1(34794,34794) of opfamily 1976
+ERROR:  could not find member 1(34838,34838) of opfamily 1976
+ERROR:  could not find member 1(34840,34840) of opfamily 1976
+ERROR:  could not find member 1(34842,34842) of opfamily 1976
+ERROR:  could not find member 1(35078,35078) of opfamily 1976
+ERROR:  could not find member 1(35080,35080) of opfamily 1976
+ERROR:  could not get commit timestamp data
+ERROR:  could not identify a comparison function for type aclitem
+ERROR:  could not identify a comparison function for type aclitem[]
+ERROR:  could not identify a comparison function for type xid
+ERROR:  could not implement DISTINCT
+ERROR:  could not implement window PARTITION BY
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/dict_snowball.so": /home/smith/postgres/inst/master/lib/dict_snowball.so: cannot allocate symbol search list: Cannot allocate memory
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/dict_snowball.so": /home/smith/postgres/inst/master/lib/dict_snowball.so: cannot allocate version reference table: Cannot allocate memory
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/dict_snowball.so": /home/smith/postgres/inst/master/lib/dict_snowball.so: cannot allocate version reference table: Cannot allocate memory": Cannot allocate memory
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/dict_snowball.so": /home/smith/postgres/inst/master/lib/dict_snowball.so: cannot create shared object descriptor
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/dict_snowball.so": /home/smith/postgres/inst/master/lib/dict_snowball.so: cannot open shared object file
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/plpgsql.so": /home/smith/postgres/inst/master/lib/plpgsql.so: cannot allocate symbol search list: Cannot allocate memory
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/plpgsql.so": /home/smith/postgres/inst/master/lib/plpgsql.so: cannot allocate version reference table: Cannot allocate memory
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/plpgsql.so": /home/smith/postgres/inst/master/lib/plpgsql.so: cannot create shared object descriptor
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/plpgsql.so": /home/smith/postgres/inst/master/lib/plpgsql.so: cannot extend global scope: Cannot allocate memory
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/plpgsql.so": /home/smith/postgres/inst/master/lib/plpgsql.so: cannot open shared object file
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/postgres_fdw.so": /home/smith/postgres/inst/master//lib/libpq.so.5: cannot allocate version reference table: Cannot allocate memory
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/postgres_fdw.so": /home/smith/postgres/inst/master/lib/postgres_fdw.so: cannot allocate dependency list: Cannot allocate memory
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/postgres_fdw.so": /home/smith/postgres/inst/master/lib/postgres_fdw.so: cannot allocate symbol search list: Cannot allocate memory
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/postgres_fdw.so": /home/smith/postgres/inst/master/lib/postgres_fdw.so: cannot allocate version reference table: Cannot allocate memory
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/postgres_fdw.so": /home/smith/postgres/inst/master/lib/postgres_fdw.so: cannot create shared object descriptor
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/postgres_fdw.so": /home/smith/postgres/inst/master/lib/postgres_fdw.so: cannot extend global scope: Cannot allocate memory
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/postgres_fdw.so": /home/smith/postgres/inst/master/lib/postgres_fdw.so: cannot open shared object file
+ERROR:  could not load library "/home/smith/postgres/inst/master/lib/postgres_fdw.so": libpq.so.5: cannot create shared object descriptor
+ERROR:  could not load library "/home/smith/postgres/src/test/regress/regress.so": /home/smith/postgres/src/test/regress/regress.so: cannot allocate symbol search list: Cannot allocate memory
+ERROR:  could not load library "/home/smith/postgres/src/test/regress/regress.so": /home/smith/postgres/src/test/regress/regress.so: cannot allocate version reference table: Cannot allocate memory
+ERROR:  could not load library "/home/smith/postgres/src/test/regress/regress.so": /home/smith/postgres/src/test/regress/regress.so: cannot create shared object descriptor
+ERROR:  could not load library "/home/smith/postgres/src/test/regress/regress.so": /home/smith/postgres/src/test/regress/regress.so: cannot extend global scope: Cannot allocate memory
+ERROR:  could not load library "/home/smith/postgres/src/test/regress/regress.so": /home/smith/postgres/src/test/regress/regress.so: cannot open shared object file
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/adminpack--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/adminpack.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/autoinc--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/autoinc.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/bloom--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/bloom.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/btree_gin--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/btree_gin.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/btree_gist--1.1.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/btree_gist--1.2.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/btree_gist.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/chkpass--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/chkpass.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/citext--1.1.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/citext--1.2.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/citext.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/cube--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/cube--1.1.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/cube--1.2.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/cube.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/dblink--1.1.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/dblink--1.2.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/dblink.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/dict_int--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/dict_int.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/dict_xsyn--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/dict_xsyn.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/earthdistance--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/earthdistance.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/failmalloc--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/failmalloc.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/file_fdw--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/file_fdw.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/fuzzystrmatch--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/fuzzystrmatch--1.1.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/fuzzystrmatch.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/hstore--1.3.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/hstore.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/insert_username--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/insert_username.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/intagg--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/intagg--1.1.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/intagg.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/intarray--1.1.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/intarray.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/isn--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/isn--1.1.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/isn.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/lo--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/lo.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/ltree--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/ltree--1.1.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/ltree.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/moddatetime--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/moddatetime.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pageinspect--1.3.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pageinspect--1.4.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pageinspect--1.5.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pageinspect.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pg_buffercache--1.1.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pg_buffercache--1.2.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pg_buffercache.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pg_freespacemap--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pg_freespacemap--1.1.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pg_freespacemap.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pg_prewarm--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pg_prewarm--1.1.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pg_prewarm.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pg_stat_statements--1.3.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pg_stat_statements.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pg_trgm--1.2.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pg_trgm--1.3.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pg_trgm.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pg_visibility.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pgcrypto--1.2.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pgcrypto.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pgrowlocks--1.1.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pgrowlocks--1.2.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pgrowlocks.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pgstattuple--1.3.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pgstattuple--1.4.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/pgstattuple.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/plpgsql--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/plpgsql.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/postgres_fdw--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/postgres_fdw.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/refint--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/refint.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/seg--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/seg--1.1.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/seg.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/tablefunc--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/tablefunc.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/tcn--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/tcn.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/timetravel--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/timetravel.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/tsearch2--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/tsearch2.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/tsm_system_rows--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/tsm_system_rows.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/tsm_system_time--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/tsm_system_time.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/unaccent--1.0.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/unaccent--1.1.control": Cannot allocate memory
+ERROR:  could not open extension control file "/home/smith/postgres/inst/master/share/extension/unaccent.control": Cannot allocate memory
+ERROR:  could not open file "base/16384/PG_VERSION": Cannot allocate memory
+ERROR:  could not open relation with OID 2619
+ERROR:  could not open stop-word file "/home/smith/postgres/inst/master/share/tsearch_data/english.stop": Cannot allocate memory
+ERROR:  could not read file "backup_label": Cannot allocate memory
+ERROR:  could not read time zone file "Default": Cannot allocate memory
+ERROR:  count must be greater than zero
+ERROR:  currtid cannot handle views with no CTID
+ERROR:  cursor "c1" already in use
+ERROR:  data type anyarray is not an array type
+ERROR:  date out of range
+ERROR:  date out of range for timestamp
+ERROR:  date/time field value out of range: 
+ERROR:  date/time value "invalid" is no longer supported
+ERROR:  dimension array or low bound array cannot be null
+ERROR:  dimension values cannot be null
+ERROR:  direct link of phone line to wall slot not permitted
+ERROR:  distance in phrase operator should be non-negative and less than 16384
+ERROR:  division by zero
+ERROR:  division of unit by zero
+ERROR:  domain pos_int does not allow null values
+ERROR:  end of function
+ERROR:  exclusive backup currently starting
+ERROR:  exclusive backup not in progress
+ERROR:  expected 2-element int8 array
+ERROR:  expected a left parenthesis
+ERROR:  expected a right parenthesis
+ERROR:  failed to find conversion function from unknown to text
+ERROR:  field name must not be null
+ERROR:  field position must be greater than zero
+ERROR:  first argument of json_populate_record must be a row type
+ERROR:  first argument of jsonb_populate_record must be a row type
+ERROR:  float4_accum: expected 3-element float8 array
+ERROR:  float8_accum: expected 3-element float8 array
+ERROR:  float8_avg: expected 3-element float8 array
+ERROR:  float8_corr: expected 6-element float8 array
+ERROR:  float8_covar_pop: expected 6-element float8 array
+ERROR:  float8_covar_samp: expected 6-element float8 array
+ERROR:  float8_regr_accum: expected 6-element float8 array
+ERROR:  float8_regr_avgx: expected 6-element float8 array
+ERROR:  float8_regr_avgy: expected 6-element float8 array
+ERROR:  float8_regr_intercept: expected 6-element float8 array
+ERROR:  float8_regr_r2: expected 6-element float8 array
+ERROR:  float8_regr_slope: expected 6-element float8 array
+ERROR:  float8_regr_sxx: expected 6-element float8 array
+ERROR:  float8_regr_sxy: expected 6-element float8 array
+ERROR:  float8_regr_syy: expected 6-element float8 array
+ERROR:  float8_stddev_pop: expected 3-element float8 array
+ERROR:  float8_stddev_samp: expected 3-element float8 array
+ERROR:  float8_var_pop: expected 3-element float8 array
+ERROR:  float8_var_samp: expected 3-element float8 array
+ERROR:  function "close_lb" not implemented
+ERROR:  function "close_sl" not implemented
+ERROR:  function "dist_lb" not implemented
+ERROR:  function "path_center" not implemented
+ERROR:  function "poly_distance" not implemented
+ERROR:  function can only be called when server is in binary upgrade mode
+ERROR:  function reset_tsearch() is no longer supported
+ERROR:  function returning record called in context that cannot accept type record
+ERROR:  function substr(character, integer, integer) does not exist
+ERROR:  gen_salt: Unknown salt algorithm
+ERROR:  getQuadrant: impossible case
+ERROR:  gtsvector_in not implemented
+ERROR:  identifier too long
+ERROR:  input is out of range
+ERROR:  input of anonymous composite types is not implemented
+ERROR:  integer out of range
+ERROR:  interval out of range
+ERROR:  invalid attribute name
+ERROR:  invalid combination of date conventions
+ERROR:  invalid concatenation of jsonb objects
+ERROR:  invalid escape string
+ERROR:  invalid fork name
+ERROR:  invalid format specification for an interval value
+ERROR:  invalid input value for enum insenum: "(0) with time zone"
+ERROR:  invalid line specification: must be two distinct points
+ERROR:  invalid name syntax
+ERROR:  invalid number of arguments: object must be matched key value pairs
+ERROR:  invalid prewarm type
+ERROR:  invalid query
+ERROR:  invalid range bound flags
+ERROR:  invalid regular expression: brackets [] not balanced
+ERROR:  invalid regular expression: nfa has too many states
+ERROR:  invalid regular expression: out of memory
+ERROR:  invalid regular expression: parentheses () not balanced
+ERROR:  invalid regular expression: quantifier operand invalid
+ERROR:  invalid regular expression: regular expression is too complex
+ERROR:  invalid salt
+ERROR:  lastval is not yet defined in this session
+ERROR:  levenshtein argument exceeds maximum length of 255 characters
+ERROR:  lexeme array may not contain nulls
+ERROR:  link of phone to hub does not make sense
+ERROR:  lower and upper bounds must be finite
+ERROR:  lower bound cannot equal upper bound
+ERROR:  lower bound of FOR loop cannot be null
+ERROR:  ltree_gist_in() not implemented
+ERROR:  mismatched array dimensions
+ERROR:  missing support function 1(34550,34550) in opfamily 1976
+ERROR:  missing support function 1(34568,34568) in opfamily 1976
+ERROR:  missing support function 1(34570,34570) in opfamily 1976
+ERROR:  missing support function 1(34594,34594) in opfamily 1976
+ERROR:  missing support function 1(34616,34616) in opfamily 1976
+ERROR:  missing support function 1(34618,34618) in opfamily 1976
+ERROR:  missing support function 1(34755,34755) in opfamily 1976
+ERROR:  missing support function 1(34757,34757) in opfamily 1976
+ERROR:  missing support function 1(34769,34769) in opfamily 1976
+ERROR:  missing support function 1(34771,34771) in opfamily 1976
+ERROR:  missing support function 1(34790,34790) in opfamily 1976
+ERROR:  missing support function 1(34834,34834) in opfamily 1976
+ERROR:  missing support function 1(34836,34836) in opfamily 1976
+ERROR:  missing support function 1(34838,34838) in opfamily 1976
+ERROR:  missing support function 1(34848,34848) in opfamily 1976
+ERROR:  missing support function 1(35074,35074) in opfamily 1976
+ERROR:  missing support function 1(35076,35076) in opfamily 1976
+ERROR:  multi-dimensional array not supported
+ERROR:  multiple decimal points
+ERROR:  must be a member of the role whose process is being terminated
+ERROR:  must be a member of the role whose process is being terminated or member of pg_signal_backend
+ERROR:  must be a member of the role whose query is being canceled
+ERROR:  must be a member of the role whose query is being canceled or member of pg_signal_backend
+ERROR:  must request at least 2 points
+ERROR:  negative substring length not allowed
+ERROR:  new bit must be 0 or 1
+ERROR:  no binary output function available for type aclitem
+ERROR:  no current dictionary
+ERROR:  no manual manipulation of HSlot
+ERROR:  non-exclusive backup in progress
+ERROR:  non-exclusive backup in progress)
+ERROR:  null array element not allowed in this context
+ERROR:  null character not permitted
+ERROR:  null value not allowed for object key
+ERROR:  numeric field overflow
+ERROR:  only superuser may access generic file functions
+ERROR:  only superusers can query or manipulate replication origins
+ERROR:  open path cannot be converted to polygon
+ERROR:  operand, lower bound, and upper bound cannot be NaN
+ERROR:  operator 1054 is not a member of opfamily 426
+ERROR:  operator 98 does not exist
+ERROR:  operator does not exist: city_budget = city_budget
+ERROR:  operator does not exist: json = json
+ERROR:  operator does not exist: language_handler = language_handler
+ERROR:  operator does not exist: point = point
+ERROR:  operator does not exist: polygon = polygon
+ERROR:  operator does not exist: txid_snapshot = txid_snapshot
+ERROR:  operator does not exist: void = void
+ERROR:  operator does not exist: xml = xml
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/adminpack.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/autoinc.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/bloom.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/btree_gin.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/btree_gist.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/chkpass.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/citext.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/cube.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/dblink.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/dict_int.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/dict_xsyn.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/earthdistance.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/failmalloc.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/file_fdw.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/fuzzystrmatch.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/hstore.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/insert_username.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/intagg.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/intarray.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/isn.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/lo.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/ltree.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/moddatetime.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/pageinspect.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/pg_buffercache.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/pg_freespacemap.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/pg_prewarm.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/pg_stat_statements.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/pg_trgm.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/pg_visibility.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/pgcrypto.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/pgrowlocks.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/pgstattuple.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/plpgsql.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/postgres_fdw.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/refint.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/seg.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/tablefunc.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/tcn.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/timetravel.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/tsearch2.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/tsm_system_rows.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/tsm_system_time.control" line 1
+ERROR:  out of dynamic memory in GUC_yy_create_buffer() at file "/home/smith/postgres/inst/master/share/extension/unaccent.control" line 1
+ERROR:  out of memory
+ERROR:  out of memory for query result
+ERROR:  out of shared memory
+ERROR:  output cannot be empty string
+ERROR:  password is required
+ERROR:  path element at position 
+ERROR:  payload string too long
+ERROR:  permission denied for relation pg_largeobject
+ERROR:  pg_event_trigger_table_rewrite_reason() can only be called in a table_rewrite event trigger function
+ERROR:  pg_extension_config_dump() can only be called from an SQL script executed by CREATE EXTENSION
+ERROR:  pg_stat_statements must be loaded via shared_preload_libraries
+ERROR:  prewarm type cannot be null
+ERROR:  range constructor flags argument must not be null
+ERROR:  range lower bound must be less than or equal to range upper bound
+ERROR:  record type has not been registered
+ERROR:  recovery is in progress
+ERROR:  recovery is not in progress
+ERROR:  regular expression failed: out of memory
+ERROR:  relation "created_table" already exists
+ERROR:  relation "tt" does not exist
+ERROR:  relation cannot be null
+ERROR:  replication slots can only be used if max_replication_slots > 0
+ERROR:  requested length cannot be negative
+ERROR:  requested length too large
+ERROR:  result is out of range
+ERROR:  result of range union would not be contiguous
+ERROR:  return type anyarray is not supported for SQL functions
+ERROR:  return type anyarray is not supported for SQL functions)
+ERROR:  return type anyelement is not supported for SQL functions
+ERROR:  return type mismatch in function declared to return reltime
+ERROR:  return type mismatch in function declared to return things
+ERROR:  return type record[] is not supported for SQL functions
+ERROR:  slotlink from patchslot to wallslot not permitted
+ERROR:  smallint out of range
+ERROR:  source string too short for "CC" formatting field
+ERROR:  source string too short for "D" formatting field
+ERROR:  source string too short for "DD" formatting field
+ERROR:  source string too short for "mm" formatting field
+ERROR:  stack depth limit exceeded
+ERROR:  syntax error at end of input
+ERROR:  syntax error at or near "ARRAY"
+ERROR:  syntax error at or near "USER"
+ERROR:  timestamp cannot be NaN
+ERROR:  timestamp out of range
+ERROR:  too many points requested
+ERROR:  ts_rewrite query must return two tsquery columns
+ERROR:  type bigint is not composite
+ERROR:  type matched to anyenum is not an enum type: anyenum
+ERROR:  type planets is not composite
+ERROR:  unexpected dtype 7 while parsing reltime "invalid"
+ERROR:  unexpected duplicate for tablespace 0, relfilenode 0
+ERROR:  unrecognized privilege type: "
+ERROR:  unrecognized storage manager name
+ERROR:  unsupported XML feature
+ERROR:  update or delete on table "clstr_tst_s" violates foreign key constraint "clstr_tst_con" on table "clstr_tst"
+ERROR:  update or delete on table "customer" violates foreign key constraint "credit_card_cid_fkey" on table "credit_card"
+ERROR:  update or delete on table "rule_and_refint_t1" violates foreign key constraint "rule_and_refint_t3_id3a_fkey" on table "rule_and_refint_t3"
+ERROR:  update or delete on table "rule_and_refint_t2" violates foreign key constraint "rule_and_refint_t3_id3a_fkey1" on table "rule_and_refint_t3"
+ERROR:  upper bound of FOR loop cannot be null
+ERROR:  value for "D" in source string is out of range
+ERROR:  value for "I" in source string is out of range
+ERROR:  value for "J" in source string is out of range
+ERROR:  value for "Q" in source string is out of range
+ERROR:  value for "US" in source string is out of range
+ERROR:  value for "d" in source string is out of range
+ERROR:  value for "i" in source string is out of range
+ERROR:  value for "j" in source string is out of range
+ERROR:  value for "us" in source string is out of range
+ERROR:  value for "w" in source string is out of range
+ERROR:  value out of range: overflow
+ERROR:  value out of range: underflow
+ERROR:  value overflows numeric format
+ERROR:  value too long for restore point (maximum 63 characters)
+ERROR:  wrong limit, should be between 0 and 1
+ERROR:  wrong number of array subscripts
+ERROR:  zero raised to a negative power is undefined
+RIGHT and FULL OUTER JOINs are not currently supported
+Some PX error (not specified)
+attempt to write a readonly database
+database is locked
+near "(": syntax error
+near "default": syntax error
+near "on": syntax error
+near "over": syntax error
+near "returning": syntax error
+near "tablesample": syntax error
+password is required
+string or blob too big
