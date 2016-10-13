@@ -102,7 +102,7 @@ void dut_pqxx::test(const std::string &stmt)
 }
 
 
-schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
+schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 {
   pqxx::work w(c);
 
@@ -154,10 +154,9 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
     string schema(row[1].as<string>());
     string insertable(row[2].as<string>());
     string table_type(row[3].as<string>());
-    //       if (schema == "pg_catalog")
-    // 	continue;
-    //       if (schema == "information_schema")
-    // 	continue;
+
+	if (no_catalog && ((schema == "pg_catalog") || (schema == "information_schema")))
+		continue;
       
     tables.push_back(table(row[0].as<string>(),
 			   schema,

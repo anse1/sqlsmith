@@ -85,25 +85,32 @@ sqlite_connection::~sqlite_connection()
     sqlite3_close(db);
 }
 
-schema_sqlite::schema_sqlite(std::string &conninfo)
+schema_sqlite::schema_sqlite(std::string &conninfo, bool no_catalog)
   : sqlite_connection(conninfo)
 {
+	std::string query = "SELECT * FROM main.sqlite_master where type in ('table', 'view')";
+
+	if (no_catalog)
+		query+= " AND name NOT like 'sqlite_%%'";
   
   version = "SQLite " SQLITE_VERSION " " SQLITE_SOURCE_ID;
 
 //   sqlite3_busy_handler(db, my_sqlite3_busy_handler, 0);
   cerr << "Loading tables...";
 
-  rc = sqlite3_exec(db, "SELECT * FROM main.sqlite_master where type in ('table', 'view')", table_callback, (void *)&tables, &zErrMsg);
+  rc = sqlite3_exec(db, query.c_str(), table_callback, (void *)&tables, &zErrMsg);
   if (rc!=SQLITE_OK) {
     auto e = std::runtime_error(zErrMsg);
     sqlite3_free(zErrMsg);
     throw e;
   }
 
-  // sqlite_master doesn't list itself, do it manually
-  table tab("sqlite_master", "main", false, false);
-  tables.push_back(tab);
+  if (!no_catalog)
+  {
+		// sqlite_master doesn't list itself, do it manually
+		table tab("sqlite_master", "main", false, false);
+		tables.push_back(tab);
+  }
   
   cerr << "done." << endl;
 
