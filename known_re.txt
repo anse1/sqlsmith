@@ -1,8 +1,6 @@
-ERROR:  value .* is out of range for (EAN13|ISSN|ISMN|UPC) type
 \\nCONTEXT:  PL/pgSQL function tg_backlink_set
 \\nCONTEXT:  PL/pgSQL function tg_iface_biu
 \\nCONTEXT:  PL/pgSQL function tg_pslot_biu
-\\nCONTEXT:  PL/pgSQL function tg_slotlink_set
 \\nCONTEXT:  PL/pgSQL.*
 \\nCONTEXT:  SQL function "make_table" statement
 \\nCONTEXT:  invalid type name
@@ -22,8 +20,6 @@ ERROR:  value .* is out of range for (EAN13|ISSN|ISMN|UPC) type
 ^ERROR:  Cannot use ".*": Badly formatted type
 ^ERROR:  Cannot use ".*": No such cipher algorithm
 ^ERROR:  Cannot use .*: No such hash algorithm
-^ERROR:  HSlot slotname
-^ERROR:  IFace slotname
 ^ERROR:  NUMERIC precision \\d+ must be between \\d+ and \\d+
 ^ERROR:  Patchfield "[^"]*" does not exist
 ^ERROR:  Room .* does not exist
@@ -78,8 +74,6 @@ ERROR:  value .* is out of range for (EAN13|ISSN|ISMN|UPC) type
 ^ERROR:  function .* does not exist
 ^ERROR:  function .*is not unique
 ^ERROR:  hour ".*" is invalid for the 12-hour clock
-^ERROR:  illegal backlink beginning with
-^ERROR:  illegal slotlink beginning with
 ^ERROR:  improper (qualified|relation) name \\(too many dotted names\\): 
 ^ERROR:  incorrect number of arguments: specified \\d+ but found \\d+
 ^ERROR:  index "hash_
@@ -133,18 +127,16 @@ ERROR:  value .* is out of range for (EAN13|ISSN|ISMN|UPC) type
 ^ERROR:  parameter "[^"]+" cannot be changed now
 ^ERROR:  parameter "[^"]+" cannot be changed without restarting the server
 ^ERROR:  path element at position 
-^ERROR:  permission denied for relation pg_
-^ERROR:  permission denied to set parameter
+^ERROR:  permission denied
 ^ERROR:  relation ".*" does not exist
 ^ERROR:  relation .*does not exists
 ^ERROR:  requested character too large for encoding
 ^ERROR:  role .* does not exist
+^ERROR:  row is too big: 
 ^ERROR:  schema ".*" does not exist
 ^ERROR:  server .* does not exist
 ^ERROR:  setseed parameter 
 ^ERROR:  setval: value .* is out of bounds for sequence
-^ERROR:  slotlink between two phones does not make sense
-^ERROR:  slotname must begin with
 ^ERROR:  source string too short for "
 ^ERROR:  stack depth limit exceeded.*"infinite_recurse"
 ^ERROR:  string is not a valid identifier: 
@@ -181,7 +173,7 @@ ERROR:  value .* is out of range for (EAN13|ISSN|ISMN|UPC) type
 ^ERROR:  update or delete on table "[^"]+" violates foreign key constraint
 ^ERROR:  value ".*" is out of range for ISBN type
 ^ERROR:  value ".*" is out of range for type 
-^ERROR:  value .* is out of range for ISSN type
+^ERROR:  value .* is out of range for
 ^ERROR:  value .* is out of range for type oid
 ^ERROR:  value for .* in source string is out of range
 ^ERROR:  value for domain [^ ]+ violates check constraint

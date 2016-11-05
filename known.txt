@@ -1,3 +1,4 @@
+ERROR:  "TZ"/"tz"/"OF" format patterns are not supported in to_date
 ERROR:  "char" out of range
 ERROR:  <datatype>key_in() not implemented
 ERROR:  COALESCE could not convert type "char" to character
@@ -429,6 +430,7 @@ ERROR:  lower and upper bounds must be finite
 ERROR:  lower bound cannot equal upper bound
 ERROR:  lower bound of FOR loop cannot be null
 ERROR:  ltree_gist_in() not implemented
+ERROR:  malformed record literal: "0"
 ERROR:  mismatched array dimensions
 ERROR:  missing support function 1(34550,34550) in opfamily 1976
 ERROR:  missing support function 1(34568,34568) in opfamily 1976
@@ -552,6 +554,7 @@ ERROR:  result of range union would not be contiguous
 ERROR:  return type anyarray is not supported for SQL functions
 ERROR:  return type anyarray is not supported for SQL functions)
 ERROR:  return type anyelement is not supported for SQL functions
+ERROR:  return type cstring is not supported for SQL functions
 ERROR:  return type mismatch in function declared to return reltime
 ERROR:  return type mismatch in function declared to return things
 ERROR:  return type record[] is not supported for SQL functions
@@ -596,6 +599,7 @@ ERROR:  value out of range: overflow
 ERROR:  value out of range: underflow
 ERROR:  value overflows numeric format
 ERROR:  value too long for restore point (maximum 63 characters)
+ERROR:  weight out of range
 ERROR:  wrong limit, should be between 0 and 1
 ERROR:  wrong number of array subscripts
 ERROR:  zero raised to a negative power is undefined
