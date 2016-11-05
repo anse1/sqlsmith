@@ -77,10 +77,15 @@ void table_subquery::accept(prod_visitor *v) {
 
 shared_ptr<join_cond> join_cond::factory(prod *p, table_ref &lhs, table_ref &rhs)
 {
-     if (d6() == 6)
-	  return make_shared<expr_join_cond>(p, lhs, rhs);
-     else
-	  return make_shared<simple_join_cond>(p, lhs, rhs);
+     try {
+	  if (d6() == 6)
+	       return make_shared<expr_join_cond>(p, lhs, rhs);
+	  else
+	       return make_shared<simple_join_cond>(p, lhs, rhs);
+     } catch (runtime_error &e) {
+	  p->retry();
+     }
+     return factory(p);
 }
 
 simple_join_cond::simple_join_cond(prod *p, table_ref &lhs, table_ref &rhs)
