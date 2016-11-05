@@ -78,14 +78,14 @@ void table_subquery::accept(prod_visitor *v) {
 shared_ptr<join_cond> join_cond::factory(prod *p, table_ref &lhs, table_ref &rhs)
 {
      try {
-	  if (d6() == 6)
+	  if (d6() < 6)
 	       return make_shared<expr_join_cond>(p, lhs, rhs);
 	  else
 	       return make_shared<simple_join_cond>(p, lhs, rhs);
      } catch (runtime_error &e) {
 	  p->retry();
      }
-     return factory(p);
+     return factory(p, lhs, rhs);
 }
 
 simple_join_cond::simple_join_cond(prod *p, table_ref &lhs, table_ref &rhs)
@@ -125,7 +125,7 @@ expr_join_cond::expr_join_cond(prod *p, table_ref &lhs, table_ref &rhs)
 	  joinscope.refs.push_back(&*ref);
      for (auto ref: rhs.refs)
 	  joinscope.refs.push_back(&*ref);
-     search = bool_expr::factory(p);
+     search = bool_expr::factory(this);
 }
 
 void expr_join_cond::out(std::ostream &out) {
