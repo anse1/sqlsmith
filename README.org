@@ -154,6 +154,10 @@ contents of the tables known and known_re.  I periodically COPY my
 filter tables into the files [[./known_re.txt]] and [[./known.txt]] to serve
 as a starting point.
 
+** Resources
+
+- [[https://korte.credativ.com/~ase/sqlsmith-talk.pdf][Slides from PGConf.EU 2016]]
+
 ** License
 
 SQLsmith is available under GPLv3.  Use it at your own risk.  It may
