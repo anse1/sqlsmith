@@ -75,19 +75,24 @@ void table_subquery::accept(prod_visitor *v) {
   v->visit(this);
 }
 
-joined_table::joined_table(prod *p) : table_ref(p) {
- retry:
-  lhs = table_ref::factory(this);
-  rhs = table_ref::factory(this);
+shared_ptr<join_cond> join_cond::factory(prod *p, table_ref &lhs, table_ref &rhs)
+{
+     if (d6() < 4)
+	  return make_shared<simple_join_cond>(p, lhs, rhs);
+     else
+	  return make_shared<expr_join_cond>(p, lhs, rhs);
+}
 
-  condition = "";
-
-  named_relation *left_rel = &*random_pick(lhs->refs);
+simple_join_cond::simple_join_cond(prod *p, table_ref &lhs, table_ref &rhs)
+     : join_cond(p, lhs, rhs)
+{
+retry:
+  named_relation *left_rel = &*random_pick(lhs.refs);
   
   if (!left_rel->columns().size())
     { retry(); goto retry; }
 
-  named_relation *right_rel = &*random_pick(rhs->refs);
+  named_relation *right_rel = &*random_pick(rhs.refs);
 
   column &c1 = random_pick(left_rel->columns());
 
@@ -101,6 +106,32 @@ joined_table::joined_table(prod *p) : table_ref(p) {
   if (condition == "") {
     retry(); goto retry;
   }
+}
+
+void simple_join_cond::out(std::ostream &out) {
+     out << condition;
+}
+
+expr_join_cond::expr_join_cond(prod *p, table_ref &lhs, table_ref &rhs)
+     : join_cond(p, lhs, rhs), joinscope(p->scope)
+{
+     scope = &joinscope;
+     for (auto ref: lhs.refs)
+	  joinscope.refs.push_back(&*ref);
+     for (auto ref: rhs.refs)
+	  joinscope.refs.push_back(&*ref);
+     search = bool_expr::factory(p);
+}
+
+void expr_join_cond::out(std::ostream &out) {
+     out << *search;
+}
+
+joined_table::joined_table(prod *p) : table_ref(p) {
+  lhs = table_ref::factory(this);
+  rhs = table_ref::factory(this);
+
+  condition = join_cond::factory(this, *lhs, *rhs);
 
   if (d6()<4) {
     type = "inner";
@@ -121,7 +152,7 @@ void joined_table::out(std::ostream &out) {
   indent(out);
   out << type << " join " << *rhs;
   indent(out);
-  out << "on (" << condition << ")";
+  out << "on (" << *condition << ")";
 }
 
 void table_subquery::out(std::ostream &out) {
