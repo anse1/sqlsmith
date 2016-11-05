@@ -69,6 +69,10 @@ struct expr_join_cond : join_cond {
      shared_ptr<bool_expr> search;
      expr_join_cond(prod *p, table_ref &lhs, table_ref &rhs);
      virtual void out(std::ostream &out);
+     virtual void accept(prod_visitor *v) {
+	  search->accept(v);
+	  v->visit(this);
+     }
 };
 
 struct joined_table : table_ref {
