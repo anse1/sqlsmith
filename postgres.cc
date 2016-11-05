@@ -85,6 +85,7 @@ void dut_pqxx::test(const std::string &stmt)
 
     pqxx::work w(c);
     w.exec(stmt.c_str());
+    w.abort();
   } catch (const pqxx::failure &e) {
     if ((dynamic_cast<const pqxx::broken_connection *>(&e))) {
       /* re-throw to outer loop to recover session. */
