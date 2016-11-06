@@ -96,9 +96,22 @@ comment on table known is 'error messages to reject';
 create table known_re(re text);
 comment on table known_re is 'regular expressions to match error messages to reject';
 
+create materialized view known_single_regexp as
+       select string_agg(re, '|') re from known_re;
+comment on table known_single_regexp is 'matview on known_re to speed up the filter trigger';
+
+create or replace function refresh_matviews() returns trigger as $$
+  begin
+     refresh materialized view known_single_regexp;
+     return new;
+  end$$ language plpgsql;
+
+create trigger refresh_matviews after insert or update or delete on
+  known_re execute procedure refresh_matviews();
+
 create or replace function discard_known() returns trigger as $$
 begin
-	if exists (select 1 from known_re where new.msg ~ re)
+	if new.msg ~ (select re from known_single_regexp)
 	     or exists (select 1 from known where firstline(new.msg) = error)
         then
 	   return NULL;
