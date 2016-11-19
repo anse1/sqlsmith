@@ -204,8 +204,6 @@ int main(int argc, char *argv[])
 	catch (const dut::broken &e) {
 	  /* Give server some time to recover. */
 	  this_thread::sleep_for(milliseconds(1000));
-	  cerr << "done." << endl;
-
 	}
       }
     }
