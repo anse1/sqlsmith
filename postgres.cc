@@ -310,6 +310,10 @@ void dut_libpq::connect(std::string &conninfo)
     if (strlen(errmsg))
 	throw dut::broken(errmsg);
 
+    test("set statement_timeout to '1s'");
+    test("set client_min_messages to 'ERROR';");
+    test("set application_name to '" PACKAGE "::dut';");
+
     PQsetNoticeReceiver(conn, dut_libpq_notice_rx, (void *) 0);
 }
 
@@ -317,9 +321,6 @@ dut_libpq::dut_libpq(std::string conninfo)
     : conninfo_(conninfo)
 {
     connect(conninfo);
-    test("set statement_timeout to '1s'");
-    test("set client_min_messages to 'ERROR';");
-    test("set application_name to '" PACKAGE "::dut';");
 }
 
 void dut_libpq::test(const std::string &stmt)
