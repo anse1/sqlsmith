@@ -20,6 +20,7 @@ create table error (
     msg text,    -- error message
     query text,  -- failed query
     target text, -- conninfo of the target
+    sqlstate text, -- sqlstate of error
     
     -- not referenced by sqlsmith:
     t timestamptz default now(),
@@ -62,6 +63,20 @@ drop view if exists report;
 create view report as
        select count(1), max(t) as last_seen, error
        from base_error group by 3 order by count desc;
+
+
+create or replace view state_report as
+ SELECT count(1) AS count,
+    sqlstate,
+    min(substring(firstline(e.msg),1,80)) AS sample,
+    array_agg(DISTINCT i.hostname) AS hosts
+   FROM error e
+     JOIN instance i ON i.id = e.id
+  WHERE e.t > (now() - '24:00:00'::interval)
+  GROUP BY sqlstate
+  ORDER BY (count(1));
+
+comment on view state_report is 'an sqlstate-grouped report';
 
 comment on view report is 'same report as sqlsmith''s verbose output';
 
@@ -126,6 +141,7 @@ create trigger discard_known before insert on error
 -- YMMV.
 create index on error(t);
 
+-- Following views are used for debugging sqlsmith
 create view impedance as
     select id, generated, level, nodes, updated,
     	   prod, ok, bad, js.retries, limited, failed

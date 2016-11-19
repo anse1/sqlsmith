@@ -308,7 +308,7 @@ void dut_libpq::connect(std::string &conninfo)
     conn = PQconnectdb(conninfo.c_str());
     char *errmsg = PQerrorMessage(conn);
     if (strlen(errmsg))
-	throw dut::broken(errmsg);
+	 throw dut::broken(errmsg, "08000");
 
     test("set statement_timeout to '1s'");
     test("set client_min_messages to 'ERROR';");
@@ -330,25 +330,27 @@ void dut_libpq::test(const std::string &stmt)
     
     PGresult *res = PQexec(conn, stmt.c_str());
     int status = PQresultStatus(res);
-    const char *sqlstate;
 
     switch (status) {
 
     case PGRES_FATAL_ERROR:
     default:
     {
-	sqlstate = PQresultErrorField(res, PG_DIAG_SQLSTATE);
-	(void) sqlstate;
+	char *sqlstate = PQresultErrorField(res, PG_DIAG_SQLSTATE);
 	char *errmsg = PQresultErrorMessage(res);
 	std::string error_string(errmsg);
+	std::string sqlstate_string(sqlstate);
 	PQclear(res);
 
 	ConnStatusType connstatus = PQstatus(conn);
 	if (CONNECTION_OK != connstatus) {
 	    conn = 0;
-	    throw dut::broken(error_string.c_str());
+	    throw dut::broken(error_string.c_str(), sqlstate_string.c_str());
 	}
-	throw dut::failure(error_string.c_str());
+	if (sqlstate_string == "42601")
+	     throw dut::syntax(error_string.c_str(), sqlstate_string.c_str());
+	else
+	     throw dut::failure(error_string.c_str(), sqlstate_string.c_str());
     }
 
     case PGRES_NONFATAL_ERROR:
