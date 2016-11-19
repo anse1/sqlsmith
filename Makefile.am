@@ -16,10 +16,10 @@ sqlsmith_SOURCES = relmodel.cc schema.cc $(DUT)	 			\
     random.cc prod.cc expr.cc grammar.cc log.cc dump.cc impedance.cc	\
     sqlsmith.cc
 
-sqlsmith_LDADD = $(LIBPQXX_LIBS) $(BOOST_REGEX_LIB)
+sqlsmith_LDADD = $(LIBPQXX_LIBS) $(BOOST_REGEX_LIB) $(POSTGRESQL_LIBS)
 
-AM_LDFLAGS = $(BOOST_LDFLAGS)
-AM_CPPFLAGS = $(BOOST_CPPFLAGS) $(PQXX_CFLAGS)  -Wall -Wextra
+AM_LDFLAGS = $(BOOST_LDFLAGS) $(POSTGRESQL_LDFLAGS)
+AM_CPPFLAGS = $(BOOST_CPPFLAGS) $(PQXX_CFLAGS) $(POSTGRESQL_CPPFLAGS) -Wall -Wextra
 
 
 EXTRA_DIST = gitrev.h dump.hh expr.hh grammar.hh log.hh prod.hh		\

@@ -10,8 +10,11 @@
 
 #include <pqxx/pqxx>
 
+extern "C" {
+#include <postgresql/libpq-fe.h>
+}
+
 #define OID long
-#define InvalidOid 0
 
 struct pg_type : sqltype {
   OID oid_;
@@ -51,6 +54,14 @@ struct dut_pqxx : dut_base {
   bool reset_gucs = true;
   virtual void test(const std::string &stmt);
   dut_pqxx(std::string conninfo);
+};
+
+struct dut_libpq : dut_base {
+     PGconn *conn = 0;
+     std::string conninfo_;
+     virtual void test(const std::string &stmt);
+     void connect(std::string &conninfo);
+     dut_libpq(std::string conninfo);
 };
 
 #endif

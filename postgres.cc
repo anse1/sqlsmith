@@ -289,3 +289,75 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
   c.disconnect();
   generate_indexes();
 }
+
+extern "C" {
+    void dut_libpq_notice_rx(void *arg, const PGresult *res);
+}
+
+void dut_libpq_notice_rx(void *arg, const PGresult *res)
+{
+    (void) arg;
+    (void) res;
+}
+
+void dut_libpq::connect(std::string &conninfo)
+{
+    if (conn) {
+	PQfinish(conn);
+    }
+    conn = PQconnectdb(conninfo.c_str());
+    char *errmsg = PQerrorMessage(conn);
+    if (strlen(errmsg))
+	throw dut::broken(errmsg);
+
+    PQsetNoticeReceiver(conn, dut_libpq_notice_rx, (void *) 0);
+}
+
+dut_libpq::dut_libpq(std::string conninfo)
+    : conninfo_(conninfo)
+{
+    connect(conninfo);
+    test("set statement_timeout to '1s'");
+    test("set client_min_messages to 'ERROR';");
+    test("set application_name to '" PACKAGE "::dut';");
+}
+
+void dut_libpq::test(const std::string &stmt)
+{
+    if (!conn)
+	connect(conninfo_);
+    
+    PGresult *res = PQexec(conn, stmt.c_str());
+    int status = PQresultStatus(res);
+    const char *sqlstate;
+
+    switch (status) {
+
+    case PGRES_FATAL_ERROR:
+    default:
+    {
+	sqlstate = PQresultErrorField(res, PG_DIAG_SQLSTATE);
+	(void) sqlstate;
+	char *errmsg = PQresultErrorMessage(res);
+	std::string error_string(errmsg);
+	PQclear(res);
+
+	ConnStatusType connstatus = PQstatus(conn);
+	if (CONNECTION_OK != connstatus) {
+	    conn = 0;
+	    throw dut::broken(error_string.c_str());
+	}
+	throw dut::failure(error_string.c_str());
+    }
+
+    case PGRES_NONFATAL_ERROR:
+    case PGRES_TUPLES_OK:
+    case PGRES_SINGLE_TUPLE:
+    case PGRES_COMMAND_OK:
+	PQclear(res);
+	return;
+    }
+
+}
+
+

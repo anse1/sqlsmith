@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 #endif
       }
       else
-	dut = make_shared<dut_pqxx>(options["target"]);
+	dut = make_shared<dut_libpq>(options["target"]);
 
       while (1)
       {
@@ -204,6 +204,8 @@ int main(int argc, char *argv[])
 	catch (const dut::broken &e) {
 	  /* Give server some time to recover. */
 	  this_thread::sleep_for(milliseconds(1000));
+	  cerr << "done." << endl;
+
 	}
       }
     }
