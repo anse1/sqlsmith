@@ -339,7 +339,7 @@ void dut_libpq::test(const std::string &stmt)
 	char *sqlstate = PQresultErrorField(res, PG_DIAG_SQLSTATE);
 	char *errmsg = PQresultErrorMessage(res);
 	std::string error_string(errmsg);
-	std::string sqlstate_string(sqlstate);
+	std::string sqlstate_string(sqlstate ? sqlstate : "?????");
 	PQclear(res);
 
 	ConnStatusType connstatus = PQstatus(conn);
