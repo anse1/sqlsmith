@@ -336,10 +336,16 @@ void dut_libpq::test(const std::string &stmt)
     case PGRES_FATAL_ERROR:
     default:
     {
-	char *sqlstate = PQresultErrorField(res, PG_DIAG_SQLSTATE);
 	char *errmsg = PQresultErrorMessage(res);
+	if (!errmsg || !strlen(errmsg))
+	     errmsg = PQerrorMessage(conn);
+
+	char *sqlstate = PQresultErrorField(res, PG_DIAG_SQLSTATE);
+	if (!sqlstate)
+	     sqlstate = "?????";
+	
 	std::string error_string(errmsg);
-	std::string sqlstate_string(sqlstate ? sqlstate : "?????");
+	std::string sqlstate_string(sqlstate);
 	PQclear(res);
 
 	ConnStatusType connstatus = PQstatus(conn);
