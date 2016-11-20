@@ -308,7 +308,7 @@ void dut_libpq::connect(std::string &conninfo)
     conn = PQconnectdb(conninfo.c_str());
     char *errmsg = PQerrorMessage(conn);
     if (strlen(errmsg))
-	 throw dut::broken(errmsg, "08000");
+	 throw dut::broken(errmsg, "08001");
 
     test("set statement_timeout to '1s'");
     test("set client_min_messages to 'ERROR';");
@@ -336,20 +336,19 @@ void dut_libpq::test(const std::string &stmt)
     case PGRES_FATAL_ERROR:
     default:
     {
-	char *errmsg = PQresultErrorMessage(res);
+	const char *errmsg = PQresultErrorMessage(res);
 	if (!errmsg || !strlen(errmsg))
 	     errmsg = PQerrorMessage(conn);
 
-	char *sqlstate = PQresultErrorField(res, PG_DIAG_SQLSTATE);
-	if (!sqlstate)
-	     sqlstate = "?????";
+	const char *sqlstate = PQresultErrorField(res, PG_DIAG_SQLSTATE);
+	if (!sqlstate || !strlen(sqlstate))
+	     sqlstate =  (CONNECTION_OK != PQstatus(conn)) ? "08000" : "?????";
 	
 	std::string error_string(errmsg);
 	std::string sqlstate_string(sqlstate);
 	PQclear(res);
 
-	ConnStatusType connstatus = PQstatus(conn);
-	if (CONNECTION_OK != connstatus) {
+	if (CONNECTION_OK != PQstatus(conn)) {
 	    conn = 0;
 	    throw dut::broken(error_string.c_str(), sqlstate_string.c_str());
 	}
