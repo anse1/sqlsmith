@@ -310,9 +310,9 @@ void dut_libpq::connect(std::string &conninfo)
     if (strlen(errmsg))
 	 throw dut::broken(errmsg, "08001");
 
-    test("set statement_timeout to '1s'");
-    test("set client_min_messages to 'ERROR';");
-    test("set application_name to '" PACKAGE "::dut';");
+    command("set statement_timeout to '1s'");
+    command("set client_min_messages to 'ERROR';");
+    command("set application_name to '" PACKAGE "::dut';");
 
     PQsetNoticeReceiver(conn, dut_libpq_notice_rx, (void *) 0);
 }
@@ -323,13 +323,21 @@ dut_libpq::dut_libpq(std::string conninfo)
     connect(conninfo);
 }
 
+void dut_libpq::command(const std::string &stmt)
+{
+     PGresult *res = PQexec(conn, stmt.c_str());
+     PQclear(res);
+}
+
 void dut_libpq::test(const std::string &stmt)
 {
     if (!conn)
 	connect(conninfo_);
-    
+
+    command("BEGIN;");
     PGresult *res = PQexec(conn, stmt.c_str());
     int status = PQresultStatus(res);
+    command("ROLLBACK;");
 
     switch (status) {
 

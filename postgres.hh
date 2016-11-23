@@ -60,6 +60,7 @@ struct dut_libpq : dut_base {
      PGconn *conn = 0;
      std::string conninfo_;
      virtual void test(const std::string &stmt);
+     void command(const std::string &stmt);
      void connect(std::string &conninfo);
      dut_libpq(std::string conninfo);
 };
