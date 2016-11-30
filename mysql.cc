@@ -13,8 +13,8 @@ mysql_connection::mysql_connection(const std::string &conninfo)
 {
   (void) conninfo;
   con = mysql_init(NULL);
-  if (!mysql_real_connect(con, "localhost", "root", "qernqmysql", 
-			 "regression", 0, NULL, 0)) {
+  if (!mysql_real_connect(con, "localhost", "smith", "smith", 
+			  "smith" /*dbname*/, 0, NULL, 0)) {
     throw runtime_error(mysql_error(con));
   }
 }
@@ -133,20 +133,20 @@ void dut_mysql::test(const std::string &stmt)
 {
   if (mysql_query(con, stmt.c_str())) {
     const char *msg = mysql_error(con);
+    const char *sqlstate = mysql_sqlstate(con);
     int myerrno = mysql_errno(con);
-
     switch(myerrno) {
     case 1149:
     case 1064:
-      throw dut::syntax("Syntax error");
+	 throw dut::syntax(msg, sqlstate);
       break;
     case 2006:
-      throw dut::broken(mysql_error(con));
+         throw dut::broken(msg, sqlstate);
     default:
       if (regex_match(msg, e_syntax))
-	throw dut::syntax("Syntax error");
+        throw dut::syntax(msg, sqlstate);
       else
-	throw dut::failure(mysql_error(con));
+        throw dut::failure(msg, sqlstate);
     }
   }
   MYSQL_RES *result = mysql_store_result(con);

@@ -10,7 +10,7 @@
 extern "C" {
 // #define bool_defined
 // #include <my_global.h>
-#include <mysql.h>
+#include <mysql/mysql.h>
 }
 
 struct mysql_connection {
