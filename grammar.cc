@@ -459,7 +459,7 @@ shared_ptr<prod> statement_factory(struct scope *s)
       return make_shared<update_returning>((struct prod *)0, s);
     else if (d6() > 4)
       return make_shared<select_for_update>((struct prod *)0, s);
-    else if (impedance::matched(typeid(common_table_expression)) && (d6() > 5))
+    else if (d6() > 5)
       return make_shared<common_table_expression>((struct prod *)0, s);
     return make_shared<query_spec>((struct prod *)0, s);
   } catch (runtime_error &e) {
@@ -478,6 +478,7 @@ void common_table_expression::accept(prod_visitor *v)
 common_table_expression::common_table_expression(prod *parent, struct scope *s)
   : prod(parent), myscope(s)
 {
+  match();
   scope = &myscope;
   do {
     shared_ptr<query_spec> query = make_shared<query_spec>(this, s);
