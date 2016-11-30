@@ -146,8 +146,8 @@ pqxx_logger::pqxx_logger(std::string target, std::string conninfo, struct schema
   id = r[0][0].as<long>(id);
 
   c->prepare("error",
-	     "insert into error (id, msg, query) "
-	     "values (" + to_string(id) + ", $1, $2)");
+	     "insert into error (id, msg, query, sqlstate) "
+	     "values (" + to_string(id) + ", $1, $2, $3)");
 
   w.exec("insert into stat (id) values (" + to_string(id) + ")");
   c->prepare("stat",
@@ -164,7 +164,7 @@ void pqxx_logger::error(prod &query, const dut::failure &e)
   work w(*c);
   ostringstream s;
   s << query;
-  w.prepared("error")(e.what())(s.str()).exec();
+  w.prepared("error")(e.what())(s.str())(e.sqlstate).exec();
   w.commit();
 }
 

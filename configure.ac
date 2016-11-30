@@ -5,6 +5,7 @@ AM_INIT_AUTOMAKE(-Wall -Werror foreign)
 AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX_11(noext,mandatory)
 
+AX_LIB_POSTGRESQL()
 PKG_CHECK_MODULES(LIBPQXX, libpqxx >= 4.0)
 
 AX_BOOST_BASE()

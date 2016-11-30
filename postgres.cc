@@ -85,6 +85,7 @@ void dut_pqxx::test(const std::string &stmt)
 
     pqxx::work w(c);
     w.exec(stmt.c_str());
+    w.abort();
   } catch (const pqxx::failure &e) {
     if ((dynamic_cast<const pqxx::broken_connection *>(&e))) {
       /* re-throw to outer loop to recover session. */
@@ -102,7 +103,7 @@ void dut_pqxx::test(const std::string &stmt)
 }
 
 
-schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
+schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 {
   pqxx::work w(c);
 
@@ -154,10 +155,9 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
     string schema(row[1].as<string>());
     string insertable(row[2].as<string>());
     string table_type(row[3].as<string>());
-    //       if (schema == "pg_catalog")
-    // 	continue;
-    //       if (schema == "information_schema")
-    // 	continue;
+
+	if (no_catalog && ((schema == "pg_catalog") || (schema == "information_schema")))
+		continue;
       
     tables.push_back(table(row[0].as<string>(),
 			   schema,
@@ -289,3 +289,83 @@ schema_pqxx::schema_pqxx(std::string &conninfo) : c(conninfo)
   c.disconnect();
   generate_indexes();
 }
+
+extern "C" {
+    void dut_libpq_notice_rx(void *arg, const PGresult *res);
+}
+
+void dut_libpq_notice_rx(void *arg, const PGresult *res)
+{
+    (void) arg;
+    (void) res;
+}
+
+void dut_libpq::connect(std::string &conninfo)
+{
+    if (conn) {
+	PQfinish(conn);
+    }
+    conn = PQconnectdb(conninfo.c_str());
+    char *errmsg = PQerrorMessage(conn);
+    if (strlen(errmsg))
+	 throw dut::broken(errmsg, "08001");
+
+    test("set statement_timeout to '1s'");
+    test("set client_min_messages to 'ERROR';");
+    test("set application_name to '" PACKAGE "::dut';");
+
+    PQsetNoticeReceiver(conn, dut_libpq_notice_rx, (void *) 0);
+}
+
+dut_libpq::dut_libpq(std::string conninfo)
+    : conninfo_(conninfo)
+{
+    connect(conninfo);
+}
+
+void dut_libpq::test(const std::string &stmt)
+{
+    if (!conn)
+	connect(conninfo_);
+    
+    PGresult *res = PQexec(conn, stmt.c_str());
+    int status = PQresultStatus(res);
+
+    switch (status) {
+
+    case PGRES_FATAL_ERROR:
+    default:
+    {
+	const char *errmsg = PQresultErrorMessage(res);
+	if (!errmsg || !strlen(errmsg))
+	     errmsg = PQerrorMessage(conn);
+
+	const char *sqlstate = PQresultErrorField(res, PG_DIAG_SQLSTATE);
+	if (!sqlstate || !strlen(sqlstate))
+	     sqlstate =  (CONNECTION_OK != PQstatus(conn)) ? "08000" : "?????";
+	
+	std::string error_string(errmsg);
+	std::string sqlstate_string(sqlstate);
+	PQclear(res);
+
+	if (CONNECTION_OK != PQstatus(conn)) {
+	    conn = 0;
+	    throw dut::broken(error_string.c_str(), sqlstate_string.c_str());
+	}
+	if (sqlstate_string == "42601")
+	     throw dut::syntax(error_string.c_str(), sqlstate_string.c_str());
+	else
+	     throw dut::failure(error_string.c_str(), sqlstate_string.c_str());
+    }
+
+    case PGRES_NONFATAL_ERROR:
+    case PGRES_TUPLES_OK:
+    case PGRES_SINGLE_TUPLE:
+    case PGRES_COMMAND_OK:
+	PQclear(res);
+	return;
+    }
+
+}
+
+

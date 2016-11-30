@@ -143,6 +143,21 @@ context where it sees non-index-oids, which causes it to croak:
 Now this is more of a curiosity than a bug, but still illustrating how
 debugging with the help of SQLsmith might look like.
 
+** Large-scale testing
+
+=--log-to= allows logging of hundreds of sqlsmith instances into a
+central database. [[./log.sql]] contains the schema sqlsmith expects and
+some additional views to generate reports on the logged contents.
+
+It also contains a trigger to filter boring/known errors based on the
+contents of the tables known and known_re.  I periodically COPY my
+filter tables into the files [[./known_re.txt]] and [[./known.txt]] to serve
+as a starting point.
+
+** Resources
+
+- [[https://korte.credativ.com/~ase/sqlsmith-talk.pdf][Slides from PGConf.EU 2016]]
+
 ** License
 
 SQLsmith is available under GPLv3.  Use it at your own risk.  It may

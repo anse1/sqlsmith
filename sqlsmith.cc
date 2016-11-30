@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
   cerr << PACKAGE_NAME " " GITREV << endl;
 
   map<string,string> options;
-  regex optregex("--(help|log-to|verbose|target|sqlite|mysql|version|dump-all-graphs|seed|dry-run|max-queries)(?:=((?:.|\n)*))?");
+  regex optregex("--(help|log-to|verbose|target|sqlite|mysql|version|dump-all-graphs|seed|dry-run|max-queries|exclude-catalog)(?:=((?:.|\n)*))?");
   
   for(char **opt = argv+1 ;opt < argv+argc; opt++) {
     smatch match;
@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
       "    --seed=int           seed RNG with specified int instead of PID" << endl <<
       "    --dump-all-graphs    dump generated ASTs" << endl <<
       "    --dry-run            print queries instead of executing them" << endl <<
+      "    --exclude-catalog    don't generate queries using catalog relations" << endl <<
       "    --max-queries=long   terminate after generating this many queries" << endl <<
       "    --verbose            emit progress output" << endl <<
       "    --version            print version information and exit" << endl <<
@@ -103,12 +104,11 @@ int main(int argc, char *argv[])
       if (options.count("sqlite")) {
 
 #ifdef HAVE_LIBSQLITE3
-	schema = make_shared<schema_sqlite>(options["sqlite"]);
+	schema = make_shared<schema_sqlite>(options["sqlite"], options.count("exclude-catalog"));
 #else
 	cerr << "Sorry, " PACKAGE_NAME " was compiled without SQLite support." << endl;
 	return 1;
 #endif
-
       } else if (options.count("mysql")) {
 
 #ifdef HAVE_LIBMYSQLCLIENT
@@ -118,9 +118,8 @@ int main(int argc, char *argv[])
 	return 1;
 #endif
 
-      } else {
-	schema = make_shared<schema_pqxx>(options["target"]);
-      }
+      } else
+	schema = make_shared<schema_pqxx>(options["target"], options.count("exclude-catalog"));
 
       scope scope;
       long queries_generated = 0;
@@ -173,8 +172,7 @@ int main(int argc, char *argv[])
 	cerr << "Sorry, " PACKAGE_NAME " was compiled without SQLite support." << endl;
 	return 1;
 #endif
-      }
-      else if (options.count("mysql")) {
+      } else if (options.count("mysql")) {
 #ifdef HAVE_LIBMYSQLCLIENT
 	dut = make_shared<dut_mysql>(options["sqlite"]);
 #else

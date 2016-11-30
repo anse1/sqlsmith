@@ -20,6 +20,7 @@ create table error (
     msg text,    -- error message
     query text,  -- failed query
     target text, -- conninfo of the target
+    sqlstate text, -- sqlstate of error
     
     -- not referenced by sqlsmith:
     t timestamptz default now(),
@@ -46,6 +47,7 @@ grant insert,select on table instance to smith;
 grant insert on table error to smith;
 grant update,insert,select on table stat to smith;
 grant usage on all sequences in schema public to smith;
+grant select on boring_sqlstates to smith;
 
 -- stuff beyond this line is not referenced by sqlsmith
 
@@ -62,6 +64,20 @@ drop view if exists report;
 create view report as
        select count(1), max(t) as last_seen, error
        from base_error group by 3 order by count desc;
+
+
+create or replace view state_report as
+ SELECT count(1) AS count,
+    sqlstate,
+    min(substring(firstline(e.msg),1,80)) AS sample,
+    array_agg(DISTINCT i.hostname) AS hosts
+   FROM error e
+     JOIN instance i ON i.id = e.id
+  WHERE e.t > (now() - '24:00:00'::interval)
+  GROUP BY sqlstate
+  ORDER BY (count(1));
+
+comment on view state_report is 'an sqlstate-grouped report';
 
 comment on view report is 'same report as sqlsmith''s verbose output';
 
@@ -90,6 +106,9 @@ comment on view instance_speed is 'query speed of recently active instances';
 
 -- Filtering boring errors
 
+create table boring_sqlstates (sqlstate text primary key);
+comment on table boring_sqlstates is 'sqlstates to reject';
+
 create table known(error text);
 comment on table known is 'error messages to reject';
 
@@ -98,8 +117,13 @@ comment on table known_re is 'regular expressions to match error messages to rej
 
 create or replace function discard_known() returns trigger as $$
 begin
-	if exists (select 1 from known_re where new.msg ~ re)
-	     or exists (select 1 from known where firstline(new.msg) = error)
+	if exists (select 1 from boring_sqlstates b where new.sqlstate = b.sqlstate)
+	   or exists (select 1 from known where firstline(new.msg) = error)
+	then
+	   return NULL;
+        end if;
+	
+	if new.msg ~ ANY (select re from known_re)
         then
 	   return NULL;
 	end if;
@@ -113,6 +137,7 @@ create trigger discard_known before insert on error
 -- YMMV.
 create index on error(t);
 
+-- Following views are used for debugging sqlsmith
 create view impedance as
     select id, generated, level, nodes, updated,
     	   prod, ok, bad, js.retries, limited, failed
