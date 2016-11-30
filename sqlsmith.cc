@@ -62,11 +62,7 @@ int main(int argc, char *argv[])
   cerr << PACKAGE_NAME " " GITREV << endl;
 
   map<string,string> options;
-<<<<<<< HEAD
   regex optregex("--(help|log-to|verbose|target|sqlite|mysql|version|dump-all-graphs|seed|dry-run|max-queries|exclude-catalog)(?:=((?:.|\n)*))?");
-=======
-  regex optregex("--(help|log-to|verbose|target|sqlite|mysql|version|dump-all-graphs|seed|dry-run|max-queries)(?:=((?:.|\n)*))?");
->>>>>>> fusion/mysql
   
   for(char **opt = argv+1 ;opt < argv+argc; opt++) {
     smatch match;
