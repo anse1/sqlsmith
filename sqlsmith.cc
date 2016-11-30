@@ -62,7 +62,11 @@ int main(int argc, char *argv[])
   cerr << PACKAGE_NAME " " GITREV << endl;
 
   map<string,string> options;
+<<<<<<< HEAD
   regex optregex("--(help|log-to|verbose|target|sqlite|mysql|version|dump-all-graphs|seed|dry-run|max-queries|exclude-catalog)(?:=((?:.|\n)*))?");
+=======
+  regex optregex("--(help|log-to|verbose|target|sqlite|mysql|version|dump-all-graphs|seed|dry-run|max-queries)(?:=((?:.|\n)*))?");
+>>>>>>> fusion/mysql
   
   for(char **opt = argv+1 ;opt < argv+argc; opt++) {
     smatch match;
@@ -109,6 +113,7 @@ int main(int argc, char *argv[])
 	cerr << "Sorry, " PACKAGE_NAME " was compiled without SQLite support." << endl;
 	return 1;
 #endif
+
       } else if (options.count("mysql")) {
 
 #ifdef HAVE_LIBMYSQLCLIENT
@@ -172,7 +177,8 @@ int main(int argc, char *argv[])
 	cerr << "Sorry, " PACKAGE_NAME " was compiled without SQLite support." << endl;
 	return 1;
 #endif
-      } else if (options.count("mysql")) {
+      }
+      else if (options.count("mysql")) {
 #ifdef HAVE_LIBMYSQLCLIENT
 	dut = make_shared<dut_mysql>(options["sqlite"]);
 #else
