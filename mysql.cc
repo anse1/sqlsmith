@@ -101,7 +101,7 @@ schema_mysql::schema_mysql(const std::string &conninfo)
 	if (!row[0] || !row[1])
 	  throw std::runtime_error("broken schema");
 
-	column col(row[0], row[1]);
+	column col(row[0], sqltype::get(row[1]));
 	t->columns().push_back(col);
       }
       mysql_free_result(result);
