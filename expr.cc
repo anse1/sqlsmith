@@ -40,6 +40,7 @@ shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
 case_expr::case_expr(prod *p, sqltype *type_constraint)
   : value_expr(p)
 {
+  match();
   condition = bool_expr::factory(this);
   retry_limit = 20;
 
