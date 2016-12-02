@@ -6,6 +6,7 @@ create table instance (
     target text,   -- target connstr
     hostname text, -- hostname of sqlsmith instance
     version text,   -- target version()
+    seed text,   -- RNG seed
 
     -- not referenced by sqlsmith:
     t timestamptz default now(),
