@@ -127,6 +127,7 @@ int main(int argc, char *argv[])
       schema->fill_scope(scope);
 //       work w(c);
 //       w.commit();
+      smith::rng.seed(options.count("seed") ? stoi(options["seed"]) : getpid());
 
       vector<shared_ptr<logger> > loggers;
 
@@ -147,8 +148,6 @@ int main(int argc, char *argv[])
       if (options.count("dump-all-graphs"))
 	loggers.push_back(make_shared<ast_logger>());
       
-      smith::rng.seed(options.count("seed") ? stoi(options["seed"]) : getpid());
-
       if (options.count("dry-run")) {
 	while (1) {
 	  shared_ptr<prod> gen = statement_factory(&scope);

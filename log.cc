@@ -1,6 +1,7 @@
 #include "config.h"
 #include <iostream>
 #include <pqxx/pqxx>
+#include <sstream>
 
 #ifndef HAVE_BOOST_REGEX
 #include <regex>
@@ -21,6 +22,7 @@ extern "C" {
 #include "schema.hh"
 #include "gitrev.h"
 #include "impedance.hh"
+#include "random.hh"
 
 using namespace std;
 using namespace pqxx;
@@ -135,13 +137,16 @@ pqxx_logger::pqxx_logger(std::string target, std::string conninfo, struct schema
   w.exec("set application_name to '" PACKAGE "::log';");
 
   c->prepare("instance",
-	     "insert into instance (rev, target, hostname, version) "
-	     "values ($1, $2, $3, $4) returning id");
+	     "insert into instance (rev, target, hostname, version, seed) "
+	     "values ($1, $2, $3, $4, $5) returning id");
 
   char hostname[1024];
   gethostname(hostname, sizeof(hostname));
+
+  ostringstream seed;
+  seed << smith::rng;
     
-  result r = w.prepared("instance")(GITREV)(target)(hostname)(s.version).exec();
+  result r = w.prepared("instance")(GITREV)(target)(hostname)(s.version)(seed.str()).exec();
   
   id = r[0][0].as<long>(id);
 
