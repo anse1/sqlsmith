@@ -24,7 +24,7 @@ struct mysql_connection {
 struct schema_mysql : schema, mysql_connection {
   schema_mysql(const std::string &conninfo);
   virtual std::string quote_name(const std::string &id) {
-    return id;
+    return "\"" + id + "\"";
   }
 };
 

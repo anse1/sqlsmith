@@ -178,14 +178,13 @@ coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
  
 void coalesce::out(std::ostream &out)
 {
-  out << "cast(coalesce(";
+  out << "coalesce(";
   for (auto expr = value_exprs.begin(); expr != value_exprs.end(); expr++) {
     out << **expr;
     if (expr+1 != value_exprs.end())
       out << ",", indent(out);
   }
   out << ")";
-  out << " as " << type->name << ")";
 }
 
 const_expr::const_expr(prod *p, sqltype *type_constraint)
@@ -200,7 +199,7 @@ const_expr::const_expr(prod *p, sqltype *type_constraint)
   else if (dynamic_cast<insert_stmt*>(p) && (d6() > 3))
     expr += "default";
   else
-    expr += "cast(null as " + type->name + ")";
+    expr += "null";
 }
 
 funcall::funcall(prod *p, sqltype *type_constraint, bool agg)

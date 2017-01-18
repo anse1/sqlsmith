@@ -27,7 +27,7 @@ struct prod {
   long retries = 0;
   /// Maximum number of retries allowed before reporting a failure to
   /// the Parent prod.
-  long retry_limit = 200;
+  long retry_limit = 20;
   prod(prod *parent);
   /// Newline and indent according to tree level.
   virtual void indent(std::ostream &out);
