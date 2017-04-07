@@ -325,21 +325,11 @@ dut_libpq::dut_libpq(std::string conninfo)
 
 void dut_libpq::command(const std::string &stmt)
 {
-     PGresult *res = PQexec(conn, stmt.c_str());
-     PQclear(res);
-}
-
-void dut_libpq::test(const std::string &stmt)
-{
     if (!conn)
 	connect(conninfo_);
-
-    command("BEGIN;");
     PGresult *res = PQexec(conn, stmt.c_str());
-    int status = PQresultStatus(res);
-    command("ROLLBACK;");
 
-    switch (status) {
+    switch (PQresultStatus(res)) {
 
     case PGRES_FATAL_ERROR:
     default:
@@ -357,6 +347,7 @@ void dut_libpq::test(const std::string &stmt)
 	PQclear(res);
 
 	if (CONNECTION_OK != PQstatus(conn)) {
+            PQfinish(conn);
 	    conn = 0;
 	    throw dut::broken(error_string.c_str(), sqlstate_string.c_str());
 	}
@@ -373,7 +364,12 @@ void dut_libpq::test(const std::string &stmt)
 	PQclear(res);
 	return;
     }
-
 }
 
-
+void dut_libpq::test(const std::string &stmt)
+{
+    command("ROLLBACK;");
+    command("BEGIN;");
+    command(stmt.c_str());
+    command("ROLLBACK;");
+}
