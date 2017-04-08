@@ -64,7 +64,7 @@ dut_pqxx::dut_pqxx(std::string conninfo)
 {
      c.set_variable("statement_timeout", "'1s'");
      c.set_variable("client_min_messages", "'ERROR'");
-     c.set_variable("application_name", "'"PACKAGE "::dut'");
+     c.set_variable("application_name", "'" PACKAGE "::dut'");
 }
 
 void dut_pqxx::test(const std::string &stmt)
