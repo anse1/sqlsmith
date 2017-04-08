@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
       schema->fill_scope(scope);
 
       if (options.count("rngstate")) {
-	   smith::rng << options["seed"];
+	   istringstream(options["rngstate"]) >> smith::rng;
       } else {
 	   smith::rng.seed(options.count("seed") ? stoi(options["seed"]) : getpid());
       }
