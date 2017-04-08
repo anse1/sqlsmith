@@ -62,26 +62,16 @@ bool pg_type::consistent(sqltype *rvalue)
 dut_pqxx::dut_pqxx(std::string conninfo)
   : c(conninfo)
 {
-  
+     c.set_variable("statement_timeout", "'1s'");
+     c.set_variable("client_min_messages", "'ERROR'");
+     c.set_variable("application_name", "'"PACKAGE "::dut'");
 }
 
 void dut_pqxx::test(const std::string &stmt)
 {
   try {
-
-    if (reset_gucs) {
-
-      if(!c.is_open())
-	c.activate();
-
-      pqxx::work w(c);
-
-      w.exec("set statement_timeout to '1s';"
-	     "set client_min_messages to 'ERROR';"
-	     "set application_name to '" PACKAGE "::dut';");
-      w.commit();
-      reset_gucs = false;
-    }
+    if(!c.is_open())
+       c.activate();
 
     pqxx::work w(c);
     w.exec(stmt.c_str());
@@ -89,7 +79,6 @@ void dut_pqxx::test(const std::string &stmt)
   } catch (const pqxx::failure &e) {
     if ((dynamic_cast<const pqxx::broken_connection *>(&e))) {
       /* re-throw to outer loop to recover session. */
-      reset_gucs = true;
       throw dut::broken(e.what());
     }
 
@@ -105,10 +94,9 @@ void dut_pqxx::test(const std::string &stmt)
 
 schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 {
-  pqxx::work w(c);
+  c.set_variable("application_name", "'" PACKAGE "::schema'");
 
-  w.exec("set application_name to '" PACKAGE "::schema';");
-    
+  pqxx::work w(c);
   pqxx::result r = w.exec("select version()");
   version = r[0][0].as<string>();
 

@@ -51,7 +51,6 @@ struct schema_pqxx : public schema {
 
 struct dut_pqxx : dut_base {
   pqxx::connection c;
-  bool reset_gucs = true;
   virtual void test(const std::string &stmt);
   dut_pqxx(std::string conninfo);
 };
