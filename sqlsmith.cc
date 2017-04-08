@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
   cerr << PACKAGE_NAME " " GITREV << endl;
 
   map<string,string> options;
-  regex optregex("--(help|log-to|verbose|target|sqlite|version|dump-all-graphs|seed|dry-run|max-queries|exclude-catalog)(?:=((?:.|\n)*))?");
+  regex optregex("--(help|log-to|verbose|target|sqlite|version|dump-all-graphs|seed|dry-run|max-queries|rngstate|exclude-catalog)(?:=((?:.|\n)*))?");
   
   for(char **opt = argv+1 ;opt < argv+argc; opt++) {
     smatch match;
@@ -83,6 +83,7 @@ int main(int argc, char *argv[])
       "    --dry-run            print queries instead of executing them" << endl <<
       "    --exclude-catalog    don't generate queries using catalog relations" << endl <<
       "    --max-queries=long   terminate after generating this many queries" << endl <<
+      "    --rngstate=string    deserialize dumped rng state" << endl <<
       "    --verbose            emit progress output" << endl <<
       "    --version            print version information and exit" << endl <<
       "    --help               print available command line options and exit" << endl;
@@ -108,9 +109,12 @@ int main(int argc, char *argv[])
       scope scope;
       long queries_generated = 0;
       schema->fill_scope(scope);
-//       work w(c);
-//       w.commit();
-      smith::rng.seed(options.count("seed") ? stoi(options["seed"]) : getpid());
+
+      if (options.count("rngstate")) {
+	   smith::rng << options["seed"];
+      } else {
+	   smith::rng.seed(options.count("seed") ? stoi(options["seed"]) : getpid());
+      }
 
       vector<shared_ptr<logger> > loggers;
 
