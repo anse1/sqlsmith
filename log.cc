@@ -122,9 +122,9 @@ void cerr_logger::error(prod &query, const dut::failure &e)
   if (dynamic_cast<const dut::timeout *>(&e))
     cerr << "t";
   else if (dynamic_cast<const dut::syntax *>(&e))
-    cerr << "s";
+    cerr << "S";
   else if (dynamic_cast<const dut::broken *>(&e))
-    cerr << "c";
+    cerr << "C";
   else
     cerr << "e";
 }
