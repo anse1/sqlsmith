@@ -87,9 +87,9 @@ following ones are generated:
 | symbol | meaning           | details                                       |
 |--------+-------------------+-----------------------------------------------|
 | .      | ok                | Query generated and executed with ok sqlstate |
-| s      | syntax error      | These are bugs in sqlsmith - please report    |
+| S      | syntax error      | These are bugs in sqlsmith - please report    |
 | t      | timeout           | SQLsmith sets a statement timeout of 1s       |
-| c      | broken connection | These happen when a query crashes the server  |
+| C      | broken connection | These happen when a query crashes the server  |
 | e      | other error       |                                               |
 
 When you test against a RDBMS that doesn't support some of SQLsmith's
