@@ -76,7 +76,7 @@ The following options are currently supported:
 | =--dry-run=          | print queries instead of executing them                  |
 | =--max-queries=long= | terminate after generating this many queries             |
 | =--dump-all-graphs=  | dump generated ASTs for debugging                        |
-| =--rngstate=string=  | deserialize dumped rng state                             |
+| =--rng-state=string= | deserialize dumped rng state                             |
 
 Sample output:
 

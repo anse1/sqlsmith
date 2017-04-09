@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
   cerr << PACKAGE_NAME " " GITREV << endl;
 
   map<string,string> options;
-  regex optregex("--(help|log-to|verbose|target|sqlite|version|dump-all-graphs|seed|dry-run|max-queries|rngstate|exclude-catalog)(?:=((?:.|\n)*))?");
+  regex optregex("--(help|log-to|verbose|target|sqlite|version|dump-all-graphs|seed|dry-run|max-queries|rng-state|exclude-catalog)(?:=((?:.|\n)*))?");
   
   for(char **opt = argv+1 ;opt < argv+argc; opt++) {
     smatch match;
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
       "    --dry-run            print queries instead of executing them" << endl <<
       "    --exclude-catalog    don't generate queries using catalog relations" << endl <<
       "    --max-queries=long   terminate after generating this many queries" << endl <<
-      "    --rngstate=string    deserialize dumped rng state" << endl <<
+      "    --rng-state=string    deserialize dumped rng state" << endl <<
       "    --verbose            emit progress output" << endl <<
       "    --version            print version information and exit" << endl <<
       "    --help               print available command line options and exit" << endl;
@@ -110,8 +110,8 @@ int main(int argc, char *argv[])
       long queries_generated = 0;
       schema->fill_scope(scope);
 
-      if (options.count("rngstate")) {
-	   istringstream(options["rngstate"]) >> smith::rng;
+      if (options.count("rng-state")) {
+	   istringstream(options["rng-state"]) >> smith::rng;
       } else {
 	   smith::rng.seed(options.count("seed") ? stoi(options["seed"]) : getpid());
       }
@@ -163,10 +163,11 @@ int main(int argc, char *argv[])
       else
 	dut = make_shared<dut_libpq>(options["target"]);
 
-      while (1)
+      while (1) /* Loop to recover connection loss */
       {
 	try {
-	  while (1) {
+            while (1) { /* Main loop */
+
 	    if (options.count("max-queries")
 		&& (++queries_generated > stol(options["max-queries"]))) {
 	      if (global_cerr_logger)
