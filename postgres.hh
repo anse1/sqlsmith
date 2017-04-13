@@ -11,7 +11,7 @@
 #include <pqxx/pqxx>
 
 extern "C" {
-#include <postgresql/libpq-fe.h>
+#include <libpq-fe.h>
 }
 
 #define OID long
