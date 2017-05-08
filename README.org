@@ -43,7 +43,7 @@ optional:
 
 In order to build on Mac OSX, assuming you use Homebrew, run the following
 
-: brew install libpqxx automake libtool autoconf autoconf-archive
+: brew install libpqxx automake libtool autoconf autoconf-archive pkg-config
 : cd sqlsmith
 : autoreconf -i # Not needed when building from a release tarball
 : ./configure
