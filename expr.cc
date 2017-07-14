@@ -19,8 +19,10 @@ shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
   try {
     if (1 == d20() && p->level < d6() && window_function::allowed(p))
       return make_shared<window_function>(p, type_constraint);
-    else if (1 == d20() && p->level < d6())
+    else if (1 == d42() && p->level < d6())
       return make_shared<coalesce>(p, type_constraint);
+    else if (1 == d42() && p->level < d6())
+      return make_shared<nullif>(p, type_constraint);
     else if (d9()<3 && p->level < d6())
       return make_shared<funcall>(p, type_constraint);
     else if (d6()<3)
@@ -156,7 +158,8 @@ comparison_op::comparison_op(prod *p) : bool_binop(p)
   }
 }
 
-coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
+coalesce::coalesce(prod *p, sqltype *type_constraint, const char *abbrev)
+     : value_expr(p), abbrev_(abbrev)
 {
   auto first_expr = value_expr::factory(this, type_constraint);
   auto second_expr = value_expr::factory(this, first_expr->type);
@@ -177,7 +180,7 @@ coalesce::coalesce(prod *p, sqltype *type_constraint) : value_expr(p)
  
 void coalesce::out(std::ostream &out)
 {
-  out << "cast(coalesce(";
+  out << "cast(" << abbrev_ << "(";
   for (auto expr = value_exprs.begin(); expr != value_exprs.end(); expr++) {
     out << **expr;
     if (expr+1 != value_exprs.end())
