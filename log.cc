@@ -85,7 +85,7 @@ void cerr_logger::report()
     long err_count = 0;
     for (auto e : report) {
       err_count += e.second;
-      cerr << e.second << "\t" << e.first << endl;
+      cerr << e.second << "\t" << e.first.substr(0,80) << endl;
     }
     cerr << "error rate: " << (float)err_count/(queries) << endl;
     impedance::report();
