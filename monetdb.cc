@@ -206,7 +206,7 @@ void dut_monetdb::test(const std::string &stmt)
 {
 	MapiHdl hdl = mapi_query(dbh,"CALL sys.settimeout(1)");
 	mapi_close_handle(hdl);
-	cerr << stmt << endl;
+	cerr << stmt << ";" << endl;
 	hdl = mapi_query(dbh,stmt.c_str());
 	if (mapi_error(dbh)!=MOK) {
 		try {
