@@ -31,6 +31,7 @@ using boost::regex_match;
 #endif
 
 #include "postgres.hh"
+#include "monetdb.hh"
 
 using namespace std;
 
@@ -58,7 +59,7 @@ int main(int argc, char *argv[])
   cerr << PACKAGE_NAME " " GITREV << endl;
 
   map<string,string> options;
-  regex optregex("--(help|log-to|verbose|target|sqlite|version|dump-all-graphs|seed|dry-run|max-queries|rng-state|exclude-catalog)(?:=((?:.|\n)*))?");
+  regex optregex("--(help|log-to|verbose|target|sqlite|monetdb|version|dump-all-graphs|seed|dry-run|max-queries|rng-state|exclude-catalog)(?:=((?:.|\n)*))?");
   
   for(char **opt = argv+1 ;opt < argv+argc; opt++) {
     smatch match;
@@ -77,6 +78,7 @@ int main(int argc, char *argv[])
 #ifdef HAVE_LIBSQLITE3
       "    --sqlite=URI         SQLite database to send queries to" << endl <<
 #endif
+      "    --monetdb=connstr    MonetDB database to send queries to" <<endl <<
       "    --log-to=connstr     log errors to postgres database" << endl <<
       "    --seed=int           seed RNG with specified int instead of PID" << endl <<
       "    --dump-all-graphs    dump generated ASTs" << endl <<
@@ -103,6 +105,8 @@ int main(int argc, char *argv[])
 	return 1;
 #endif
       }
+      else if(options.count("monetdb"))
+	schema = make_shared<schema_monetdb>(options["monetdb"]);
       else
 	schema = make_shared<schema_pqxx>(options["target"], options.count("exclude-catalog"));
 
@@ -160,6 +164,8 @@ int main(int argc, char *argv[])
 	return 1;
 #endif
       }
+      else if(options.count("monetdb"))
+	dut = make_shared<dut_monetdb>(options["monetdb"]);
       else
 	dut = make_shared<dut_libpq>(options["target"]);
 
