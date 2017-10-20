@@ -71,7 +71,6 @@ schema_monetdb::schema_monetdb(std::string &conninfo):monetdb_connection(conninf
 	string qry = "select t.name, s.name, t.system, t.type from sys.tables t,  sys.schemas s where t.schema_id=s.id ";
 	MapiHdl hdl = mapi_query(dbh,qry.c_str());
 	while (mapi_fetch_row(hdl)) {
-		cerr << ".";
 		tables.push_back(table(mapi_fetch_field(hdl,0),mapi_fetch_field(hdl,1),strcmp(mapi_fetch_field(hdl,2),"false")==0 ? true : false , atoi(mapi_fetch_field(hdl,3))==0 ? false : true));
 	}
 	mapi_close_handle(hdl);
@@ -85,11 +84,9 @@ schema_monetdb::schema_monetdb(std::string &conninfo):monetdb_connection(conninf
 			" where tab.name= '");
 		q += t->name;
 		q += "' and tab.id = col.table_id";
-		cerr << ".";
 
 		hdl = mapi_query(dbh,q.c_str());
 		while (mapi_fetch_row(hdl)) {
-			cerr << ".";
 			column c(mapi_fetch_field(hdl,0), sqltype::get(mapi_fetch_field(hdl,1)));
 			t->columns().push_back(c);
 		}
@@ -105,7 +102,6 @@ schema_monetdb::schema_monetdb(std::string &conninfo):monetdb_connection(conninf
                 "  where f.id=a.func_id and f.id=b.func_id and f.id=c.func_id and a.name='arg_1' and b.name='arg_2' and c.number=0");
 	hdl = mapi_query(dbh,opq.c_str());
 	while (mapi_fetch_row(hdl)) {
-		cerr << ".";
 		op o(mapi_fetch_field(hdl,0),sqltype::get(mapi_fetch_field(hdl,1)),sqltype::get(mapi_fetch_field(hdl,2)),sqltype::get(mapi_fetch_field(hdl,3)));
 		register_operator(o);
 	}
@@ -117,7 +113,6 @@ schema_monetdb::schema_monetdb(std::string &conninfo):monetdb_connection(conninf
 	string routq("select s.name, f.id, a.type, f.name from sys.schemas s, sys.args a, sys.types t, sys.functions f where f.schema_id = s.id and f.id=a.func_id and a.number=0 and a.type = t.sqlname and f.mod<>'aggr'");
 	hdl = mapi_query(dbh,routq.c_str());
 	while (mapi_fetch_row(hdl)) {
-		cerr << ".";
 		routine proc(mapi_fetch_field(hdl,0),mapi_fetch_field(hdl,1),sqltype::get(mapi_fetch_field(hdl,2)),mapi_fetch_field(hdl,3));
 		register_routine(proc);
 	}
@@ -134,7 +129,6 @@ schema_monetdb::schema_monetdb(std::string &conninfo):monetdb_connection(conninf
 		hdl = mapi_query(dbh,routpq.c_str());
 		while (mapi_fetch_row(hdl)) {
 			proc.argtypes.push_back(sqltype::get(mapi_fetch_field(hdl,0)));
-			cerr<<".";
 		}
 		mapi_close_handle(hdl);
 	}
@@ -147,7 +141,6 @@ schema_monetdb::schema_monetdb(std::string &conninfo):monetdb_connection(conninf
 
 	hdl = mapi_query(dbh,aggq.c_str());
 	while (mapi_fetch_row(hdl)) {
-		cerr << ".";
 		routine proc(mapi_fetch_field(hdl,0),mapi_fetch_field(hdl,1),sqltype::get(mapi_fetch_field(hdl,2)),mapi_fetch_field(hdl,3));
 		register_aggregate(proc);
 	}
@@ -163,7 +156,6 @@ schema_monetdb::schema_monetdb(std::string &conninfo):monetdb_connection(conninf
 		hdl = mapi_query(dbh,aggpq.c_str());
 		while (mapi_fetch_row(hdl)) {
 			proc.argtypes.push_back(sqltype::get(mapi_fetch_field(hdl,0)));
-			cerr<<".";
 		}
 		mapi_close_handle(hdl);
 	}
