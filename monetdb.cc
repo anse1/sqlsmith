@@ -14,9 +14,6 @@ using boost::regex_match;
 
 using namespace std;
 
-static regex e_syntax("near \".*\": syntax error");
-static regex e_user_abort("callback requested query abort");
-
 extern "C" {
 #include <mapi.h>
 #include <unistd.h>
@@ -206,26 +203,39 @@ void dut_monetdb::test(const std::string &stmt)
 {
 	MapiHdl hdl = mapi_query(dbh,"CALL sys.settimeout(1)");
 	mapi_close_handle(hdl);
-	cerr << stmt << ";" << endl;
 	hdl = mapi_query(dbh,stmt.c_str());
+
 	if (mapi_error(dbh)!=MOK) {
-		try {
-			if (mapi_error(dbh)==MERROR) {
-			    mapi_explain_result(hdl, stdout);
-			    mapi_close_handle(hdl);
-			    throw dut::syntax("e");
-			} else if (mapi_error(dbh)==MTIMEOUT) {
-				mapi_explain_result(hdl, stdout);
-				mapi_close_handle(hdl);
-				throw dut::timeout("t");
-			} else {
-				mapi_explain_result(hdl, stdout);
-				mapi_close_handle(hdl);
-				throw dut::failure("er");
-			}
-		} catch (dut::failure &e) {
-			throw dut::failure("et");
-		}
-        }
+
+	     try {
+		  const char *error_string = mapi_result_error(hdl);
+
+		  if (!error_string)
+		       error_string = "unknown error";
+
+		  const char *sqlstate = mapi_result_errorcode(hdl);
+		  if (!sqlstate)
+		       sqlstate = "XXXXX";
+
+		  /* monetdb appears to report sqlstate 42000 for all
+		     errors, so we need to match the error string to
+		     figure out actual syntax errors */
+
+		  static regex re_syntax("^syntax error,.*", regex::extended);
+		  
+		  if (mapi_error(dbh)==MERROR)
+		       throw dut::syntax(error_string, sqlstate);
+		  else if (mapi_error(dbh)==MTIMEOUT)
+		       throw dut::timeout(error_string, sqlstate);
+		  else if (regex_match(error_string, re_syntax))
+		       throw dut::syntax(error_string, sqlstate);
+		  else
+		       throw dut::failure(error_string, sqlstate);
+
+	     }  catch (dut::failure &e) {
+		  mapi_close_handle(hdl);
+		  throw;
+	     }
+	}
 	mapi_close_handle(hdl);
 }
