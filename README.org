@@ -7,9 +7,9 @@
 SQLsmith is a random SQL query generator.  Its paragon is [[https://embed.cs.utah.edu/csmith/][Csmith]],
 which proved valuable for quality assurance in C compilers.
 
-It currently supports generating queries for PostgreSQL 9.1 or later
-and SQLite 3.  To add support for another RDBMS, you need to implement
-two classes providing schema information about and connectivity to the
+It currently supports generating queries for PostgreSQL, SQLite 3 and
+MonetDB.  To add support for another RDBMS, you need to implement two
+classes providing schema information about and connectivity to the
 device under test.
 
 Besides developers of the RDBMS products, users developing extensions
@@ -18,8 +18,8 @@ workload.
 
 During its prototyping stage, it already found about thirty bugs in
 PostgreSQL alphas, betas and releases, including security
-vulnerabilities in released versions.  SQLsmith's score list is
-maintained by its users in a wiki:
+vulnerabilities in released versions.  SQLsmith's growing score list
+is maintained by its users in a wiki:
 
     https://github.com/anse1/sqlsmith/wiki#score-list
 
@@ -30,6 +30,7 @@ maintained by its users in a wiki:
 optional:
 - boost::regex in case your std::regex is broken
 - SQLite3
+- monetdb_mapi
 
 ** Building on Debian Jessie
 
@@ -64,17 +65,21 @@ Example invocations:
 : sqlsmith --verbose --target="host=/tmp port=65432 dbname=regression"
 : # testing SQLite
 : sqlsmith --verbose --sqlite="file:$HOME/.mozilla/firefox/places.sqlite?mode=ro"
+: # testing MonetDB
+: sqlsmith --verbose --monetdb="mapi:monetdb://localhost:50000/smith"
 
 The following options are currently supported:
 
 | =--target=connstr=   | target postgres database (default: libpq defaults)       |
 | =--sqlite=URI=       | target SQLite3 database                                  |
+| =--monetdb=URI=      | target MonetDB database                                  |
 | =--log-to=connstr=   | postgres db for logging errors into (default: don't log) |
 | =--verbose=          | emit progress output                                     |
 | =--version=          | show version information                                 |
 | =--seed=int=         | seed RNG with specified integer instead of PID           |
 | =--dry-run=          | print queries instead of executing them                  |
 | =--max-queries=long= | terminate after generating this many queries             |
+| =--exclude-catalog=  | don't generate queries using catalog relations           |
 | =--dump-all-graphs=  | dump generated ASTs for debugging                        |
 | =--rng-state=string= | deserialize dumped rng state                             |
 
@@ -147,13 +152,14 @@ debugging with the help of SQLsmith might look like.
 ** Large-scale testing
 
 =--log-to= allows logging of hundreds of sqlsmith instances into a
-central database. [[./log.sql]] contains the schema sqlsmith expects and
-some additional views to generate reports on the logged contents.
+central PostgreSQL database. [[./log.sql]] contains the schema sqlsmith
+expects and some additional views to generate reports on the logged
+contents.
 
 It also contains a trigger to filter boring/known errors based on the
 contents of the tables known and known_re.  I periodically COPY my
-filter tables into the files [[./known_re.txt]] and [[./known.txt]] to serve
-as a starting point.
+filter tables for testing PostgreSQL into the files [[./known_re.txt]] and
+[[./known.txt]] to serve as a starting point.
 
 ** Resources
 
@@ -168,5 +174,9 @@ and break things).  See the file [[COPYING]] for details.
 ** Authors
 
 Andreas Seltenreich <seltenreich@gmx.de>
+
+Bo Tang <tangloner@gmail.com>
+
+Stefan Manegold <Stefan.Manegold@cwi.nl>
 
 [[ast.png]]
