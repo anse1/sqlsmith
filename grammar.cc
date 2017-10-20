@@ -10,8 +10,6 @@
 #include "schema.hh"
 #include "impedance.hh"
 
-#define MONETDB
-
 using namespace std;
 
 shared_ptr<table_ref> table_ref::factory(prod *p) {
@@ -57,13 +55,9 @@ table_sample::table_sample(prod *p) : table_ref(p) {
 
 void table_sample::out(std::ostream &out) {
   out << t->ident() <<
-#ifdef MONETDB
-    " as " << refs[0]->ident();
-#else
     " as " << refs[0]->ident() <<
     " tablesample " << method <<
     " (" << percent << ") ";
-#endif
 }
 
 table_subquery::table_subquery(prod *p, bool lateral)
