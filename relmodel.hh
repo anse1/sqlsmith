@@ -85,6 +85,8 @@ struct scope {
   scope(struct scope *parent = 0) : parent(parent) {
     if (parent) {
       schema = parent->schema;
+      tables = parent->tables;
+      refs = parent->refs;
       stmt_seq = parent->stmt_seq;
     }
   }
