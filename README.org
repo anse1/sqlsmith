@@ -80,6 +80,7 @@ The following options are currently supported:
 | =--dry-run=          | print queries instead of executing them                  |
 | =--max-queries=long= | terminate after generating this many queries             |
 | =--exclude-catalog=  | don't generate queries using catalog relations           |
+| =--dump-all-queries= | dump queries as they are generated                       |
 | =--dump-all-graphs=  | dump generated ASTs for debugging                        |
 | =--rng-state=string= | deserialize dumped rng state                             |
 

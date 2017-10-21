@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
   cerr << PACKAGE_NAME " " GITREV << endl;
 
   map<string,string> options;
-  regex optregex("--(help|log-to|verbose|target|sqlite|monetdb|version|dump-all-graphs|seed|dry-run|max-queries|rng-state|exclude-catalog)(?:=((?:.|\n)*))?");
+  regex optregex("--(help|log-to|verbose|target|sqlite|monetdb|version|dump-all-graphs|dump-all-queries|seed|dry-run|max-queries|rng-state|exclude-catalog)(?:=((?:.|\n)*))?");
   
   for(char **opt = argv+1 ;opt < argv+argc; opt++) {
     smatch match;
@@ -86,6 +86,7 @@ int main(int argc, char *argv[])
 #endif
       "    --log-to=connstr     log errors to postgres database" << endl <<
       "    --seed=int           seed RNG with specified int instead of PID" << endl <<
+      "    --dump-all-queries   print queries as they are generated" << endl <<
       "    --dump-all-graphs    dump generated ASTs" << endl <<
       "    --dry-run            print queries instead of executing them" << endl <<
       "    --exclude-catalog    don't generate queries using catalog relations" << endl <<
@@ -149,7 +150,10 @@ int main(int argc, char *argv[])
       
       if (options.count("dump-all-graphs"))
 	loggers.push_back(make_shared<ast_logger>());
-      
+
+      if (options.count("dump-all-queries"))
+	loggers.push_back(make_shared<query_dumper>());
+
       if (options.count("dry-run")) {
 	while (1) {
 	  shared_ptr<prod> gen = statement_factory(&scope);

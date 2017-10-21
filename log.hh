@@ -20,6 +20,14 @@ struct logger {
   }
 };
 
+/// logger to dump all generated queries
+struct query_dumper : logger {
+  virtual void generated(prod &query) {
+       query.out(std::cout);
+       std::cout << ";" << std::endl;
+  }
+};
+
 /// logger for statistics collection
 struct stats_collecting_logger : logger {
   long queries = 0;
