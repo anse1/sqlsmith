@@ -178,6 +178,6 @@ Andreas Seltenreich <seltenreich@gmx.de>
 
 Bo Tang <tangloner@gmail.com>
 
-Stefan Manegold <Stefan.Manegold@cwi.nl>
+Sjoerd Mullender <sjoerd@acm.org>
 
 [[ast.png]]
