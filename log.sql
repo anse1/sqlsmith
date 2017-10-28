@@ -25,7 +25,7 @@ create table error (
     
     -- not referenced by sqlsmith:
     t timestamptz default now(),
-    errid serial primary key
+    errid bigserial primary key
 );
 
 comment on table error is 'observed errors';
@@ -143,7 +143,7 @@ create view impedance as
     select id, generated, level, nodes, updated,
     	   prod, ok, bad, js.retries, limited, failed
     from stat, jsonb_to_recordset(impedance->'impedance')
-    	 js(prod text, ok int, bad int, retries int, limited int, failed int)
+    	 js(prod text, ok bigint, bad bigint, retries bigint, limited bigint, failed bigint)
     where impedance is not null;
 
 comment on view impedance is 'stat table with normalized jsonb';
