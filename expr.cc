@@ -149,12 +149,8 @@ comparison_op::comparison_op(prod *p) : bool_binop(p)
   lhs = value_expr::factory(this, oper->left);
   rhs = value_expr::factory(this, oper->right);
 
-  while (oper->left == oper->right
+  if (oper->left == oper->right
 	 && lhs->type != rhs->type) {
-    // Looks like more concrete types have been picked for the
-    // operators.  Try to match them.
-
-    retry();
 
     if (lhs->type->consistent(rhs->type))
       lhs = value_expr::factory(this, rhs->type);
