@@ -43,17 +43,16 @@ case_expr::case_expr(prod *p, sqltype *type_constraint)
   : value_expr(p)
 {
   condition = bool_expr::factory(this);
-  retry_limit = 20;
-
   true_expr = value_expr::factory(this, type_constraint);
   false_expr = value_expr::factory(this, true_expr->type);
 
-  while(false_expr->type != true_expr->type) {
-    retry();
-    if (true_expr->type->consistent(false_expr->type))
-      true_expr = value_expr::factory(this, false_expr->type);
-    else 
-      false_expr = value_expr::factory(this, true_expr->type);
+  if(false_expr->type != true_expr->type) {
+       /* Types are consistent but not identical.  Try to find a more
+	  concrete one for a better match. */
+       if (true_expr->type->consistent(false_expr->type))
+	    true_expr = value_expr::factory(this, false_expr->type);
+       else 
+	    false_expr = value_expr::factory(this, true_expr->type);
   }
   type = true_expr->type;
 }
