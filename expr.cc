@@ -149,7 +149,6 @@ comparison_op::comparison_op(prod *p) : bool_binop(p)
   lhs = value_expr::factory(this, oper->left);
   rhs = value_expr::factory(this, oper->right);
 
-  retry_limit = 10;
   while (oper->left == oper->right
 	 && lhs->type != rhs->type) {
     // Looks like more concrete types have been picked for the
