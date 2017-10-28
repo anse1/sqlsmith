@@ -96,17 +96,23 @@ column_reference::column_reference(prod *p, sqltype *type_constraint) : value_ex
 
 shared_ptr<bool_expr> bool_expr::factory(prod *p)
 {
-  if(d6() < 4)
-    return make_shared<comparison_op>(p);
-  else if (d6() < 4)
-    return make_shared<bool_term>(p);
-  else if (d6() < 4)
-    return make_shared<null_predicate>(p);
-  else if (d6() < 4)
-    return make_shared<truth_value>(p);
-  else
-    return make_shared<exists_predicate>(p);
+  try {
+       if(d6() < 4)
+	    return make_shared<comparison_op>(p);
+       else if (d6() < 4)
+	    return make_shared<bool_term>(p);
+       else if (d6() < 4)
+	    return make_shared<null_predicate>(p);
+       else if (d6() < 4)
+	    return make_shared<truth_value>(p);
+       else
+	    return make_shared<exists_predicate>(p);
 //     return make_shared<distinct_pred>(q);
+  } catch (runtime_error &e) {
+  }
+  p->retry();
+  return factory(p);
+     
 }
 
 exists_predicate::exists_predicate(prod *p) : bool_expr(p)
