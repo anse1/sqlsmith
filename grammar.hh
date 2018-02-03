@@ -256,11 +256,22 @@ struct update_stmt : modifying_stmt {
   }
 };
 
+struct when_clause : prod {
+  bool matched;
+  shared_ptr<bool_expr> condition;  
+//   shared_ptr<prod> merge_action;
+  when_clause(struct merge_stmt *p);
+  virtual ~when_clause() { }
+  virtual void out(std::ostream &out);
+  virtual void accept(prod_visitor *v);
+};
+
 struct merge_stmt : modifying_stmt {
   merge_stmt(prod *p, struct scope *s, table *victim = 0);
   shared_ptr<table_ref> target_table_;
   shared_ptr<table_ref> data_source;
   shared_ptr<join_cond> join_condition;
+  vector<shared_ptr<when_clause> > clauselist;
   virtual ~merge_stmt() {  }
   virtual void out(std::ostream &out);
   virtual void accept(prod_visitor *v);

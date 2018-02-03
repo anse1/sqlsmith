@@ -544,7 +544,8 @@ merge_stmt::merge_stmt(prod *p, struct scope *s, table *victim)
   data_source = table_ref::factory(this);
 //   join_condition = join_cond::factory(this, *target_table_, *data_source);
   join_condition = make_shared<simple_join_cond>(this, *target_table_, *data_source);
-     
+
+  clauselist.push_back(make_shared<when_clause>(this));
 }
 
 void merge_stmt::out(std::ostream &out)
@@ -555,7 +556,10 @@ void merge_stmt::out(std::ostream &out)
      indent(out);
      out << "ON " << *join_condition;
      indent(out);
-     out << "WHEN NOT MATCHED THEN DO NOTHING ";
+     for (auto p : clauselist) {
+       out << *p;
+       indent(out);
+     }
 }
 
 void merge_stmt::accept(prod_visitor *v)
@@ -564,4 +568,30 @@ void merge_stmt::accept(prod_visitor *v)
   target_table_->accept(v);
   data_source->accept(v);
   join_condition->accept(v);
+  for (auto p : clauselist)
+    p->accept(v);
+    
+}
+
+when_clause::when_clause(merge_stmt *p)
+  : prod(p)
+{
+  condition = bool_expr::factory(this);
+  matched = false;
+}
+
+void when_clause::out(std::ostream &out)
+{
+  out << (matched ? "WHEN MATCHED " : "WHEN NOT MATCHED");
+  indent(out);
+  out << "AND " << *condition;
+  indent(out);
+  out << " THEN";
+  out << " DO NOTHING";
+}
+
+void when_clause::accept(prod_visitor *v)
+{
+  v->visit(this);
+  condition->accept(v);
 }
