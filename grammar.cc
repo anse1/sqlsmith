@@ -41,7 +41,6 @@ void table_or_query_name::out(std::ostream &out) {
 
 target_table::target_table(prod *p, table *victim) : table_ref(p)
 {
-
   while (! victim
 	 || victim->schema == "pg_catalog"
 	 || !victim->is_base_table
@@ -49,7 +48,7 @@ target_table::target_table(prod *p, table *victim) : table_ref(p)
     struct named_relation *pick = random_pick(scope->tables);
     victim = dynamic_cast<table *>(pick);
     retry();
-  } ;
+  }
   victim_ = victim;
   refs.push_back(make_shared<aliased_relation>(scope->stmt_uid("target"), victim));
 }
@@ -538,16 +537,16 @@ void common_table_expression::out(std::ostream &out)
   indent(out);
 }
 
-merge_stmt::merge_stmt(prod *p, struct scope *s, table *victim)
-     : modifying_stmt(p,s,victim) {
+merge_stmt::merge_stmt(prod *p, struct scope *s, table *v)
+     : modifying_stmt(p,s,v) {
   target_table_ = make_shared<target_table>(this, victim);
   data_source = table_ref::factory(this);
 //   join_condition = join_cond::factory(this, *target_table_, *data_source);
   join_condition = make_shared<simple_join_cond>(this, *target_table_, *data_source);
 
-  clauselist.push_back(make_shared<when_clause>(this));
+  clauselist.push_back(when_clause::factory(this));
   while (d6()>4)
-    clauselist.push_back(make_shared<when_clause>(this));
+    clauselist.push_back(when_clause::factory(this));
 }
 
 void merge_stmt::out(std::ostream &out)
@@ -596,4 +595,39 @@ void when_clause::accept(prod_visitor *v)
 {
   v->visit(this);
   condition->accept(v);
+}
+
+when_clause_update::when_clause_update(merge_stmt *p)
+  : when_clause(p)
+{
+  set_list = std::make_shared<struct set_list>(p);
+}
+
+void when_clause_update::out(std::ostream &out) {
+  out << "WHEN MATCHED AND " << *condition;
+  indent(out);
+  out << " THEN UPDATE " << *set_list;
+}
+
+void when_clause_update::accept(prod_visitor *v)
+{
+  v->visit(this);
+  set_list->accept(v);
+}
+
+shared_ptr<when_clause> when_clause::factory(struct merge_stmt *p)
+{
+  try {
+    switch(d6()) {
+    case 1:
+    case 2:
+    case 3:
+      return make_shared<when_clause_update>(p);
+    default:
+      return make_shared<when_clause>(p);
+    }
+  } catch (runtime_error &e) {
+    p->retry();
+  }
+  return factory(p);
 }

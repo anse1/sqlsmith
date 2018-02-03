@@ -262,9 +262,19 @@ struct when_clause : prod {
 //   shared_ptr<prod> merge_action;
   when_clause(struct merge_stmt *p);
   virtual ~when_clause() { }
+  static shared_ptr<when_clause> factory(struct merge_stmt *p);
   virtual void out(std::ostream &out);
   virtual void accept(prod_visitor *v);
 };
+
+struct when_clause_update : when_clause {
+  shared_ptr<struct set_list> set_list;
+  when_clause_update(struct merge_stmt *p);
+  virtual ~when_clause_update() { }
+  virtual void out(std::ostream &out);
+  virtual void accept(prod_visitor *v);
+};
+
 
 struct merge_stmt : modifying_stmt {
   merge_stmt(prod *p, struct scope *s, table *victim = 0);
