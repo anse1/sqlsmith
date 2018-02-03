@@ -615,13 +615,49 @@ void when_clause_update::accept(prod_visitor *v)
   set_list->accept(v);
 }
 
+
+when_clause_insert::when_clause_insert(struct merge_stmt *p)
+  : when_clause(p)
+{
+  for (auto col : p->victim->columns()) {
+    auto expr = value_expr::factory(this, col.type);
+    assert(expr->type == col.type);
+    exprs.push_back(expr);
+  }
+}
+
+void when_clause_insert::out(std::ostream &out) {
+  out << "WHEN NOT MATCHED AND " << *condition;
+  indent(out);
+  out << " THEN INSERT VALUES ( ";
+
+  for (auto expr = exprs.begin();
+       expr != exprs.end();
+       expr++) {
+    out << **expr;
+    if (expr+1 != exprs.end())
+      out << ", ";
+  }
+  out << ")";
+
+}
+
+void when_clause_insert::accept(prod_visitor *v)
+{
+  v->visit(this);
+  for (auto p : exprs)
+    p->accept(v);
+}
+
 shared_ptr<when_clause> when_clause::factory(struct merge_stmt *p)
 {
   try {
     switch(d6()) {
     case 1:
     case 2:
+      return make_shared<when_clause_insert>(p);
     case 3:
+    case 4:
       return make_shared<when_clause_update>(p);
     default:
       return make_shared<when_clause>(p);
@@ -631,3 +667,4 @@ shared_ptr<when_clause> when_clause::factory(struct merge_stmt *p)
   }
   return factory(p);
 }
+

@@ -275,6 +275,13 @@ struct when_clause_update : when_clause {
   virtual void accept(prod_visitor *v);
 };
 
+struct when_clause_insert : when_clause {
+  vector<shared_ptr<value_expr> > exprs;
+  when_clause_insert(struct merge_stmt *p);
+  virtual ~when_clause_insert() { }
+  virtual void out(std::ostream &out);
+  virtual void accept(prod_visitor *v);
+};
 
 struct merge_stmt : modifying_stmt {
   merge_stmt(prod *p, struct scope *s, table *victim = 0);
