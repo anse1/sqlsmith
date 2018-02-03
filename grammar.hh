@@ -217,7 +217,7 @@ struct insert_stmt : modifying_stmt {
 struct set_list : prod {
   vector<shared_ptr<value_expr> > value_exprs;
   vector<string> names;
-  set_list(modifying_stmt *pprod);
+  set_list(prod *p, table *target);
   virtual ~set_list() {  }
   virtual void out(std::ostream &out);
   virtual void accept(prod_visitor *v) {
@@ -269,6 +269,7 @@ struct when_clause : prod {
 
 struct when_clause_update : when_clause {
   shared_ptr<struct set_list> set_list;
+  struct scope myscope;
   when_clause_update(struct merge_stmt *p);
   virtual ~when_clause_update() { }
   virtual void out(std::ostream &out);

@@ -405,10 +405,10 @@ void insert_stmt::out(std::ostream &out)
   out << ")";
 }
 
-set_list::set_list(modifying_stmt *pprod) : prod(pprod)
+set_list::set_list(prod *p, table *target) : prod(p)
 {
   do {
-    for (auto col : pprod->victim->columns()) {
+    for (auto col : target->columns()) {
       if (d6() < 4)
 	continue;
       auto expr = value_expr::factory(this, col.type);
@@ -434,7 +434,7 @@ update_stmt::update_stmt(prod *p, struct scope *s, table *v)
   : modifying_stmt(p, s, v) {
   scope->refs.push_back(victim);
   search = bool_expr::factory(this);
-  set_list = make_shared<struct set_list>(this);
+  set_list = make_shared<struct set_list>(this, victim);
 }
 
 void update_stmt::out(std::ostream &out)
@@ -458,7 +458,7 @@ upsert_stmt::upsert_stmt(prod *p, struct scope *s, table *v)
   if (!victim->constraints.size())
     fail("need table w/ constraint for upsert");
     
-  set_list = std::make_shared<struct set_list>(this);
+  set_list = std::make_shared<struct set_list>(this, victim);
   search = bool_expr::factory(this);
   constraint = random_pick(victim->constraints);
 }
@@ -539,10 +539,17 @@ void common_table_expression::out(std::ostream &out)
 
 merge_stmt::merge_stmt(prod *p, struct scope *s, table *v)
      : modifying_stmt(p,s,v) {
+
   target_table_ = make_shared<target_table>(this, victim);
   data_source = table_ref::factory(this);
 //   join_condition = join_cond::factory(this, *target_table_, *data_source);
   join_condition = make_shared<simple_join_cond>(this, *target_table_, *data_source);
+
+
+  /* Put data_source into scope but not target_table.  Visibility of
+     the latter varies depending on kind of when clause. */
+//   for (auto r : data_source->refs)
+//     scope->refs.push_back(&*r);
 
   clauselist.push_back(when_clause::factory(this));
   while (d6()>4)
@@ -598,9 +605,14 @@ void when_clause::accept(prod_visitor *v)
 }
 
 when_clause_update::when_clause_update(merge_stmt *p)
-  : when_clause(p)
+  : when_clause(p), myscope(p->scope)
 {
-  set_list = std::make_shared<struct set_list>(p);
+  myscope.tables = scope->tables;
+  myscope.refs = scope->refs;
+  scope = &myscope;
+  scope->refs.push_back(&*(p->target_table_->refs[0]));
+  
+  set_list = std::make_shared<struct set_list>(this, p->victim);
 }
 
 void when_clause_update::out(std::ostream &out) {
