@@ -467,6 +467,7 @@ shared_ptr<prod> statement_factory(struct scope *s)
 {
   try {
     s->new_stmt();
+    return make_shared<merge_stmt>((struct prod *)0, s);
     if (d42() == 1)
       return make_shared<merge_stmt>((struct prod *)0, s);
     if (d42() == 1)
