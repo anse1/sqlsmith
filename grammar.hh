@@ -28,6 +28,13 @@ struct table_or_query_name : table_ref {
   named_relation *t;
 };
 
+struct target_table : table_ref {
+  virtual void out(std::ostream &out);
+  target_table(prod *p, table *victim = 0);
+  virtual ~target_table() { }
+  table *victim_;
+};
+
 struct table_sample : table_ref {
   virtual void out(std::ostream &out);
   table_sample(prod *p);
@@ -247,6 +254,16 @@ struct update_stmt : modifying_stmt {
     v->visit(this);
     search->accept(v);
   }
+};
+
+struct merge_stmt : modifying_stmt {
+  merge_stmt(prod *p, struct scope *s, table *victim = 0);
+  shared_ptr<table_ref> target_table_;
+  shared_ptr<table_ref> data_source;
+  shared_ptr<join_cond> join_condition;
+  virtual ~merge_stmt() {  }
+  virtual void out(std::ostream &out);
+  virtual void accept(prod_visitor *v);
 };
 
 struct update_returning : update_stmt {

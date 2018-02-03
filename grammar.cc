@@ -39,6 +39,25 @@ void table_or_query_name::out(std::ostream &out) {
   out << t->ident() << " as " << refs[0]->ident();
 }
 
+target_table::target_table(prod *p, table *victim) : table_ref(p)
+{
+
+  while (! victim
+	 || victim->schema == "pg_catalog"
+	 || !victim->is_base_table
+	 || !victim->columns().size()) {
+    struct named_relation *pick = random_pick(scope->tables);
+    victim = dynamic_cast<table *>(pick);
+    retry();
+  } ;
+  victim_ = victim;
+  refs.push_back(make_shared<aliased_relation>(scope->stmt_uid("target"), victim));
+}
+
+void target_table::out(std::ostream &out) {
+  out << victim_->ident() << " as " << refs[0]->ident();
+}
+
 table_sample::table_sample(prod *p) : table_ref(p) {
   match();
   retry_limit = 1000; /* retries are cheap here */
@@ -449,6 +468,7 @@ shared_ptr<prod> statement_factory(struct scope *s)
 {
   try {
     s->new_stmt();
+    return make_shared<merge_stmt>((struct prod *)0, s);
     if (d42() == 1)
       return make_shared<insert_stmt>((struct prod *)0, s);
     else if (d42() == 1)
@@ -516,4 +536,32 @@ void common_table_expression::out(std::ostream &out)
   }
   out << *query;
   indent(out);
+}
+
+merge_stmt::merge_stmt(prod *p, struct scope *s, table *victim)
+     : modifying_stmt(p,s,victim) {
+  target_table_ = make_shared<target_table>(this, victim);
+  data_source = table_ref::factory(this);
+//   join_condition = join_cond::factory(this, *target_table_, *data_source);
+  join_condition = make_shared<simple_join_cond>(this, *target_table_, *data_source);
+     
+}
+
+void merge_stmt::out(std::ostream &out)
+{
+     out << "MERGE INTO " << *target_table_;
+     indent(out);
+     out << "USING " << *data_source;
+     indent(out);
+     out << "ON " << *join_condition;
+     indent(out);
+     out << "WHEN NOT MATCHED THEN DO NOTHING ";
+}
+
+void merge_stmt::accept(prod_visitor *v)
+{
+  v->visit(this);
+  target_table_->accept(v);
+  data_source->accept(v);
+  join_condition->accept(v);
 }
