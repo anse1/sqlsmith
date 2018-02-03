@@ -546,6 +546,8 @@ merge_stmt::merge_stmt(prod *p, struct scope *s, table *victim)
   join_condition = make_shared<simple_join_cond>(this, *target_table_, *data_source);
 
   clauselist.push_back(make_shared<when_clause>(this));
+  while (d6()>4)
+    clauselist.push_back(make_shared<when_clause>(this));
 }
 
 void merge_stmt::out(std::ostream &out)
