@@ -78,10 +78,13 @@ struct table : named_relation {
 
 struct scope {
   struct scope *parent;
-  vector<named_relation*> tables;  // available to table_ref productions
-  vector<named_relation*> refs; // available to column_ref productions
+  /// available to table_ref productions
+  vector<named_relation*> tables;
+ /// available to column_ref productions
+  vector<named_relation*> refs;
   struct schema *schema;
-  shared_ptr<map<string,unsigned int> > stmt_seq; // sequence for stmt-unique identifiers
+  /// Counters for prefixed stmt-unique identifiers
+  shared_ptr<map<string,unsigned int> > stmt_seq;
   scope(struct scope *parent = 0) : parent(parent) {
     if (parent) {
       schema = parent->schema;
@@ -98,12 +101,14 @@ struct scope {
 	  result.push_back(make_pair(r,c));
     return result;
   }
+  /** Generate unique identifier with prefix. */
   string stmt_uid(const char* prefix) {
     string result(prefix);
     result += "_";
     result += std::to_string((*stmt_seq)[result]++);
     return result;
   }
+  /** Reset unique identifier counters. */
   void new_stmt() {
     stmt_seq = std::make_shared<map<string,unsigned int> >();
   }
