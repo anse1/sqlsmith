@@ -577,7 +577,7 @@ when_clause::when_clause(merge_stmt *p)
   : prod(p)
 {
   condition = bool_expr::factory(this);
-  matched = false;
+  matched = d6() > 3;
 }
 
 void when_clause::out(std::ostream &out)
@@ -586,8 +586,8 @@ void when_clause::out(std::ostream &out)
   indent(out);
   out << "AND " << *condition;
   indent(out);
-  out << " THEN";
-  out << " DO NOTHING";
+  out << " THEN ";
+  out << (matched ? "DELETE" : "DO NOTHING");
 }
 
 void when_clause::accept(prod_visitor *v)
