@@ -467,7 +467,8 @@ shared_ptr<prod> statement_factory(struct scope *s)
 {
   try {
     s->new_stmt();
-    return make_shared<merge_stmt>((struct prod *)0, s);
+    if (d42() == 1)
+      return make_shared<merge_stmt>((struct prod *)0, s);
     if (d42() == 1)
       return make_shared<insert_stmt>((struct prod *)0, s);
     else if (d42() == 1)
@@ -539,7 +540,7 @@ void common_table_expression::out(std::ostream &out)
 
 merge_stmt::merge_stmt(prod *p, struct scope *s, table *v)
      : modifying_stmt(p,s,v) {
-
+  match();
   target_table_ = make_shared<target_table>(this, victim);
   data_source = table_ref::factory(this);
 //   join_condition = join_cond::factory(this, *target_table_, *data_source);
