@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <unordered_set>
 #include <utility>
 #include <memory>
 #include <cassert>
@@ -80,6 +81,7 @@ struct scope {
   struct scope *parent;
   vector<named_relation*> tables;  // available to table_ref productions
   vector<named_relation*> refs; // available to column_ref productions
+  std::unordered_set<string> excluded_stmts;
   struct schema *schema;
   shared_ptr<map<string,unsigned int> > stmt_seq; // sequence for stmt-unique identifiers
   scope(struct scope *parent = 0) : parent(parent) {
