@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <chrono>
+#include <algorithm>
 
 #ifndef HAVE_BOOST_REGEX
 #include <regex>
@@ -62,8 +63,8 @@ int main(int argc, char *argv[])
   cerr << PACKAGE_NAME " " GITREV << endl;
 
   map<string,string> options;
-  regex optregex("--(help|log-to|verbose|target|sqlite|monetdb|version|dump-all-graphs|dump-all-queries|seed|dry-run|max-queries|rng-state|exclude-catalog)(?:=((?:.|\n)*))?");
-  
+  regex optregex("--(help|log-to|verbose|target|sqlite|monetdb|version|dump-all-graphs|dump-all-queries|seed|dry-run|max-queries|rng-state|exclude-catalog|exclude-stmts)(?:=((?:.|\n)*))?");
+
   for(char **opt = argv+1 ;opt < argv+argc; opt++) {
     smatch match;
     string s(*opt);
@@ -75,26 +76,30 @@ int main(int argc, char *argv[])
     }
   }
 
+  const std::string option_exclude_stmts = "exclude-stmts";
+
   if (options.count("help")) {
     cerr <<
-      "    --target=connstr     postgres database to send queries to" << endl <<
+      "    --target=connstr        postgres database to send queries to" << endl <<
 #ifdef HAVE_LIBSQLITE3
-      "    --sqlite=URI         SQLite database to send queries to" << endl <<
+      "    --sqlite=URI            SQLite database to send queries to" << endl <<
 #endif
 #ifdef HAVE_MONETDB
-      "    --monetdb=connstr    MonetDB database to send queries to" <<endl <<
+      "    --monetdb=connstr       MonetDB database to send queries to" <<endl <<
 #endif
-      "    --log-to=connstr     log errors to postgres database" << endl <<
-      "    --seed=int           seed RNG with specified int instead of PID" << endl <<
-      "    --dump-all-queries   print queries as they are generated" << endl <<
-      "    --dump-all-graphs    dump generated ASTs" << endl <<
-      "    --dry-run            print queries instead of executing them" << endl <<
-      "    --exclude-catalog    don't generate queries using catalog relations" << endl <<
-      "    --max-queries=long   terminate after generating this many queries" << endl <<
-      "    --rng-state=string    deserialize dumped rng state" << endl <<
-      "    --verbose            emit progress output" << endl <<
-      "    --version            print version information and exit" << endl <<
-      "    --help               print available command line options and exit" << endl;
+      "    --log-to=connstr        log errors to postgres database" << endl <<
+      "    --seed=int              seed RNG with specified int instead of PID" << endl <<
+      "    --dump-all-queries      print queries as they are generated" << endl <<
+      "    --dump-all-graphs       dump generated ASTs" << endl <<
+      "    --dry-run               print queries instead of executing them" << endl <<
+      "    --exclude-catalog       don't generate queries using catalog relations" << endl <<
+      "    --" << option_exclude_stmts << "=string  comma-separated list of statements that should not be generated" << endl <<
+      "                            choices: MERGE, INSERT, DELETE, UPSERT, UPDATE, SELECT_FOR_UPDATE, CTE" << endl <<
+      "    --max-queries=long      terminate after generating this many queries" << endl <<
+      "    --rng-state=string      deserialize dumped rng state" << endl <<
+      "    --verbose               emit progress output" << endl <<
+      "    --version               print version information and exit" << endl <<
+      "    --help                  print available command line options and exit" << endl;
     return 0;
   } else if (options.count("version")) {
     return 0;
@@ -126,6 +131,20 @@ int main(int argc, char *argv[])
       long queries_generated = 0;
       schema->fill_scope(scope);
 
+      if (options.count(option_exclude_stmts)) {
+         const auto& excluded_stmts = options[option_exclude_stmts];
+         boost::regex re("[a-zA-Z_]+");
+         boost::sregex_iterator it(excluded_stmts.begin(), excluded_stmts.end(), re);
+         boost::sregex_iterator itEnd;
+         for(; it != itEnd; ++it) {
+           std::string stmt = it->str();
+           std::cout << "Excluding: " << stmt << "\n";
+
+           std::transform(stmt.begin(), stmt.end(), stmt.begin(), ::tolower);
+           scope.excluded_stmts.emplace(stmt);
+         }
+      }
+
       if (options.count("rng-state")) {
 	   istringstream(options["rng-state"]) >> smith::rng;
       } else {
@@ -147,7 +166,7 @@ int main(int argc, char *argv[])
 	loggers.push_back(l);
 	signal(SIGINT, cerr_log_handler);
       }
-      
+
       if (options.count("dump-all-graphs"))
 	loggers.push_back(make_shared<ast_logger>());
 
@@ -166,11 +185,12 @@ int main(int argc, char *argv[])
 	  if (options.count("max-queries")
 	      && (queries_generated >= stol(options["max-queries"])))
 	      return 0;
+
 	}
       }
 
       shared_ptr<dut_base> dut;
-      
+
       if (options.count("sqlite")) {
 #ifdef HAVE_LIBSQLITE3
 	dut = make_shared<dut_sqlite>(options["sqlite"]);
@@ -180,7 +200,7 @@ int main(int argc, char *argv[])
 #endif
       }
       else if(options.count("monetdb")) {
-#ifdef HAVE_MONETDB	   
+#ifdef HAVE_MONETDB
 	dut = make_shared<dut_monetdb>(options["monetdb"]);
 #else
 	cerr << "Sorry, " PACKAGE_NAME " was compiled without MonetDB support." << endl;
@@ -201,13 +221,13 @@ int main(int argc, char *argv[])
 		global_cerr_logger->report();
 	      return 0;
 	    }
-	    
+
 	    /* Invoke top-level production to generate AST */
 	    shared_ptr<prod> gen = statement_factory(&scope);
 
 	    for (auto l : loggers)
 	      l->generated(*gen);
-	  
+
 	    /* Generate SQL from AST */
 	    ostringstream s;
 	    gen->out(s);

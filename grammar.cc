@@ -465,22 +465,39 @@ upsert_stmt::upsert_stmt(prod *p, struct scope *s, table *v)
 
 shared_ptr<prod> statement_factory(struct scope *s)
 {
+  const auto check_d42 = [s](const std::string& stmt) {
+    return !s->excluded_stmts.count(stmt) && d42() == 1;
+  };
+
+  const auto check_d6 = [s](const int value, const std::string& stmt) {
+      return !s->excluded_stmts.count(stmt) && d6() > value;
+  };
+
   try {
     s->new_stmt();
-    if (d42() == 1)
+    if (check_d42("merge")) {
       return make_shared<merge_stmt>((struct prod *)0, s);
-    if (d42() == 1)
+    }
+
+    if (check_d42("insert")) {
       return make_shared<insert_stmt>((struct prod *)0, s);
-    else if (d42() == 1)
+    }
+    else if (check_d42("delete")) {
       return make_shared<delete_returning>((struct prod *)0, s);
-    else if (d42() == 1) {
+    }
+    else if (check_d42("upsert")) {
       return make_shared<upsert_stmt>((struct prod *)0, s);
-    } else if (d42() == 1)
+    }
+    else if (check_d42("update")) {
       return make_shared<update_returning>((struct prod *)0, s);
-    else if (d6() > 4)
+    }
+    else if (check_d6(4, "select_for_update")) {
       return make_shared<select_for_update>((struct prod *)0, s);
-    else if (d6() > 5)
+    }
+    else if (check_d6(5, "cte")) {
       return make_shared<common_table_expression>((struct prod *)0, s);
+    }
+
     return make_shared<query_spec>((struct prod *)0, s);
   } catch (runtime_error &e) {
     return statement_factory(s);
