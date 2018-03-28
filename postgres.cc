@@ -210,7 +210,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 	     "and proname <> 'pg_event_trigger_table_rewrite_reason' "
 	     "and proname <> 'pg_event_trigger_table_rewrite_oid' "
 	     "and proname !~ '^ri_fkey_' "
-	     "and not (proretset or proisagg or proiswindow) ");
+	     "and not (proretset or prokind = 'a' or prokind = 'w') ");
 
   for (auto row : r) {
     routine proc(row[0].as<string>(),
@@ -246,8 +246,8 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 	     "and proname not in ('percentile_cont', 'dense_rank', 'cume_dist', "
 	     "'rank', 'test_rank', 'percent_rank', 'percentile_disc', 'mode', 'test_percentile_disc') "
 	     "and proname !~ '^ri_fkey_' "
-	     "and not (proretset or proiswindow) "
-	     "and proisagg");
+	     "and not (proretset or prokind = 'w') "
+	     "and prokind = 'a'");
 
   for (auto row : r) {
     routine proc(row[0].as<string>(),
