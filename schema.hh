@@ -39,6 +39,7 @@ struct schema {
   std::vector<table*> base_tables;
 
   string version;
+  int version_num; // comparable version number
 
   const char *true_literal = "true";
   const char *false_literal = "false";

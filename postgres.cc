@@ -100,6 +100,13 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
   pqxx::result r = w.exec("select version()");
   version = r[0][0].as<string>();
 
+  r = w.exec("SHOW server_version_num");
+  version_num = r[0][0].as<int>();
+
+  // address the schema change in postgresql 11 that replaced proisagg and proiswindow with prokind
+  string procedure_is_aggregate = version_num < 110000 ? "proisagg" : "prokind = 'a'";
+  string procedure_is_window = version_num < 110000 ? "proiswindow" : "prokind = 'w'";
+
   cerr << "Loading types...";
 
   r = w.exec("select quote_ident(typname), oid, typdelim, typrelid, typelem, typarray, typtype "
@@ -210,7 +217,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 	     "and proname <> 'pg_event_trigger_table_rewrite_reason' "
 	     "and proname <> 'pg_event_trigger_table_rewrite_oid' "
 	     "and proname !~ '^ri_fkey_' "
-	     "and not (proretset or prokind = 'a' or prokind = 'w') ");
+	     "and not (proretset or " + procedure_is_aggregate + " or " + procedure_is_window + ") ");
 
   for (auto row : r) {
     routine proc(row[0].as<string>(),
@@ -246,8 +253,8 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 	     "and proname not in ('percentile_cont', 'dense_rank', 'cume_dist', "
 	     "'rank', 'test_rank', 'percent_rank', 'percentile_disc', 'mode', 'test_percentile_disc') "
 	     "and proname !~ '^ri_fkey_' "
-	     "and not (proretset or prokind = 'w') "
-	     "and prokind = 'a'");
+	     "and not (proretset or " + procedure_is_window + ") "
+	     "and " + procedure_is_aggregate);
 
   for (auto row : r) {
     routine proc(row[0].as<string>(),
