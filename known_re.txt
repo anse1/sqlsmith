@@ -1,3 +1,5 @@
+Line style is ascii.
+Pager usage is off.
 \\nCONTEXT:  PL/pgSQL function tg_backlink_set
 \\nCONTEXT:  PL/pgSQL function tg_iface_biu
 \\nCONTEXT:  PL/pgSQL function tg_pslot_biu
@@ -23,6 +25,7 @@
 ^ERROR:  NUMERIC precision \\d+ must be between \\d+ and \\d+
 ^ERROR:  Patchfield "[^"]*" does not exist
 ^ERROR:  Room .* does not exist
+^ERROR:  Syntax error near
 ^ERROR:  \\d+ is outside the valid range for parameter
 ^ERROR:  argument list must have even number of elements
 ^ERROR:  array size exceeds the maximum allowed
@@ -41,6 +44,8 @@
 ^ERROR:  cannot compare dissimilar column types 
 ^ERROR:  cannot insert into column "[^"]+" of view
 ^ERROR:  cannot retrieve commit timestamp for transaction
+^ERROR:  cannot take cube root of a unit with
+^ERROR:  cannot take square root of a unit with odd
 ^ERROR:  collations are not supported by type "
 ^ERROR:  column ".*" of relation ".*" does not exist
 ^ERROR:  column .* is of type .*\\[\\].* but expression is of type .*\\[\\]
@@ -50,6 +55,8 @@
 ^ERROR:  column.*int8alias
 ^ERROR:  column.*test_type
 ^ERROR:  conflicting key value violates exclusion constraint
+^ERROR:  conflicting values for.* field in formatting string
+^ERROR:  conflicting values for.* field in formatting string:
 ^ERROR:  connection .* not available
 ^ERROR:  could not create file "pg_snapshots.*Cannot allocate memory
 ^ERROR:  could not find array type for data type
@@ -59,8 +66,10 @@
 ^ERROR:  could not identify an equality operator for type
 ^ERROR:  could not identify an ordering operator for type
 ^ERROR:  could not open relation with OID (\\d+)
+^ERROR:  could not perform block dump because dump file is being used by PID
 ^ERROR:  could not read symbolic link ".*": No such file or directory
 ^ERROR:  cross-database references are not implemented
+^ERROR:  cube index [0-9]+ is out of bounds
 ^ERROR:  currval of sequence "[^"]+" is not yet defined in this session
 ^ERROR:  database .* does not exist
 ^ERROR:  date field value out of range: 
@@ -130,6 +139,7 @@
 ^ERROR:  permission denied
 ^ERROR:  relation ".*" does not exist
 ^ERROR:  relation .*does not exists
+^ERROR:  replication slot ".*" already exists
 ^ERROR:  requested character too large for encoding
 ^ERROR:  role .* does not exist
 ^ERROR:  row is too big: 
@@ -140,6 +150,7 @@
 ^ERROR:  source string too short for "
 ^ERROR:  stack depth limit exceeded.*"infinite_recurse"
 ^ERROR:  string is not a valid identifier: 
+^ERROR:  string is too long for tsvector
 ^ERROR:  syntax error at or near
 ^ERROR:  syntax error in tsquery: 
 ^ERROR:  syntax error in tsvector: "
@@ -157,10 +168,12 @@
 ^ERROR:  type ".*" does not exist
 ^ERROR:  type .* is not a domain
 ^ERROR:  type \\d+ is not a range type
+^ERROR:  unit ".*" is not known
 ^ERROR:  unrecognized configuration parameter
 ^ERROR:  unrecognized conversion type specifier 
 ^ERROR:  unrecognized encoding: 
 ^ERROR:  unrecognized format\\(\\) type specifier
+^ERROR:  unrecognized headline parameter:
 ^ERROR:  unrecognized interval typmod
 ^ERROR:  unrecognized key word: 
 ^ERROR:  unrecognized object class: 
@@ -179,6 +192,7 @@
 ^ERROR:  value for domain [^ ]+ violates check constraint
 ^ERROR:  value too long for type character
 ^ERROR:  word is too long "
+^ERROR:  word is too long in tsquery
 ^ERROR:  wrong position info in tsvector: "
 ^ERROR: .*is not a valid binary digit
 ^ERROR: .*is not a valid encoding name
@@ -186,3 +200,4 @@
 ^FATAL:  the database system is shutting down
 ^NOT NULL constraint failed: 
 ^UNIQUE constraint failed: 
+^cannot take square root of a unit with odd

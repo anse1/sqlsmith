@@ -95,6 +95,7 @@ ERROR:  cannot accumulate empty arrays
 ERROR:  cannot accumulate null arrays
 ERROR:  cannot assign TransactionIds during recovery
 ERROR:  cannot cast type name to anyarray
+ERROR:  cannot cast type point to anyarray
 ERROR:  cannot cast type text to anyarray
 ERROR:  cannot cast type text to anyenum
 ERROR:  cannot cast type text to anyrange
@@ -151,6 +152,7 @@ ERROR:  cannot subtract infinite timestamps
 ERROR:  cannot take logarithm of a negative number
 ERROR:  cannot take logarithm of zero
 ERROR:  cannot take square root of a negative number
+ERROR:  cannot take square root of a negative-valued unit
 ERROR:  cannot use "PR" and "S"/"PL"/"MI"/"SG" together
 ERROR:  cannot use "S" and "MI" together
 ERROR:  cannot use "S" and "PL" together
@@ -603,8 +605,11 @@ ERROR:  weight out of range
 ERROR:  wrong limit, should be between 0 and 1
 ERROR:  wrong number of array subscripts
 ERROR:  zero raised to a negative power is undefined
+Line style is ascii.
+Pager usage is off.
 RIGHT and FULL OUTER JOINs are not currently supported
 Some PX error (not specified)
+^ERROR:  cannot take cube root of a unit
 attempt to write a readonly database
 database is locked
 near "(": syntax error
