@@ -27,7 +27,7 @@ AM_CPPFLAGS = $(BOOST_CPPFLAGS) $(PQXX_CFLAGS) $(POSTGRESQL_CPPFLAGS) $(MONETDB_
 
 
 EXTRA_DIST = gitrev.h dump.hh expr.hh grammar.hh log.hh prod.hh		\
-    random.hh relmodel.hh schema.hh impedance.hh filter.sql log.sql	\
+    random.hh relmodel.hh schema.hh impedance.hh known.txt known_re.txt log.sql	\
     README.org TODO.org ast.png logo.png dump.xsl util.hh sqlite.hh	\
     dut.hh postgres.hh monetdb.hh log-v1.0-to-v1.1.sql
 
