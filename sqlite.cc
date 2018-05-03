@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <cassert>
+#include <cstring>
 #include "sqlite.hh"
 #include <iostream>
 
