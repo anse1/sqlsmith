@@ -1,7 +1,6 @@
 -include Makefile.local
 
 BUILT_SOURCES = gitrev.h
-CLEANFILES = gitrev.h
 
 bin_PROGRAMS = sqlsmith
 
