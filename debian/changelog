@@ -1,4 +1,4 @@
-sqlsmith (1.2-2) unstable; urgency=medium
+sqlsmith (1.2-1) unstable; urgency=medium
 
   * SQLsmith v1.2 is released.
   * Adds support for testing sqlite3.
