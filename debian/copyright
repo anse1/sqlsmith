@@ -2,14 +2,8 @@ Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Contact: Andreas Seltenreich <seltenreich@gmx.de>
 
 Files: *
-Copyright: 2015-2017 Andreas Seltenreich <seltenreich@gmx.de>
+Copyright: 2015-2018 Andreas Seltenreich <seltenreich@gmx.de>
 License: GPL-3
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation;  version 3 of the License.
- .
- The full text of the GPL is distributed as in
- /usr/share/common-licenses/GPL-3 on Debian systems.
 
 Files: monetdb.*
 Copyright: 2016-2017 Sjoerd Mullender <sjoerd@acm.org>,  Bo Tang <tangloner@gmail.com>
