@@ -31,7 +31,9 @@ EXTRA_DIST = gitrev.h dump.hh expr.hh grammar.hh log.hh prod.hh		\
     dut.hh postgres.hh monetdb.hh log-v1.0-to-v1.2.sql
 
 gitrev.h: $(HEADERS) $(SOURCES)
-	echo "#define GITREV \"$$(git describe --dirty --tags --always)\"" > $@
+	-if git describe --dirty --tags --always > /dev/null ; then \
+	echo "#define GITREV \"$$(git describe --dirty --tags --always)\"" > $@ ;\
+	fi
 
 filterdump:
 	psql -c 'copy (select error from known) to stdout' smith|sort -u > known.txt
