@@ -16,10 +16,10 @@ Besides developers of the RDBMS products, users developing extensions
 might also be interested in exposing their code to SQLsmith's random
 workload.
 
-During its prototyping stage, it already found about thirty bugs in
-PostgreSQL alphas, betas and releases, including security
-vulnerabilities in released versions.  SQLsmith's growing score list
-is maintained by its users in a wiki:
+Since 2015, it found 118 bugs in alphas, betas and releases in the
+aforementioned products, including security vulnerabilities in
+released versions.  Addtional bugs were squashed in extensions and
+libraries such as orafce and glibc.
 
     https://github.com/anse1/sqlsmith/wiki#score-list
 
@@ -36,7 +36,7 @@ optional:
 
 : apt-get install build-essential autoconf autoconf-archive libpqxx-dev libboost-regex-dev libsqlite3-dev
 : cd sqlsmith
-: autoreconf -i # Not needed when building from a release tarball
+: autoreconf -i # Avoid when building from a release tarball
 : ./configure
 : make
 
@@ -46,7 +46,7 @@ In order to build on Mac OSX, assuming you use Homebrew, run the following
 
 : brew install libpqxx automake libtool autoconf autoconf-archive pkg-config
 : cd sqlsmith
-: autoreconf -i # Not needed when building from a release tarball
+: autoreconf -i # Avoid when building from a release tarball
 : ./configure
 : make
 
