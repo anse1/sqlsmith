@@ -1,3 +1,6 @@
+/// @file
+/// @brief Base class providing schema information to grammar
+
 #ifndef SCHEMA_HH
 #define SCHEMA_HH
 
@@ -15,6 +18,8 @@ struct schema {
   sqltype *inttype;
   sqltype *internaltype;
   sqltype *arraytype;
+
+  std::vector<sqltype *> types;
   
   std::vector<table> tables;
   std::vector<op> operators;
@@ -29,9 +34,16 @@ struct schema {
   std::multimap<sqltype*, routine*> aggregates_returning_type;
   std::multimap<sqltype*, routine*> parameterless_routines_returning_type;
   std::multimap<sqltype*, table*> tables_with_columns_of_type;
+  std::multimap<sqltype*, op*> operators_returning_type;
+  std::multimap<sqltype*, sqltype*> concrete_type;
+  std::vector<table*> base_tables;
 
   string version;
+  int version_num; // comparable version number
 
+  const char *true_literal = "true";
+  const char *false_literal = "false";
+  
   virtual std::string quote_name(const std::string &id) = 0;
   
   void summary() {
@@ -65,16 +77,6 @@ struct schema {
   schema() { }
   void generate_indexes();
 };
-
-struct schema_pqxx : public schema {
-  pqxx::connection c;
-  virtual std::string quote_name(const std::string &id) {
-    return c.quote_name(id);
-  }
-  schema_pqxx(std::string &conninfo);
-};
-  
-extern schema_pqxx schema;
 
 #endif
 

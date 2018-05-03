@@ -1,3 +1,5 @@
+/// @file
+/// @brief Dump syntax trees as GraphML
 #ifndef DUMP_HH
 #define DUMP_HH
 

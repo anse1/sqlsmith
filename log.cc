@@ -1,6 +1,7 @@
 #include "config.h"
 #include <iostream>
 #include <pqxx/pqxx>
+#include <sstream>
 
 #ifndef HAVE_BOOST_REGEX
 #include <regex>
@@ -20,6 +21,8 @@ extern "C" {
 #include "log.hh"
 #include "schema.hh"
 #include "gitrev.h"
+#include "impedance.hh"
+#include "random.hh"
 
 using namespace std;
 using namespace pqxx;
@@ -63,9 +66,6 @@ void stats_collecting_logger::generated(prod &query)
   sum_retries += v.retries;
 }
 
-static regex e_timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
-static regex e_syntax("ERROR:  syntax error at or near(\n|.)*");
-
 void cerr_logger::report()
 {
     cerr << endl << "queries: " << queries << endl;
@@ -85,9 +85,10 @@ void cerr_logger::report()
     long err_count = 0;
     for (auto e : report) {
       err_count += e.second;
-      cerr << e.second << "\t" << e.first << endl;
+      cerr << e.second << "\t" << e.first.substr(0,80) << endl;
     }
     cerr << "error rate: " << (float)err_count/(queries) << endl;
+    impedance::report();
 }
 
 
@@ -100,28 +101,30 @@ void cerr_logger::generated(prod &p)
 
 void cerr_logger::executed(prod &query)
 {
+  (void)query;
   if (columns-1 == (queries%columns)) {
     cerr << endl;
   }
   cerr << ".";
 }
 
-void cerr_logger::error(prod &query, const pqxx::failure &e)
+void cerr_logger::error(prod &query, const dut::failure &e)
 {
+  (void)query;
   istringstream err(e.what());
   string line;
-  
+
   if (columns-1 == (queries%columns)) {
     cerr << endl;
   }
   getline(err, line);
   errors[line]++;
-  if (regex_match(e.what(), e_timeout))
+  if (dynamic_cast<const dut::timeout *>(&e))
     cerr << "t";
-  else if (regex_match(e.what(), e_syntax))
-    cerr << "s";
-  else if (dynamic_cast<const pqxx::broken_connection *>(&e))
-    cerr << "c";
+  else if (dynamic_cast<const dut::syntax *>(&e))
+    cerr << "S";
+  else if (dynamic_cast<const dut::broken *>(&e))
+    cerr << "C";
   else
     cerr << "e";
 }
@@ -131,39 +134,42 @@ pqxx_logger::pqxx_logger(std::string target, std::string conninfo, struct schema
   c = make_shared<pqxx::connection>(conninfo);
 
   work w(*c);
-  w.exec("set application_name to 'sqlsmith " GITREV "';");
+  w.exec("set application_name to '" PACKAGE "::log';");
 
   c->prepare("instance",
-	     "insert into instance (rev, target, hostname, version) "
-	     "values ($1, $2, $3, $4) returning id");
+	     "insert into instance (rev, target, hostname, version, seed) "
+	     "values ($1, $2, $3, $4, $5) returning id");
 
   char hostname[1024];
   gethostname(hostname, sizeof(hostname));
+
+  ostringstream seed;
+  seed << smith::rng;
     
-  result r = w.prepared("instance")(GITREV)(target)(hostname)(s.version).exec();
+  result r = w.prepared("instance")(GITREV)(target)(hostname)(s.version)(seed.str()).exec();
   
   id = r[0][0].as<long>(id);
 
   c->prepare("error",
-	     "insert into error (id, msg, query) "
-	     "values (" + to_string(id) + ", $1, $2)");
+	     "insert into error (id, msg, query, sqlstate) "
+	     "values (" + to_string(id) + ", $1, $2, $3)");
 
   w.exec("insert into stat (id) values (" + to_string(id) + ")");
   c->prepare("stat",
 	     "update stat set generated=$1, level=$2, nodes=$3, updated=now() "
-	     ", retries = $4 "
+	     ", retries = $4, impedance = $5 "
 	     "where id = " + to_string(id));
 
   w.commit();
 
 }
 
-void pqxx_logger::error(prod &query, const pqxx::failure &e)
+void pqxx_logger::error(prod &query, const dut::failure &e)
 {
   work w(*c);
   ostringstream s;
   s << query;
-  w.prepared("error")(e.what())(s.str()).exec();
+  w.prepared("error")(e.what())(s.str())(e.sqlstate).exec();
   w.commit();
 }
 
@@ -172,7 +178,9 @@ void pqxx_logger::generated(prod &query)
   stats_collecting_logger::generated(query);
   if (999 == (queries%1000)) {
     work w(*c);
-    w.prepared("stat")(queries)(sum_height/queries)(sum_nodes/queries)(sum_retries/queries).exec();
+    ostringstream s;
+    impedance::report(s);
+    w.prepared("stat")(queries)(sum_height/queries)(sum_nodes/queries)(sum_retries/queries)(s.str()).exec();
     w.commit();
   }
 }

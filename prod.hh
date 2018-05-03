@@ -1,47 +1,54 @@
-#include <stdexcept>
+/// @file
+/// @brief Base class for grammar productions
+
 #include <string>
+#include <iostream>
 
 #ifndef PROD_HH
 #define PROD_HH
 
+/// Base class for walking the AST
 struct prod_visitor {
   virtual void visit(struct prod *p) = 0;
   virtual ~prod_visitor() { }
 };
 
+/// Base class for AST nodes
 struct prod {
+  /// Parent production that instanciated this one.  May be NULL for
+  /// top-level productions.
   struct prod *pprod;
+  /// Scope object to model column/table reference visibility.
   struct scope *scope;
+  /// Level of this production in the AST.  0 for root node.
   int level;
+  /// Number of retries in this production.  Child productions are
+  /// generated speculatively and may fail.
   long retries = 0;
-  prod(prod *parent) : pprod(parent) {
-    if (parent) {
-      level = parent->level + 1;
-      scope = parent->scope;
-    } else {
-      scope = 0;
-      level = 0;
-    }
-  }
-  virtual void indent(std::ostream &out) {
-    out << std::endl;
-    for (int i = 0; i < level; i++)
-      out << "  ";
-  }
+  /// Maximum number of retries allowed before reporting a failure to
+  /// the Parent prod.
+  long retry_limit = 100;
+  prod(prod *parent);
+  /// Newline and indent according to tree level.
+  virtual void indent(std::ostream &out);
+  /// Emit SQL for this production.
   virtual void out(std::ostream &out) = 0;
+  /// Check with the impedance matching code whether this production
+  /// has been blacklisted and throw an exception.
+  virtual void match();
+  /// Visitor pattern for walking the AST.  Make sure you visit all
+  /// child production when deriving classes.
   virtual void accept(prod_visitor *v) { v->visit(this); }
-  void retry() {
-    if (retries++ > 100000)
-      throw std::runtime_error(std::string("excessive retries in ")
-			       + typeid(this).name());
-  };
-  
+  /// Report a "failed to generate" error.
+  virtual void fail(const char *reason);
+  /// Increase the retry count and throw an exception when retry_limit
+  /// is exceeded.
+  void retry();
 };
 
 inline std::ostream& operator<<(std::ostream& s, prod& p)
 {
   p.out(s); return s;
 }
-
 
 #endif

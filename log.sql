@@ -6,6 +6,7 @@ create table instance (
     target text,   -- target connstr
     hostname text, -- hostname of sqlsmith instance
     version text,   -- target version()
+    seed text,   -- RNG seed
 
     -- not referenced by sqlsmith:
     t timestamptz default now(),
@@ -20,10 +21,11 @@ create table error (
     msg text,    -- error message
     query text,  -- failed query
     target text, -- conninfo of the target
+    sqlstate text, -- sqlstate of error
     
     -- not referenced by sqlsmith:
     t timestamptz default now(),
-    errid serial primary key
+    errid bigserial primary key
 );
 
 comment on table error is 'observed errors';
@@ -34,10 +36,11 @@ create table stat (
    level float,         -- avg. height of ASTs
    nodes float,         -- avg. number of nodes in ASTs
    retries float,       -- avg. number of retries needed for ASTs
-   updated timestamptz
+   updated timestamptz,
+   impedance jsonb      -- impedance report
 );
 
-comment on table stat is 'statistics about ASTs';
+comment on table stat is 'statistics about ASTs and productions';
 
 -- grant role smith just enough rights to do the logging
 create role smith login;
@@ -45,6 +48,7 @@ grant insert,select on table instance to smith;
 grant insert on table error to smith;
 grant update,insert,select on table stat to smith;
 grant usage on all sequences in schema public to smith;
+grant select on boring_sqlstates to smith;
 
 -- stuff beyond this line is not referenced by sqlsmith
 
@@ -61,6 +65,20 @@ drop view if exists report;
 create view report as
        select count(1), max(t) as last_seen, error
        from base_error group by 3 order by count desc;
+
+
+create or replace view state_report as
+ SELECT count(1) AS count,
+    sqlstate,
+    min(substring(firstline(e.msg),1,80)) AS sample,
+    array_agg(DISTINCT i.hostname) AS hosts
+   FROM error e
+     JOIN instance i ON i.id = e.id
+  WHERE e.t > (now() - '24:00:00'::interval)
+  GROUP BY sqlstate
+  ORDER BY (count(1));
+
+comment on view state_report is 'an sqlstate-grouped report';
 
 comment on view report is 'same report as sqlsmith''s verbose output';
 
@@ -89,6 +107,9 @@ comment on view instance_speed is 'query speed of recently active instances';
 
 -- Filtering boring errors
 
+create table boring_sqlstates (sqlstate text primary key);
+comment on table boring_sqlstates is 'sqlstates to reject';
+
 create table known(error text);
 comment on table known is 'error messages to reject';
 
@@ -97,8 +118,13 @@ comment on table known_re is 'regular expressions to match error messages to rej
 
 create or replace function discard_known() returns trigger as $$
 begin
-	if exists (select 1 from known_re where new.msg ~ re)
-	     or exists (select 1 from known where firstline(new.msg) = error)
+	if exists (select 1 from boring_sqlstates b where new.sqlstate = b.sqlstate)
+	   or exists (select 1 from known where firstline(new.msg) = error)
+	then
+	   return NULL;
+        end if;
+	
+	if new.msg ~ ANY (select re from known_re)
         then
 	   return NULL;
 	end if;
@@ -111,3 +137,27 @@ create trigger discard_known before insert on error
 
 -- YMMV.
 create index on error(t);
+
+-- Following views are used for debugging sqlsmith
+create view impedance as
+    select id, generated, level, nodes, updated,
+    	   prod, ok, bad, js.retries, limited, failed
+    from stat, jsonb_to_recordset(impedance->'impedance')
+    	 js(prod text, ok bigint, bad bigint, retries bigint, limited bigint, failed bigint)
+    where impedance is not null;
+
+comment on view impedance is 'stat table with normalized jsonb';
+
+create view impedance_report as
+  select rev, prod,
+  	 sum(generated) as generated, sum(ok) as ok,
+	 sum(bad) as bad,
+	 sum(retries) as retries,
+	 sum(limited)as limited,
+	 sum(failed) as failed
+  from impedance natural join instance
+  where rev = (select max(rev) from instance where version ~* 'postgres')
+  group by rev, prod
+  order by retries;
+
+comment on view impedance_report is 'impedance report for latest revision';

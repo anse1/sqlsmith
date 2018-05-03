@@ -1,3 +1,4 @@
+[[logo.png]]
 * SQLsmith
 
 : <mba> "I love the smell of coredumps in the morning"
@@ -6,29 +7,34 @@
 SQLsmith is a random SQL query generator.  Its paragon is [[https://embed.cs.utah.edu/csmith/][Csmith]],
 which proved valuable for quality assurance in C compilers.
 
-It currently supports generating queries for PostgreSQL 9.5 or later
-only.  SQLsmith was designed with testing different versions and even
-products in mind, but this has not manifested yet.
+It currently supports generating queries for PostgreSQL, SQLite 3 and
+MonetDB.  To add support for another RDBMS, you need to implement two
+classes providing schema information about and connectivity to the
+device under test.
 
-Besides PostgreSQL developers, users developing extensions of
-PostgreSQL might also be interested in exposing their code to
-SQLsmith's random workload.
+Besides developers of the RDBMS products, users developing extensions
+might also be interested in exposing their code to SQLsmith's random
+workload.
 
 During its prototyping stage, it already found about thirty bugs in
 PostgreSQL alphas, betas and releases, including security
-vulnerabilities in released versions.  SQLsmith's score list is
-maintained by its users in a wiki:
+vulnerabilities in released versions.  SQLsmith's growing score list
+is maintained by its users in a wiki:
 
     https://github.com/anse1/sqlsmith/wiki#score-list
 
-** Dependencies:
+** Dependencies
 - C++11
 - libpqxx
+
+optional:
 - boost::regex in case your std::regex is broken
+- SQLite3
+- monetdb_mapi
 
 ** Building on Debian Jessie
 
-: apt-get install build-essential autoconf autoconf-archive libpqxx-dev libboost-regex-dev
+: apt-get install build-essential autoconf autoconf-archive libpqxx-dev libboost-regex-dev libsqlite3-dev
 : cd sqlsmith
 : autoreconf -i # Not needed when building from a release tarball
 : ./configure
@@ -38,7 +44,7 @@ maintained by its users in a wiki:
 
 In order to build on Mac OSX, assuming you use Homebrew, run the following
 
-: brew install libpqxx automake libtool autoconf autoconf-archive
+: brew install libpqxx automake libtool autoconf autoconf-archive pkg-config
 : cd sqlsmith
 : autoreconf -i # Not needed when building from a release tarball
 : ./configure
@@ -53,20 +59,30 @@ functions that could possibly have side-effects
 (e.g. pg_terminate_backend).  Use a suitably *underprivileged user*
 for its connection to avoid this.
 
-Example invocation:
+Example invocations:
 
+: # testing Postgres
 : sqlsmith --verbose --target="host=/tmp port=65432 dbname=regression"
+: # testing SQLite
+: sqlsmith --verbose --sqlite="file:$HOME/.mozilla/firefox/places.sqlite?mode=ro"
+: # testing MonetDB
+: sqlsmith --verbose --monetdb="mapi:monetdb://localhost:50000/smith"
 
 The following options are currently supported:
 
-| =--target=connstr=   | target database (default: libpq defaults)        |
-| =--log-to=connstr=   | database for logging errors (default: don't log) |
-| =--verbose=          | emit progress output                             |
-| =--version=          | show version information                         |
-| =--seed=int=         | seed RNG with specified integer instead of PID   |
-| =--dry-run=          | print queries instead of executing them          |
-| =--max-queries=long= | terminate after generating this many queries     |
-| =--dump-all-graphs=  | dump generated ASTs for debugging                |
+| =--target=connstr=   | target postgres database (default: libpq defaults)       |
+| =--sqlite=URI=       | target SQLite3 database                                  |
+| =--monetdb=URI=      | target MonetDB database                                  |
+| =--log-to=connstr=   | postgres db for logging errors into (default: don't log) |
+| =--verbose=          | emit progress output                                     |
+| =--version=          | show version information                                 |
+| =--seed=int=         | seed RNG with specified integer instead of PID           |
+| =--dry-run=          | print queries instead of executing them                  |
+| =--max-queries=long= | terminate after generating this many queries             |
+| =--exclude-catalog=  | don't generate queries using catalog relations           |
+| =--dump-all-queries= | dump queries as they are generated                       |
+| =--dump-all-graphs=  | dump generated ASTs for debugging                        |
+| =--rng-state=string= | deserialize dumped rng state                             |
 
 Sample output:
 
@@ -77,13 +93,19 @@ following ones are generated:
 | symbol | meaning           | details                                       |
 |--------+-------------------+-----------------------------------------------|
 | .      | ok                | Query generated and executed with ok sqlstate |
-| s      | syntax error      | These are bugs in sqlsmith - please report    |
+| S      | syntax error      | These are bugs in sqlsmith - please report    |
 | t      | timeout           | SQLsmith sets a statement timeout of 1s       |
-| c      | broken connection | These happen when a query crashes the server  |
+| C      | broken connection | These happen when a query crashes the server  |
 | e      | other error       |                                               |
 
-It also periodically emits error reports.  In the following example,
-these are mostly caused by the primitive type system.
+When you test against a RDBMS that doesn't support some of SQLsmith's
+grammar, there will be a burst of syntax errors on startup.  These
+should disappear after some time as SQLsmith blacklists productions
+that consistently lead to errors.
+
+=--verbose= will also periodically emit error reports.  In the
+following example, these are mostly caused by the primitive type
+system.
 
 : queries: 39000 (202.399 gen/s, 298.942 exec/s)
 : AST stats (avg): height = 5.599 nodes = 37.8489
@@ -128,6 +150,22 @@ context where it sees non-index-oids, which causes it to croak:
 Now this is more of a curiosity than a bug, but still illustrating how
 debugging with the help of SQLsmith might look like.
 
+** Large-scale testing
+
+=--log-to= allows logging of hundreds of sqlsmith instances into a
+central PostgreSQL database. [[./log.sql]] contains the schema sqlsmith
+expects and some additional views to generate reports on the logged
+contents.
+
+It also contains a trigger to filter boring/known errors based on the
+contents of the tables known and known_re.  I periodically COPY my
+filter tables for testing PostgreSQL into the files [[./known_re.txt]] and
+[[./known.txt]] to serve as a starting point.
+
+** Resources
+
+- [[https://korte.credativ.com/~ase/sqlsmith-talk.pdf][Slides from PGConf.EU 2016]]
+
 ** License
 
 SQLsmith is available under GPLv3.  Use it at your own risk.  It may
@@ -137,5 +175,9 @@ and break things).  See the file [[COPYING]] for details.
 ** Authors
 
 Andreas Seltenreich <seltenreich@gmx.de>
+
+Bo Tang <tangloner@gmail.com>
+
+Sjoerd Mullender <sjoerd@acm.org>
 
 [[ast.png]]

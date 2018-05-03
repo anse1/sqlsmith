@@ -1,3 +1,6 @@
+/// @file
+/// @brief grammar: Top-level and unsorted grammar productions
+
 #ifndef GRAMMAR_HH
 #define GRAMMAR_HH
 
@@ -22,16 +25,22 @@ struct table_or_query_name : table_ref {
   virtual void out(std::ostream &out);
   table_or_query_name(prod *p);
   virtual ~table_or_query_name() { }
-private:
   named_relation *t;
+};
+
+struct target_table : table_ref {
+  virtual void out(std::ostream &out);
+  target_table(prod *p, table *victim = 0);
+  virtual ~target_table() { }
+  table *victim_;
 };
 
 struct table_sample : table_ref {
   virtual void out(std::ostream &out);
   table_sample(prod *p);
   virtual ~table_sample() { }
-private:
   struct table *t;
+private:
   string method;
   double percent;
 };
@@ -41,25 +50,53 @@ struct table_subquery : table_ref {
   virtual void out(std::ostream &out);
   shared_ptr<struct query_spec> query;
   table_subquery(prod *p, bool lateral = false);
-  static int instances;
   virtual ~table_subquery();
   virtual void accept(prod_visitor *v);
+};
+
+struct lateral_subquery : table_subquery {
+  lateral_subquery(prod *p)
+    : table_subquery(p, true) {  }
+};
+
+struct join_cond : prod {
+     static shared_ptr<join_cond> factory(prod *p, table_ref &lhs, table_ref &rhs);
+     join_cond(prod *p, table_ref &lhs, table_ref &rhs)
+	  : prod(p) { (void) lhs; (void) rhs;}
+};
+
+struct simple_join_cond : join_cond {
+     std::string condition;
+     simple_join_cond(prod *p, table_ref &lhs, table_ref &rhs);
+     virtual void out(std::ostream &out);
+};
+
+struct expr_join_cond : join_cond {
+     struct scope joinscope;
+     shared_ptr<bool_expr> search;
+     expr_join_cond(prod *p, table_ref &lhs, table_ref &rhs);
+     virtual void out(std::ostream &out);
+     virtual void accept(prod_visitor *v) {
+	  search->accept(v);
+	  v->visit(this);
+     }
 };
 
 struct joined_table : table_ref {
   virtual void out(std::ostream &out);  
   joined_table(prod *p);
   std::string type;
-  std::string condition;
   std::string alias;
   virtual std::string ident() { return alias; }
   shared_ptr<table_ref> lhs;
   shared_ptr<table_ref> rhs;
+  shared_ptr<join_cond> condition;
   virtual ~joined_table() {
   }
   virtual void accept(prod_visitor *v) {
     lhs->accept(v);
     rhs->accept(v);
+    condition->accept(v);
     v->visit(this);
   }
 };
@@ -96,15 +133,21 @@ struct query_spec : prod {
   shared_ptr<struct select_list> select_list;
   shared_ptr<bool_expr> search;
   std::string limit_clause;
+  struct scope myscope;
   virtual void out(std::ostream &out);
   query_spec(prod *p, struct scope *s, bool lateral = 0);
-  virtual ~query_spec() { delete scope; }
   virtual void accept(prod_visitor *v) {
     v->visit(this);
     select_list->accept(v);
     from_clause->accept(v);
     search->accept(v);
   }
+};
+
+struct select_for_update : query_spec {
+  const char *lockmode;
+  virtual void out(std::ostream &out);
+  select_for_update(prod *p, struct scope *s, bool lateral = 0);
 };
 
 struct prepare_stmt : prod {
@@ -125,9 +168,9 @@ struct prepare_stmt : prod {
 
 struct modifying_stmt : prod {
   table *victim;
+  struct scope myscope;
   modifying_stmt(prod *p, struct scope *s, struct table *victim = 0);
 //   shared_ptr<modifying_stmt> modifying_stmt::factory(prod *p, struct scope *s);
-  virtual ~modifying_stmt() { delete scope; }
   virtual void pick_victim();
 };
 
@@ -174,7 +217,7 @@ struct insert_stmt : modifying_stmt {
 struct set_list : prod {
   vector<shared_ptr<value_expr> > value_exprs;
   vector<string> names;
-  set_list(modifying_stmt *pprod);
+  set_list(prod *p, table *target);
   virtual ~set_list() {  }
   virtual void out(std::ostream &out);
   virtual void accept(prod_visitor *v) {
@@ -213,6 +256,45 @@ struct update_stmt : modifying_stmt {
   }
 };
 
+struct when_clause : prod {
+  bool matched;
+  shared_ptr<bool_expr> condition;  
+//   shared_ptr<prod> merge_action;
+  when_clause(struct merge_stmt *p);
+  virtual ~when_clause() { }
+  static shared_ptr<when_clause> factory(struct merge_stmt *p);
+  virtual void out(std::ostream &out);
+  virtual void accept(prod_visitor *v);
+};
+
+struct when_clause_update : when_clause {
+  shared_ptr<struct set_list> set_list;
+  struct scope myscope;
+  when_clause_update(struct merge_stmt *p);
+  virtual ~when_clause_update() { }
+  virtual void out(std::ostream &out);
+  virtual void accept(prod_visitor *v);
+};
+
+struct when_clause_insert : when_clause {
+  vector<shared_ptr<value_expr> > exprs;
+  when_clause_insert(struct merge_stmt *p);
+  virtual ~when_clause_insert() { }
+  virtual void out(std::ostream &out);
+  virtual void accept(prod_visitor *v);
+};
+
+struct merge_stmt : modifying_stmt {
+  merge_stmt(prod *p, struct scope *s, table *victim = 0);
+  shared_ptr<table_ref> target_table_;
+  shared_ptr<table_ref> data_source;
+  shared_ptr<join_cond> join_condition;
+  vector<shared_ptr<when_clause> > clauselist;
+  virtual ~merge_stmt() {  }
+  virtual void out(std::ostream &out);
+  virtual void accept(prod_visitor *v);
+};
+
 struct update_returning : update_stmt {
   shared_ptr<struct select_list> select_list;
   update_returning(prod *p, struct scope *s, table *victim = 0);
@@ -229,5 +311,15 @@ struct update_returning : update_stmt {
 };
 
 shared_ptr<prod> statement_factory(struct scope *s);
+
+struct common_table_expression : prod {
+  vector<shared_ptr<prod> > with_queries;
+  shared_ptr<prod> query;
+  vector<shared_ptr<named_relation> > refs;
+  struct scope myscope;
+  virtual void out(std::ostream &out);
+  virtual void accept(prod_visitor *v);
+  common_table_expression(prod *parent, struct scope *s);
+};
 
 #endif

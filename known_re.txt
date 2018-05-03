@@ -1,0 +1,203 @@
+Line style is ascii.
+Pager usage is off.
+\\nCONTEXT:  PL/pgSQL function tg_backlink_set
+\\nCONTEXT:  PL/pgSQL function tg_iface_biu
+\\nCONTEXT:  PL/pgSQL function tg_pslot_biu
+\\nCONTEXT:  PL/pgSQL.*
+\\nCONTEXT:  SQL function "make_table" statement
+\\nCONTEXT:  invalid type name
+^ERROR:  "-?\\d+" is out of range for type real
+^ERROR:  ".* must be ahead of ".*
+^ERROR:  ".*" is not a number
+^ERROR:  ".*" is not a sequence
+^ERROR:  ".*" is not an index
+^ERROR:  ".*" not supported for input
+^ERROR:  "time with time zone" units ".*" not recognized
+^ERROR:  "time" units "
+^ERROR:  -\\d+ is less than zero
+^ERROR:  .*is not a valid encoding code
+^ERROR:  .*is out of range for type double precision
+^ERROR:  COALESCE could not convert type
+^ERROR:  COALESCE types.*cannot be matched
+^ERROR:  Cannot use ".*": Badly formatted type
+^ERROR:  Cannot use ".*": No such cipher algorithm
+^ERROR:  Cannot use .*: No such hash algorithm
+^ERROR:  NUMERIC precision \\d+ must be between \\d+ and \\d+
+^ERROR:  Patchfield "[^"]*" does not exist
+^ERROR:  Room .* does not exist
+^ERROR:  Syntax error near
+^ERROR:  \\d+ is outside the valid range for parameter
+^ERROR:  argument list must have even number of elements
+^ERROR:  array size exceeds the maximum allowed
+^ERROR:  attribute number \\d+ not found in view targetlist
+^ERROR:  bit index -?\\d+ out of valid range
+^ERROR:  bit index \\d+ out of valid range
+^ERROR:  bit string length \\d+ does not match type bit
+^ERROR:  bit string too long for type bit varying
+^ERROR:  block number \\d+ is out of range for relation "
+^ERROR:  cache lookup failed for constraint
+^ERROR:  cache lookup failed for function
+^ERROR:  cache lookup failed for index 
+^ERROR:  cache lookup failed for text search
+^ERROR:  cache lookup failed for type
+^ERROR:  cannot accept a value of type 
+^ERROR:  cannot compare dissimilar column types 
+^ERROR:  cannot insert into column "[^"]+" of view
+^ERROR:  cannot retrieve commit timestamp for transaction
+^ERROR:  cannot take cube root of a unit with
+^ERROR:  cannot take square root of a unit with odd
+^ERROR:  collations are not supported by type "
+^ERROR:  column ".*" of relation ".*" does not exist
+^ERROR:  column .* is of type .*\\[\\].* but expression is of type .*\\[\\]
+^ERROR:  column .* is of type oidvector
+^ERROR:  column .*city_budget
+^ERROR:  column .*type rewritetype
+^ERROR:  column.*int8alias
+^ERROR:  column.*test_type
+^ERROR:  conflicting key value violates exclusion constraint
+^ERROR:  conflicting values for.* field in formatting string
+^ERROR:  conflicting values for.* field in formatting string:
+^ERROR:  connection .* not available
+^ERROR:  could not create file "pg_snapshots.*Cannot allocate memory
+^ERROR:  could not find array type for data type
+^ERROR:  could not find member .* of opfamily 1976
+^ERROR:  could not find tuple for trigger
+^ERROR:  could not identify a hash function for type
+^ERROR:  could not identify an equality operator for type
+^ERROR:  could not identify an ordering operator for type
+^ERROR:  could not open relation with OID (\\d+)
+^ERROR:  could not perform block dump because dump file is being used by PID
+^ERROR:  could not read symbolic link ".*": No such file or directory
+^ERROR:  cross-database references are not implemented
+^ERROR:  cube index [0-9]+ is out of bounds
+^ERROR:  currval of sequence "[^"]+" is not yet defined in this session
+^ERROR:  database .* does not exist
+^ERROR:  date field value out of range: 
+^ERROR:  date out of range: 
+^ERROR:  date/time field value out of range: 
+^ERROR:  dimension mismatch in
+^ERROR:  division by zero-valued unit:
+^ERROR:  duplicate key value violates unique constraint
+^ERROR:  encoding conversion from 
+^ERROR:  foreign-data wrapper "
+^ERROR:  function .* does not exist
+^ERROR:  function .*is not unique
+^ERROR:  hour ".*" is invalid for the 12-hour clock
+^ERROR:  improper (qualified|relation) name \\(too many dotted names\\): 
+^ERROR:  incorrect number of arguments: specified \\d+ but found \\d+
+^ERROR:  index "hash_
+^ERROR:  index -?[0-9]+ out of valid range
+^ERROR:  index [^o]+out of valid range, 0..127
+^ERROR:  index row requires \\d+ bytes, maximum size is \\d+
+^ERROR:  index row size \\d+ exceeds maximum \\d+ for index
+^ERROR:  insert or update on table "[^"]+" violates foreign key constraint
+^ERROR:  interval field value out of range
+^ERROR:  interval time zone 
+^ERROR:  interval units 
+^ERROR:  invalid INTERVAL typmod: 
+^ERROR:  invalid attnum \\d+ for relation "
+^ERROR:  invalid byte sequence for encoding
+^ERROR:  invalid cidr value: 
+^ERROR:  invalid destination encoding name
+^ERROR:  invalid encoding name 
+^ERROR:  invalid flags for opening a large object: 
+^ERROR:  invalid input syntax for
+^ERROR:  invalid large-object descriptor: 
+^ERROR:  invalid mask length: 
+^ERROR:  invalid memory alloc request size \\d+
+^ERROR:  invalid non-zero objectSubId for object class 
+^ERROR:  invalid octet value in
+^ERROR:  invalid option 
+^ERROR:  invalid parameter list format: 
+^ERROR:  invalid range flags
+^ERROR:  invalid regexp option: 
+^ERROR:  invalid regular expression: 
+^ERROR:  invalid size: ".*"
+^ERROR:  invalid source encoding name 
+^ERROR:  invalid type name
+^ERROR:  invalid value 
+^ERROR:  language .*does not exist
+^ERROR:  language validation function
+^ERROR:  large object.*does not exist
+^ERROR:  malformed array literal
+^ERROR:  malformed range literal: "
+^ERROR:  missing support function .*in opfamily
+^ERROR:  more than one operator named
+^ERROR:  must be superuser
+^ERROR:  new row for relation .* violates check constraint
+^ERROR:  no operand in tsquery: 
+^ERROR:  null value in column "[^"]+" violates not-null constraint
+^ERROR:  number of array dimensions .* exceeds the maximum allowed
+^ERROR:  operator does not exist
+^ERROR:  operator.*int8alias
+^ERROR:  operator.*test_type
+^ERROR:  parameter ".*" cannot be changed
+^ERROR:  parameter ".*" requires
+^ERROR:  parameter "[^"]+" cannot be changed now
+^ERROR:  parameter "[^"]+" cannot be changed without restarting the server
+^ERROR:  path element at position 
+^ERROR:  permission denied
+^ERROR:  relation ".*" does not exist
+^ERROR:  relation .*does not exists
+^ERROR:  replication slot ".*" already exists
+^ERROR:  requested character too large for encoding
+^ERROR:  role .* does not exist
+^ERROR:  row is too big: 
+^ERROR:  schema ".*" does not exist
+^ERROR:  server .* does not exist
+^ERROR:  setseed parameter 
+^ERROR:  setval: value .* is out of bounds for sequence
+^ERROR:  source string too short for "
+^ERROR:  stack depth limit exceeded.*"infinite_recurse"
+^ERROR:  string is not a valid identifier: 
+^ERROR:  string is too long for tsvector
+^ERROR:  syntax error at or near
+^ERROR:  syntax error in tsquery: 
+^ERROR:  syntax error in tsvector: "
+^ERROR:  system "[^"]+" does not exist
+^ERROR:  tablespace .*does not exist
+^ERROR:  text search configuration.*does not exist
+^ERROR:  text search dictionary .* does not exist
+^ERROR:  text search parser .* does not exist
+^ERROR:  time field value out of range: 
+^ERROR:  time zone 
+^ERROR:  timestamp out of range: 
+^ERROR:  timestamp units 
+^ERROR:  timestamp with time zone units
+^ERROR:  timestamp\\(
+^ERROR:  type ".*" does not exist
+^ERROR:  type .* is not a domain
+^ERROR:  type \\d+ is not a range type
+^ERROR:  unit ".*" is not known
+^ERROR:  unrecognized configuration parameter
+^ERROR:  unrecognized conversion type specifier 
+^ERROR:  unrecognized encoding: 
+^ERROR:  unrecognized format\\(\\) type specifier
+^ERROR:  unrecognized headline parameter:
+^ERROR:  unrecognized interval typmod
+^ERROR:  unrecognized key word: 
+^ERROR:  unrecognized object class: 
+^ERROR:  unrecognized object type
+^ERROR:  unrecognized objtype abbreviation:
+^ERROR:  unrecognized privilege type: "
+^ERROR:  unrecognized reset target: 
+^ERROR:  unrecognized storage manager name
+^ERROR:  unrecognized weight: 
+^ERROR:  update or delete on table "[^"]+" violates foreign key constraint
+^ERROR:  value ".*" is out of range for ISBN type
+^ERROR:  value ".*" is out of range for type 
+^ERROR:  value .* is out of range for
+^ERROR:  value .* is out of range for type oid
+^ERROR:  value for .* in source string is out of range
+^ERROR:  value for domain [^ ]+ violates check constraint
+^ERROR:  value too long for type character
+^ERROR:  word is too long "
+^ERROR:  word is too long in tsquery
+^ERROR:  wrong position info in tsvector: "
+^ERROR: .*is not a valid binary digit
+^ERROR: .*is not a valid encoding name
+^ERROR:.*type tab1
+^FATAL:  the database system is shutting down
+^NOT NULL constraint failed: 
+^UNIQUE constraint failed: 
+^cannot take square root of a unit with odd

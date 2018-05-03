@@ -1,3 +1,6 @@
+/// @file
+/// @brief randomness
+
 #ifndef RANDOM_HH
 #define RANDOM_HH
 

@@ -1,7 +1,6 @@
 #include "config.h"
 
 #include <iostream>
-#include <pqxx/pqxx>
 #include <chrono>
 
 #ifndef HAVE_BOOST_REGEX
@@ -14,19 +13,30 @@ using boost::regex_match;
 #endif
 
 #include <thread>
+#include <typeinfo>
 
 #include "random.hh"
 #include "grammar.hh"
 #include "relmodel.hh"
 #include "schema.hh"
-
 #include "gitrev.h"
 
 #include "log.hh"
 #include "dump.hh"
+#include "impedance.hh"
+#include "dut.hh"
+
+#ifdef HAVE_LIBSQLITE3
+#include "sqlite.hh"
+#endif
+
+#ifdef HAVE_MONETDB
+#include "monetdb.hh"
+#endif
+
+#include "postgres.hh"
 
 using namespace std;
-using namespace pqxx;
 
 using namespace std::chrono;
 
@@ -49,10 +59,10 @@ extern "C" void cerr_log_handler(int)
 
 int main(int argc, char *argv[])
 {
-  cerr << "sqlsmith " << GITREV << endl;
+  cerr << PACKAGE_NAME " " GITREV << endl;
 
   map<string,string> options;
-  regex optregex("--(help|log-to|verbose|target|version|dump-all-graphs|seed|dry-run|max-queries)(?:=((?:.|\n)*))?");
+  regex optregex("--(help|log-to|verbose|target|sqlite|monetdb|version|dump-all-graphs|dump-all-queries|seed|dry-run|max-queries|rng-state|exclude-catalog)(?:=((?:.|\n)*))?");
   
   for(char **opt = argv+1 ;opt < argv+argc; opt++) {
     smatch match;
@@ -61,40 +71,75 @@ int main(int argc, char *argv[])
       options[string(match[1])] = match[2];
     } else {
       cerr << "Cannot parse option: " << *opt << endl;
-      return 1;
+      options["help"] = "";
     }
   }
 
   if (options.count("help")) {
     cerr <<
-      "    --log-to=connstr     log errors to database" << endl <<
-      "    --target=connstr     database to send queries to" << endl <<
+      "    --target=connstr     postgres database to send queries to" << endl <<
+#ifdef HAVE_LIBSQLITE3
+      "    --sqlite=URI         SQLite database to send queries to" << endl <<
+#endif
+#ifdef HAVE_MONETDB
+      "    --monetdb=connstr    MonetDB database to send queries to" <<endl <<
+#endif
+      "    --log-to=connstr     log errors to postgres database" << endl <<
       "    --seed=int           seed RNG with specified int instead of PID" << endl <<
+      "    --dump-all-queries   print queries as they are generated" << endl <<
       "    --dump-all-graphs    dump generated ASTs" << endl <<
       "    --dry-run            print queries instead of executing them" << endl <<
+      "    --exclude-catalog    don't generate queries using catalog relations" << endl <<
       "    --max-queries=long   terminate after generating this many queries" << endl <<
+      "    --rng-state=string    deserialize dumped rng state" << endl <<
       "    --verbose            emit progress output" << endl <<
       "    --version            print version information and exit" << endl <<
       "    --help               print available command line options and exit" << endl;
     return 0;
   } else if (options.count("version")) {
-    cerr << GITREV << endl;
     return 0;
   }
 
   try
     {
-      schema_pqxx schema(options["target"]);
+      shared_ptr<schema> schema;
+      if (options.count("sqlite")) {
+#ifdef HAVE_LIBSQLITE3
+	schema = make_shared<schema_sqlite>(options["sqlite"], options.count("exclude-catalog"));
+#else
+	cerr << "Sorry, " PACKAGE_NAME " was compiled without SQLite support." << endl;
+	return 1;
+#endif
+      }
+      else if(options.count("monetdb")) {
+#ifdef HAVE_MONETDB
+	schema = make_shared<schema_monetdb>(options["monetdb"]);
+#else
+	cerr << "Sorry, " PACKAGE_NAME " was compiled without MonetDB support." << endl;
+	return 1;
+#endif
+      }
+      else
+	schema = make_shared<schema_pqxx>(options["target"], options.count("exclude-catalog"));
+
       scope scope;
       long queries_generated = 0;
-      schema.fill_scope(scope);
-//       work w(c);
-//       w.commit();
+      schema->fill_scope(scope);
+
+      if (options.count("rng-state")) {
+	   istringstream(options["rng-state"]) >> smith::rng;
+      } else {
+	   smith::rng.seed(options.count("seed") ? stoi(options["seed"]) : getpid());
+      }
 
       vector<shared_ptr<logger> > loggers;
 
+      loggers.push_back(make_shared<impedance_feedback>());
+
       if (options.count("log-to"))
-	loggers.push_back(make_shared<pqxx_logger>(options["target"], options["log-to"], schema));
+	loggers.push_back(make_shared<pqxx_logger>(
+	     options.count("sqlite") ? options["sqlite"] : options["target"],
+	     options["log-to"], *schema));
 
       if (options.count("verbose")) {
 	auto l = make_shared<cerr_logger>();
@@ -105,8 +150,9 @@ int main(int argc, char *argv[])
       
       if (options.count("dump-all-graphs"))
 	loggers.push_back(make_shared<ast_logger>());
-      
-      smith::rng.seed(options.count("seed") ? stoi(options["seed"]) : getpid());
+
+      if (options.count("dump-all-queries"))
+	loggers.push_back(make_shared<query_dumper>());
 
       if (options.count("dry-run")) {
 	while (1) {
@@ -122,19 +168,33 @@ int main(int argc, char *argv[])
 	      return 0;
 	}
       }
-      
-      connection c(options["target"]);
 
-      while (1)
+      shared_ptr<dut_base> dut;
+      
+      if (options.count("sqlite")) {
+#ifdef HAVE_LIBSQLITE3
+	dut = make_shared<dut_sqlite>(options["sqlite"]);
+#else
+	cerr << "Sorry, " PACKAGE_NAME " was compiled without SQLite support." << endl;
+	return 1;
+#endif
+      }
+      else if(options.count("monetdb")) {
+#ifdef HAVE_MONETDB	   
+	dut = make_shared<dut_monetdb>(options["monetdb"]);
+#else
+	cerr << "Sorry, " PACKAGE_NAME " was compiled without MonetDB support." << endl;
+	return 1;
+#endif
+      }
+      else
+	dut = make_shared<dut_libpq>(options["target"]);
+
+      while (1) /* Loop to recover connection loss */
       {
 	try {
-	  work w(c);
-	  w.exec("set statement_timeout to '1s';"
-		 "set client_min_messages to 'ERROR';"
-		 "set application_name to 'sqlsmith';");
-	  w.commit();
+            while (1) { /* Main loop */
 
-	  while (1) {
 	    if (options.count("max-queries")
 		&& (++queries_generated > stol(options["max-queries"]))) {
 	      if (global_cerr_logger)
@@ -142,8 +202,6 @@ int main(int argc, char *argv[])
 	      return 0;
 	    }
 	    
-	    work w(c);
-
 	    /* Invoke top-level production to generate AST */
 	    shared_ptr<prod> gen = statement_factory(&scope);
 
@@ -156,11 +214,10 @@ int main(int argc, char *argv[])
 
 	    /* Try to execute it */
 	    try {
-	      result r = w.exec(s.str() + ";");
+	      dut->test(s.str());
 	      for (auto l : loggers)
 		l->executed(*gen);
-	      w.abort();
-	    } catch (const pqxx::failure &e) {
+	    } catch (const dut::failure &e) {
 	      for (auto l : loggers)
 		try {
 		  l->error(*gen, e);
@@ -168,14 +225,14 @@ int main(int argc, char *argv[])
 		  cerr << endl << "log failed: " << typeid(*l).name() << ": "
 		       << e.what() << endl;
 		}
-	      if ((dynamic_cast<const broken_connection *>(&e))) {
+	      if ((dynamic_cast<const dut::broken *>(&e))) {
 		/* re-throw to outer loop to recover session. */
 		throw;
 	      }
 	    }
 	  }
 	}
-	catch (const broken_connection &e) {
+	catch (const dut::broken &e) {
 	  /* Give server some time to recover. */
 	  this_thread::sleep_for(milliseconds(1000));
 	}
