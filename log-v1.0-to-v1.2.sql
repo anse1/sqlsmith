@@ -1,7 +1,8 @@
--- upgrade SQLsmith logging schema from 1.0 to 1.1
+-- upgrade SQLsmith logging schema from 1.0 to 1.2
 
 alter table stat add column impedance jsonb;
 alter table instance add column seed text;
+alter table error add column sqlstate text;
 
 create or replace view impedance as
  SELECT stat.id,
