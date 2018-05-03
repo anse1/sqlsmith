@@ -12,7 +12,9 @@ Build-Depends:
  autoconf-archive,
  debhelper (>= 9),
  libboost-regex-dev,
+ libpq-dev,
  libpqxx-dev (>= 4.0),
+ libsqlite3-dev,
 
 Package: sqlsmith
 Architecture: any
