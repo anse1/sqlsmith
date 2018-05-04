@@ -96,6 +96,8 @@ column_reference::column_reference(prod *p, sqltype *type_constraint) : value_ex
 shared_ptr<bool_expr> bool_expr::factory(prod *p)
 {
   try {
+       if (p->level > d100())
+	    return make_shared<truth_value>(p);
        if(d6() < 4)
 	    return make_shared<comparison_op>(p);
        else if (d6() < 4)
