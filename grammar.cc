@@ -9,6 +9,7 @@
 #include "grammar.hh"
 #include "schema.hh"
 #include "impedance.hh"
+#include "ddl.hh"
 
 using namespace std;
 
@@ -467,6 +468,7 @@ shared_ptr<prod> statement_factory(struct scope *s)
 {
   try {
     s->new_stmt();
+    return make_shared<table_definition>((struct prod *)0, s);
     if (d42() == 1)
       return make_shared<merge_stmt>((struct prod *)0, s);
     if (d42() == 1)
