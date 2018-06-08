@@ -10,8 +10,17 @@
 #include "relmodel.hh"
 #include "grammar.hh"
 
+struct column_constraint : prod {
+     string name;
+     string characteristics;
+     column_constraint(prod *parent);
+     virtual void out(std::ostream &out);
+     virtual ~column_constraint() {  };
+};
+
 struct column_definition : prod {
      shared_ptr<column> created_column;
+     vector<shared_ptr<column_constraint> > constraints;
      column_definition(prod *parent);
      virtual void out(std::ostream &out);
      virtual ~column_definition() {  };
