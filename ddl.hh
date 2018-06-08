@@ -17,6 +17,7 @@ struct column_constraint : prod {
      column_constraint(prod *parent);
      virtual void out(std::ostream &out);
      virtual ~column_constraint() {  };
+     static shared_ptr<column_constraint> factory(prod *parent);
 };
 
 struct column_definition : prod {
@@ -29,6 +30,7 @@ struct column_definition : prod {
 
 struct table_definition : prod {
      table created_table;
+     struct scope myscope;
      vector<shared_ptr<column_definition> > column_defs;
      table_definition(prod *parent, struct scope *s);
      virtual void out(std::ostream &out);
@@ -40,4 +42,11 @@ struct table_definition : prod {
      }
 };
 
+struct check_constraint : column_constraint {
+     shared_ptr<bool_expr> expr;
+     check_constraint(prod *parent);
+     virtual void out(std::ostream &out);
+     virtual ~check_constraint() { };
+};
+     
 #endif

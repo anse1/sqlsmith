@@ -3,10 +3,12 @@
 
 table_definition::table_definition(prod *parent, struct scope *s)
      : prod(parent),
-       created_table(s->stmt_uid("new_tab"), "public", true, true)
+       created_table(s->stmt_uid("new_tab"), "public", true, true),
+       myscope(s)
 {
-     scope = s;
-
+     scope = &myscope;
+     scope->refs.push_back(&created_table);
+     
      while (d6() > 1) {
 	  column_defs.push_back(std::make_shared<column_definition>(this));
      }
@@ -35,9 +37,13 @@ column_definition::column_definition(prod *parent)
 	  random_pick(scope->schema->types)
 	  );
 
-
+     struct table_definition *tabledef = dynamic_cast<struct table_definition*>(parent);
+     if (tabledef)
+	  tabledef->created_table.cols.push_back(*created_column);
+     
+     
      if (1 == d6()) {
-	  constraints.push_back(std::make_shared<column_constraint>(this));
+	  constraints.push_back(column_constraint::factory(this));
      }
 }
 							  
@@ -56,10 +62,29 @@ column_constraint::column_constraint(prod *parent)
      };
 
      spec = specs[d6()-1];
-     
+
+}
+
+shared_ptr<column_constraint> column_constraint::factory(prod *parent)
+{
+     if (1 == d6())
+	  return std::make_shared<check_constraint>(parent);
+     else
+	  return std::make_shared<column_constraint>(parent);
 }
 
 void column_constraint::out(std::ostream &out)
 {
      out << spec;
+}
+
+check_constraint::check_constraint(prod *parent)
+     : column_constraint(parent)
+{
+     expr = bool_expr::factory(this);
+}
+
+void check_constraint::out(std::ostream &out)
+{
+     out << "CHECK(" << *expr << ")";
 }
