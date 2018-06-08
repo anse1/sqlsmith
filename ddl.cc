@@ -51,10 +51,15 @@ void column_definition::out(std::ostream &out)
 column_constraint::column_constraint(prod *parent)
      : prod(parent)
 {
+     static const char *specs[] = {
+	  "UNIQUE", "NOT NULL", "NULL", "PRIMARY KEY", "", ""
+     };
 
+     spec = specs[d6()-1];
+     
 }
 
 void column_constraint::out(std::ostream &out)
 {
-     out << "not null";
+     out << spec;
 }

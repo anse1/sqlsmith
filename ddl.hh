@@ -13,6 +13,7 @@
 struct column_constraint : prod {
      string name;
      string characteristics;
+     const char *spec;
      column_constraint(prod *parent);
      virtual void out(std::ostream &out);
      virtual ~column_constraint() {  };
