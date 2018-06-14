@@ -27,6 +27,13 @@ struct column_definition : prod {
      column_definition(prod *parent);
      virtual void out(std::ostream &out);
      virtual ~column_definition() {  };
+     virtual void accept(prod_visitor *v) {
+	  for (auto el : constraints)
+	       el->accept(v);
+	  if (default_expr)
+	       default_expr->accept(v);
+	  v->visit(this);
+     }
 };
 
 struct table_definition : prod {
@@ -48,6 +55,10 @@ struct check_constraint : column_constraint {
      check_constraint(prod *parent);
      virtual void out(std::ostream &out);
      virtual ~check_constraint() { };
+     virtual void accept(prod_visitor *v) {
+	  expr->accept(v);
+	  v->visit(this);
+     }
 };
      
 #endif
