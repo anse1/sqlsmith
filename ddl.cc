@@ -41,15 +41,18 @@ column_definition::column_definition(prod *parent)
      if (tabledef)
 	  tabledef->created_table.cols.push_back(*created_column);
      
-     
-     if (1 == d6()) {
+     if (1 == d6())
 	  constraints.push_back(column_constraint::factory(this));
-     }
+
+     if (1 == d6())
+	  default_expr = std::make_shared<const_expr>(this, created_column->type);
 }
 							  
 void column_definition::out(std::ostream &out)
 {
      out << created_column->name << " " << created_column->type->name;
+     if (default_expr)
+	  out << " DEFAULT " << *default_expr << " ";
      for (auto c : constraints)
 	  out << " " << *c;
 }

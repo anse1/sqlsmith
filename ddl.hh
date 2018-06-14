@@ -23,6 +23,7 @@ struct column_constraint : prod {
 struct column_definition : prod {
      shared_ptr<column> created_column;
      vector<shared_ptr<column_constraint> > constraints;
+     shared_ptr<const_expr> default_expr;
      column_definition(prod *parent);
      virtual void out(std::ostream &out);
      virtual ~column_definition() {  };
