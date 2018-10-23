@@ -119,14 +119,7 @@ void cerr_logger::error(prod &query, const dut::failure &e)
   }
   getline(err, line);
   errors[line]++;
-  if (dynamic_cast<const dut::timeout *>(&e))
-    cerr << "t";
-  else if (dynamic_cast<const dut::syntax *>(&e))
-    cerr << "S";
-  else if (dynamic_cast<const dut::broken *>(&e))
-    cerr << "C";
-  else
-    cerr << "e";
+  cerr << e.errcode;
 }
 
 pqxx_logger::pqxx_logger(std::string target, std::string conninfo, struct schema &s)
@@ -151,8 +144,8 @@ pqxx_logger::pqxx_logger(std::string target, std::string conninfo, struct schema
   id = r[0][0].as<long>(id);
 
   c->prepare("error",
-	     "insert into error (id, msg, query, sqlstate) "
-	     "values (" + to_string(id) + ", $1, $2, $3)");
+	     "insert into error (id, msg, query, sqlstate, code) "
+	     "values (" + to_string(id) + ", $1, $2, $3, $4)");
 
   w.exec("insert into stat (id) values (" + to_string(id) + ")");
   c->prepare("stat",
@@ -169,7 +162,7 @@ void pqxx_logger::error(prod &query, const dut::failure &e)
   work w(*c);
   ostringstream s;
   s << query;
-  w.prepared("error")(e.what())(s.str())(e.sqlstate).exec();
+  w.prepared("error")(e.what())(s.str())(e.sqlstate)(e.errcode).exec();
   w.commit();
 }
 

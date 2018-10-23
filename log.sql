@@ -22,7 +22,8 @@ create table error (
     query text,  -- failed query
     target text, -- conninfo of the target
     sqlstate text, -- sqlstate of error
-    
+    code char, -- error symbol from verbose output (C,e,S,t)
+
     -- not referenced by sqlsmith:
     t timestamptz default now(),
     errid bigserial primary key
@@ -57,7 +58,7 @@ create or replace function firstline(msg text) returns text as $$
 $$ language sql immutable;
 
 create view base_error as
-       select id, firstline(msg) as error, query, t, errid from error;
+       select id, firstline(msg) as error, query, code, t, errid from error;
 
 comment on view base_error is 'like error, but truncate msg to first line';
 
