@@ -22,11 +22,14 @@ Pager usage is off.
 ^ERROR:  Cannot use ".*": Badly formatted type
 ^ERROR:  Cannot use ".*": No such cipher algorithm
 ^ERROR:  Cannot use .*: No such hash algorithm
+^ERROR:  Function .* is currently not supported for Aurora
+^ERROR:  Function .* is currently not supported in Aurora
 ^ERROR:  NUMERIC precision \\d+ must be between \\d+ and \\d+
 ^ERROR:  Patchfield "[^"]*" does not exist
 ^ERROR:  Room .* does not exist
 ^ERROR:  Syntax error near
 ^ERROR:  \\d+ is outside the valid range for parameter
+^ERROR:  argument declared anyrange is not a range type but type anyrange*
 ^ERROR:  argument list must have even number of elements
 ^ERROR:  array size exceeds the maximum allowed
 ^ERROR:  attribute number \\d+ not found in view targetlist
@@ -59,6 +62,7 @@ Pager usage is off.
 ^ERROR:  conflicting values for.* field in formatting string:
 ^ERROR:  connection .* not available
 ^ERROR:  could not create file "pg_snapshots.*Cannot allocate memory
+^ERROR:  could not determine polymorphic type because input has type unknown*
 ^ERROR:  could not find array type for data type
 ^ERROR:  could not find member .* of opfamily 1976
 ^ERROR:  could not find tuple for trigger

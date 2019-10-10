@@ -463,6 +463,7 @@ ERROR:  new bit must be 0 or 1
 ERROR:  no binary output function available for type aclitem
 ERROR:  no current dictionary
 ERROR:  no manual manipulation of HSlot
+ERROR:  no replication origin is configured
 ERROR:  non-exclusive backup in progress
 ERROR:  non-exclusive backup in progress)
 ERROR:  null array element not allowed in this context
