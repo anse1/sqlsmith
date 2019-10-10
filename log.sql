@@ -161,3 +161,37 @@ create view impedance_report as
   order by retries;
 
 comment on view impedance_report is 'impedance report for latest revision';
+
+-- SELECT add_new_known('ERROR:  could not determine polymorphic type because input has type unknown');
+CREATE OR REPLACE FUNCTION add_new_known(_pattern TEXT) RETURNS BOOLEAN AS
+$$
+BEGIN
+	PERFORM msg FROM error WHERE msg ~ _pattern;
+
+	IF FOUND THEN
+		INSERT INTO known values (_pattern);
+		DELETE FROM error WHERE msg ~ _pattern;
+	ELSE
+		RAISE NOTICE 'Unable to find anything matching pattern (%)', _pattern;
+	END IF;
+END;
+$$
+LANGUAGE PLPGSQL;
+
+-- SELECT add_new_known_re('^ERROR:  replication origin ".*" does not exist');
+CREATE OR REPLACE FUNCTION add_new_known_re(_pattern_re TEXT) RETURNS BOOLEAN AS
+$$
+BEGIN
+	PERFORM msg FROM error WHERE msg ~ _pattern_re;
+
+	IF FOUND THEN
+		INSERT INTO known_re values (_pattern_re);
+		DELETE FROM error WHERE msg ~ _pattern_re;
+		RETURN TRUE;
+	ELSE
+		RAISE NOTICE 'Unable to find anything matching pattern (%)', _pattern_re;
+		RETURN FALSE;
+	END IF;
+END;
+$$
+LANGUAGE PLPGSQL;
