@@ -30,6 +30,8 @@ create table error (
 
 comment on table error is 'observed errors';
 
+create table error_archive as table error with no data;
+
 create table stat (
    id bigint references instance(id),
    generated bigint,    -- number of generated ASTs
@@ -166,13 +168,16 @@ comment on view impedance_report is 'impedance report for latest revision';
 CREATE OR REPLACE FUNCTION add_new_known(_pattern TEXT) RETURNS BOOLEAN AS
 $$
 BEGIN
-	PERFORM msg FROM error WHERE msg ~ _pattern;
+	PERFORM msg FROM error WHERE msg IS NOT DISTINCT FROM _pattern;
 
 	IF FOUND THEN
 		INSERT INTO known values (_pattern);
-		DELETE FROM error WHERE msg ~ _pattern;
+		INSERT INTO error_archive
+			SELECT * FROM error WHERE msg IS NOT DISTINCT FROM _pattern;
+		DELETE FROM error WHERE msg IS NOT DISTINCT FROM _pattern;
 	ELSE
 		RAISE NOTICE 'Unable to find anything matching pattern (%)', _pattern;
+        RETURN FALSE;
 	END IF;
 END;
 $$
@@ -186,6 +191,8 @@ BEGIN
 
 	IF FOUND THEN
 		INSERT INTO known_re values (_pattern_re);
+		INSERT INTO error_archive
+			SELECT * FROM error WHERE msg ~ _pattern_re;
 		DELETE FROM error WHERE msg ~ _pattern_re;
 		RETURN TRUE;
 	ELSE
