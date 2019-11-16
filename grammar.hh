@@ -83,7 +83,7 @@ struct expr_join_cond : join_cond {
 };
 
 struct joined_table : table_ref {
-  virtual void out(std::ostream &out);  
+  virtual void out(std::ostream &out);
   joined_table(prod *p);
   std::string type;
   std::string alias;
@@ -258,7 +258,7 @@ struct update_stmt : modifying_stmt {
 
 struct when_clause : prod {
   bool matched;
-  shared_ptr<bool_expr> condition;  
+  shared_ptr<bool_expr> condition;
 //   shared_ptr<prod> merge_action;
   when_clause(struct merge_stmt *p);
   virtual ~when_clause() { }

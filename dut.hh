@@ -9,7 +9,7 @@
 #include "prod.hh"
 
 namespace dut {
-  
+
 struct failure : public std::exception {
   std::string errstr;
   std::string sqlstate;

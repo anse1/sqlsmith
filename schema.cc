@@ -26,7 +26,7 @@ void schema::generate_indexes() {
       if(!r.argtypes.size())
 	parameterless_routines_returning_type.insert(pair<sqltype*, routine*>(type, &r));
     }
-    
+
     for (auto &t: tables) {
       for (auto &c: t.columns()) {
 	if (type->consistent(c.type)) {
@@ -51,7 +51,7 @@ void schema::generate_indexes() {
     if (t.is_base_table)
       base_tables.push_back(&t);
   }
-  
+
   cerr << "done." << endl;
 
   assert(booltype);

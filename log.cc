@@ -57,7 +57,7 @@ struct stats_visitor : prod_visitor {
 void stats_collecting_logger::generated(prod &query)
 {
   queries++;
-  
+
   stats_visitor v;
   query.accept(&v);
 
@@ -145,9 +145,9 @@ pqxx_logger::pqxx_logger(std::string target, std::string conninfo, struct schema
 
   ostringstream seed;
   seed << smith::rng;
-    
+
   result r = w.prepared("instance")(GITREV)(target)(hostname)(s.version)(seed.str()).exec();
-  
+
   id = r[0][0].as<long>(id);
 
   c->prepare("error",
@@ -184,4 +184,3 @@ void pqxx_logger::generated(prod &query)
     w.commit();
   }
 }
-

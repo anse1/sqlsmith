@@ -30,7 +30,7 @@ graphml_dumper::graphml_dumper(ostream &out)
             "attr.name=\"scope\" attr.type=\"string\" />" << endl;
 
   o << "<graph id=\"ast\" edgedefault=\"directed\">" << endl;
-  
+
 }
 
 void graphml_dumper::visit(struct prod *p)

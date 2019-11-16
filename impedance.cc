@@ -39,7 +39,7 @@ void impedance_feedback::error(prod &query, const dut::failure &e)
 }
 
 namespace impedance {
-  
+
 bool matched(const char *name)
 {
   if (100 > occurances_in_failed_query[name])

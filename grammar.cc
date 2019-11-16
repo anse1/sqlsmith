@@ -65,7 +65,7 @@ table_sample::table_sample(prod *p) : table_ref(p) {
     t = dynamic_cast<struct table*>(pick);
     retry();
   } while (!t || !t->is_base_table);
-  
+
   refs.push_back(make_shared<aliased_relation>(scope->stmt_uid("sample"), t));
   percent = 0.1 * d100();
   method = (d6() > 2) ? "system" : "bernoulli";
@@ -111,7 +111,7 @@ simple_join_cond::simple_join_cond(prod *p, table_ref &lhs, table_ref &rhs)
 {
 retry:
   named_relation *left_rel = &*random_pick(lhs.refs);
-  
+
   if (!left_rel->columns().size())
     { retry(); goto retry; }
 
@@ -319,10 +319,10 @@ query_spec::query_spec(prod *p, struct scope *s, bool lateral) :
 
   if (lateral)
     scope->refs = s->refs;
-  
+
   from_clause = make_shared<struct from_clause>(this);
   select_list = make_shared<struct select_list>(this);
-  
+
   set_quantifier = (d100() == 1) ? "distinct" : "";
 
   search = bool_expr::factory(this);
@@ -393,7 +393,7 @@ void insert_stmt::out(std::ostream &out)
   }
 
   out << "values (";
-  
+
   for (auto expr = value_exprs.begin();
        expr != value_exprs.end();
        expr++) {
@@ -457,7 +457,7 @@ upsert_stmt::upsert_stmt(prod *p, struct scope *s, table *v)
 
   if (!victim->constraints.size())
     fail("need table w/ constraint for upsert");
-    
+
   set_list = std::make_shared<struct set_list>(this, victim);
   search = bool_expr::factory(this);
   constraint = random_pick(victim->constraints);
@@ -579,7 +579,7 @@ void merge_stmt::accept(prod_visitor *v)
   join_condition->accept(v);
   for (auto p : clauselist)
     p->accept(v);
-    
+
 }
 
 when_clause::when_clause(merge_stmt *p)
@@ -612,7 +612,7 @@ when_clause_update::when_clause_update(merge_stmt *p)
   myscope.refs = scope->refs;
   scope = &myscope;
   scope->refs.push_back(&*(p->target_table_->refs[0]));
-  
+
   set_list = std::make_shared<struct set_list>(this, p->victim);
 }
 
@@ -680,4 +680,3 @@ shared_ptr<when_clause> when_clause::factory(struct merge_stmt *p)
   }
   return factory(p);
 }
-

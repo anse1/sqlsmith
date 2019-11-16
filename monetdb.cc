@@ -214,7 +214,7 @@ void dut_monetdb::test(const std::string &stmt)
 		     figure out actual syntax errors */
 
 		  static regex re_syntax("^syntax error,.*", regex::extended);
-		  
+
 		  if (mapi_error(dbh)==MERROR)
 		       throw dut::syntax(error_string, sqlstate);
 		  else if (mapi_error(dbh)==MTIMEOUT)

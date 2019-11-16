@@ -29,7 +29,7 @@ void prod::retry()
   impedance::retry(this);
   if (retries++ <= retry_limit)
     return;
-  
+
   impedance::limit(this);
   throw std::runtime_error(std::string("excessive retries in ")
 			   + typeid(*this).name());

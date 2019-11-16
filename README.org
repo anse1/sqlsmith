@@ -133,7 +133,7 @@ certain catalog view like this:
 This is because the planner then puts =pg_get_indexdef(oid)= in a
 context where it sees non-index-oids, which causes it to croak:
 
-:                                      QUERY PLAN                                     
+:                                      QUERY PLAN
 : ------------------------------------------------------------------------------------
 :  Hash Join  (cost=17.60..30.65 rows=9 width=4)
 :    Hash Cond: (i.oid = x.indexrelid)
