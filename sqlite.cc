@@ -17,7 +17,7 @@ using namespace std;
 
 static regex e_syntax("near \".*\": syntax error");
 static regex e_user_abort("callback requested query abort");
-  
+
 extern "C"  {
 #include <sqlite3.h>
 #include <unistd.h>
@@ -93,7 +93,7 @@ schema_sqlite::schema_sqlite(std::string &conninfo, bool no_catalog)
 
 	if (no_catalog)
 		query+= " AND name NOT like 'sqlite_%%'";
-  
+
   version = "SQLite " SQLITE_VERSION " " SQLITE_SOURCE_ID;
 
 //   sqlite3_busy_handler(db, my_sqlite3_busy_handler, 0);
@@ -112,7 +112,7 @@ schema_sqlite::schema_sqlite(std::string &conninfo, bool no_catalog)
 		table tab("sqlite_master", "main", false, false);
 		tables.push_back(tab);
   }
-  
+
   cerr << "done." << endl;
 
   cerr << "Loading columns and constraints...";
@@ -159,7 +159,7 @@ schema_sqlite::schema_sqlite(std::string &conninfo, bool no_catalog)
 
   BINOP(AND, INTEGER);
   BINOP(OR, INTEGER);
-  
+
 #define FUNC(n,r) do {							\
     routine proc("", "", sqltype::get(#r), #n);				\
     register_routine(proc);						\
@@ -282,7 +282,7 @@ void dut_sqlite::test(const std::string &stmt)
       else if (regex_match(zErrMsg, e_user_abort)) {
 	sqlite3_free(zErrMsg);
 	return;
-      } else 
+      } else
 	throw dut::failure(zErrMsg);
     } catch (dut::failure &e) {
       sqlite3_free(zErrMsg);
@@ -290,4 +290,3 @@ void dut_sqlite::test(const std::string &stmt)
     }
   }
 }
-

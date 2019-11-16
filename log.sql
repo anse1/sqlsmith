@@ -22,7 +22,7 @@ create table error (
     query text,  -- failed query
     target text, -- conninfo of the target
     sqlstate text, -- sqlstate of error
-    
+
     -- not referenced by sqlsmith:
     t timestamptz default now(),
     errid bigserial primary key
@@ -125,7 +125,7 @@ begin
 	then
 	   return NULL;
         end if;
-	
+
 	if new.msg ~ ANY (select re from known_re)
         then
 	   return NULL;
