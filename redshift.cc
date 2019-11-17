@@ -16,6 +16,7 @@ using namespace std;
 static regex e_timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
 static regex e_syntax("ERROR:  syntax error at or near(\n|.)*");
 
+/*
 bool pg_type::consistent(sqltype *rvalue)
 {
   pg_type *t = dynamic_cast<pg_type*>(rvalue);
@@ -26,11 +27,11 @@ bool pg_type::consistent(sqltype *rvalue)
   }
 
   switch(typtype_) {
-  case 'b': /* base type */
-  case 'c': /* composite type */
-  case 'd': /* domain */
-  case 'r': /* range */
-  case 'e': /* enum */
+  case 'b': /* base type * /
+  case 'c': /* composite type * /
+  case 'd': /* domain * /
+  case 'r': /* range * /
+  case 'e': /* enum * /
     return this == t;
 
   case 'p':
@@ -78,7 +79,7 @@ void dut_pqxx::test(const std::string &stmt)
     w.abort();
   } catch (const pqxx::failure &e) {
     if ((dynamic_cast<const pqxx::broken_connection *>(&e))) {
-      /* re-throw to outer loop to recover session. */
+      /* re-throw to outer loop to recover session. * /
       throw dut::broken(e.what());
     }
 
@@ -284,16 +285,18 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
   c.disconnect();
   generate_indexes();
 }
-
+*/
 extern "C" {
     void dut_libpq_notice_rx(void *arg, const PGresult *res);
 }
 
+/*
 void dut_libpq_notice_rx(void *arg, const PGresult *res)
 {
     (void) arg;
     (void) res;
 }
+
 
 void dut_libpq::connect(std::string &conninfo)
 {
@@ -368,3 +371,4 @@ void dut_libpq::test(const std::string &stmt)
     command(stmt.c_str());
     command("ROLLBACK;");
 }
+*/
