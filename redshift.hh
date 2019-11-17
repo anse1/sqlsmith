@@ -16,15 +16,14 @@ extern "C" {
 
 #define OID long
 
-/*
-struct pg_type : sqltype {
+struct rs_type : sqltype {
   OID oid_;
   char typdelim_;
   OID typrelid_;
   OID typelem_;
   OID typarray_;
   char typtype_;
-  pg_type(string name,
+  rs_type(string name,
 	  OID oid,
 	  char typdelim,
 	  OID typrelid,
@@ -41,27 +40,27 @@ struct pg_type : sqltype {
 
 struct schema_redshift : public schema {
   pqxx::connection c;
-  map<OID, pg_type*> oid2type;
-  map<string, pg_type*> name2type;
+  map<OID, rs_type*> oid2type;
+  map<string, rs_type*> name2type;
 
   virtual std::string quote_name(const std::string &id) {
     return c.quote_name(id);
   }
-  schema_pqxx(std::string &conninfo, bool no_catalog);
+  schema_redshift(std::string &conninfo, bool no_catalog);
 };
 
-struct dut_pqxx : dut_base {
+struct dut_rspqxx : dut_base {
   pqxx::connection c;
   virtual void test(const std::string &stmt);
-  dut_pqxx(std::string conninfo);
+  dut_rspqxx(std::string conninfo);
 };
-*/
+
 struct dut_redshift : dut_base {
      PGconn *conn = 0;
      std::string conninfo_;
      virtual void test(const std::string &stmt);
      void command(const std::string &stmt);
      void connect(std::string &conninfo);
-     dut_libpq(std::string conninfo);
+     dut_redshift(std::string conninfo);
 };
 #endif

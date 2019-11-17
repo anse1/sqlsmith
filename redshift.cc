@@ -16,9 +16,9 @@ using namespace std;
 static regex e_timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
 static regex e_syntax("ERROR:  syntax error at or near(\n|.)*");
 
-bool pg_type::consistent(sqltype *rvalue)
+bool rs_type::consistent(sqltype *rvalue)
 {
-  pg_type *t = dynamic_cast<pg_type*>(rvalue);
+  rs_type *t = dynamic_cast<rs_type*>(rvalue);
 
   if (!t) {
     cerr << "unknown type: " << rvalue->name  << endl;
@@ -26,11 +26,11 @@ bool pg_type::consistent(sqltype *rvalue)
   }
 
   switch(typtype_) {
-  case 'b': / * base type * /
-  case 'c': / * composite type * /
-  case 'd': / * domain * /
-  case 'r': / * range * /
-  case 'e': / * enum * /
+  case 'b': /* base type */
+  case 'c': /* composite type */
+  case 'd': /* domain */
+  case 'r': /* range */
+  case 'e': /* enum */
     return this == t;
 
   case 'p':
@@ -59,7 +59,7 @@ bool pg_type::consistent(sqltype *rvalue)
   }
 }
 
-dut_pqxx::dut_pqxx(std::string conninfo)
+dut_rspqxx::dut_rspqxx(std::string conninfo)
   : c(conninfo)
 {
      c.set_variable("statement_timeout", "'1s'");
@@ -67,7 +67,7 @@ dut_pqxx::dut_pqxx(std::string conninfo)
      c.set_variable("application_name", "'" PACKAGE "::dut'");
 }
 
-void dut_pqxx::test(const std::string &stmt)
+void dut_rspqxx::test(const std::string &stmt)
 {
   try {
     if(!c.is_open())
@@ -78,7 +78,7 @@ void dut_pqxx::test(const std::string &stmt)
     w.abort();
   } catch (const pqxx::failure &e) {
     if ((dynamic_cast<const pqxx::broken_connection *>(&e))) {
-      / * re-throw to outer loop to recover session. * /
+      /* re-throw to outer loop to recover session. */
       throw dut::broken(e.what());
     }
 
@@ -124,7 +124,7 @@ schema_redshift::schema_redshift(std::string &conninfo, bool no_catalog) : c(con
     //       if (schema == "information_schema")
     // 	continue;
 
-    pg_type *t = new pg_type(name,oid,typdelim[0],typrelid, typelem, typarray, typtype[0]);
+    rs_type *t = new rs_type(name,oid,typdelim[0],typrelid, typelem, typarray, typtype[0]);
     oid2type[oid] = t;
     name2type[name] = t;
     types.push_back(t);
@@ -285,10 +285,10 @@ schema_redshift::schema_redshift(std::string &conninfo, bool no_catalog) : c(con
 }
 
 extern "C" {
-    void dut_libpq_notice_rx(void *arg, const PGresult *res);
+    void dut_libpq_rsnotice_rx(void *arg, const PGresult *res);
 }
 
-void dut_libpq_notice_rx(void *arg, const PGresult *res)
+void dut_libpq_rsnotice_rx(void *arg, const PGresult *res)
 {
     (void) arg;
     (void) res;
@@ -308,7 +308,7 @@ void dut_redshift::connect(std::string &conninfo)
     command("set client_min_messages to 'ERROR';");
     command("set application_name to '" PACKAGE "::dut';");
 
-    PQsetNoticeReceiver(conn, dut_libpq_notice_rx, (void *) 0);
+    PQsetNoticeReceiver(conn, dut_libpq_rsnotice_rx, (void *) 0);
 }
 
 dut_redshift::dut_redshift(std::string conninfo)
