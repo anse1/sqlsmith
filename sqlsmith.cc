@@ -125,15 +125,15 @@ int main(int argc, char *argv[])
 	cerr << "Sorry, " PACKAGE_NAME " was compiled without MonetDB support." << endl;
 	return 1;
 #endif
-/*      }
+      }
       else if(options.count("redshift")) {
 #ifdef HAVE_REDSHIFT
-	schema = make_shared<schema_redshift>(options["redshift"]);
+	schema = make_shared<schema_redshift>(options["redshift"], options.count("exclude-catalog"));
 #else
 	cerr << "Sorry, " PACKAGE_NAME " was compiled without Redshift support." << endl;
 	return 1;
 #endif
-  */    }
+      }
       else
 	schema = make_shared<schema_pqxx>(options["target"], options.count("exclude-catalog"));
 
