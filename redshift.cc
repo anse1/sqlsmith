@@ -63,7 +63,7 @@ dut_rspqxx::dut_rspqxx(std::string conninfo)
   : c(conninfo)
 {
      c.set_variable("statement_timeout", "'1s'");
-     c.set_variable("client_min_messages", "'ERROR'");
+     //c.set_variable("client_min_messages", "'ERROR'");
      c.set_variable("application_name", "'" PACKAGE "::dut'");
 }
 
@@ -312,8 +312,8 @@ void dut_redshift::connect(std::string &conninfo)
     if (strlen(errmsg))
 	 throw dut::broken(errmsg, "08001");
 
-    command("set statement_timeout to '1s'");
-    command("set client_min_messages to 'ERROR';");
+    command("set statement_timeout to '10'");
+//    command("set client_min_messages to 'ERROR';");
     command("set application_name to '" PACKAGE "::dut';");
 
     PQsetNoticeReceiver(conn, dut_libpq_rsnotice_rx, (void *) 0);
