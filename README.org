@@ -7,10 +7,10 @@
 SQLsmith is a random SQL query generator.  Its paragon is [[https://embed.cs.utah.edu/csmith/][Csmith]],
 which proved valuable for quality assurance in C compilers.
 
-It currently supports generating queries for PostgreSQL, SQLite 3 and
-MonetDB.  To add support for another RDBMS, you need to implement two
-classes providing schema information about and connectivity to the
-device under test.
+It currently supports generating queries for PostgreSQL, SQLite 3,
+Redshift and MonetDB.  To add support for another RDBMS, you need to
+implement two classes providing schema information about and
+connectivity to the device under test.
 
 Besides developers of the RDBMS products, users developing extensions
 might also be interested in exposing their code to SQLsmith's random
@@ -67,12 +67,15 @@ Example invocations:
 : sqlsmith --verbose --sqlite="file:$HOME/.mozilla/firefox/places.sqlite?mode=ro"
 : # testing MonetDB
 : sqlsmith --verbose --monetdb="mapi:monetdb://localhost:50000/smith"
+: # testing Redshift
+: sqlsmith --verbose --target="host=redshift.cluster.com port=5439 dbname=regression"
 
 The following options are currently supported:
 
 | =--target=connstr=   | target postgres database (default: libpq defaults)       |
 | =--sqlite=URI=       | target SQLite3 database                                  |
 | =--monetdb=URI=      | target MonetDB database                                  |
+| =--redshift=connstr= | target Redshift database (default: libpq defaults)       |
 | =--log-to=connstr=   | postgres db for logging errors into (default: don't log) |
 | =--verbose=          | emit progress output                                     |
 | =--version=          | show version information                                 |
@@ -133,7 +136,7 @@ certain catalog view like this:
 This is because the planner then puts =pg_get_indexdef(oid)= in a
 context where it sees non-index-oids, which causes it to croak:
 
-:                                      QUERY PLAN                                     
+:                                      QUERY PLAN
 : ------------------------------------------------------------------------------------
 :  Hash Join  (cost=17.60..30.65 rows=9 width=4)
 :    Hash Cond: (i.oid = x.indexrelid)

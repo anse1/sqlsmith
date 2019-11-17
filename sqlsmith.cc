@@ -34,6 +34,10 @@ using boost::regex_match;
 #include "monetdb.hh"
 #endif
 
+#ifdef HAVE_REDSHIFT
+#include "redshift.hh"
+#endif
+
 #include "postgres.hh"
 
 using namespace std;
@@ -63,7 +67,7 @@ int main(int argc, char *argv[])
 
   map<string,string> options;
   regex optregex("--(help|log-to|verbose|target|sqlite|monetdb|version|dump-all-graphs|dump-all-queries|seed|dry-run|max-queries|rng-state|exclude-catalog)(?:=((?:.|\n)*))?");
-  
+
   for(char **opt = argv+1 ;opt < argv+argc; opt++) {
     smatch match;
     string s(*opt);
@@ -83,6 +87,9 @@ int main(int argc, char *argv[])
 #endif
 #ifdef HAVE_MONETDB
       "    --monetdb=connstr    MonetDB database to send queries to" <<endl <<
+#endif
+#ifdef HAVE_REDSHIFT
+      "    --redshift=connstr   Redshift database to send queries to" <<endl <<
 #endif
       "    --log-to=connstr     log errors to postgres database" << endl <<
       "    --seed=int           seed RNG with specified int instead of PID" << endl <<
@@ -119,6 +126,14 @@ int main(int argc, char *argv[])
 	return 1;
 #endif
       }
+      else if(options.count("redshift")) {
+#ifdef HAVE_REDSHIFT
+	schema = make_shared<schema_monetdb>(options["redshift"]);
+#else
+	cerr << "Sorry, " PACKAGE_NAME " was compiled without Redshift support." << endl;
+	return 1;
+#endif
+      }
       else
 	schema = make_shared<schema_pqxx>(options["target"], options.count("exclude-catalog"));
 
@@ -147,7 +162,7 @@ int main(int argc, char *argv[])
 	loggers.push_back(l);
 	signal(SIGINT, cerr_log_handler);
       }
-      
+
       if (options.count("dump-all-graphs"))
 	loggers.push_back(make_shared<ast_logger>());
 
@@ -170,7 +185,7 @@ int main(int argc, char *argv[])
       }
 
       shared_ptr<dut_base> dut;
-      
+
       if (options.count("sqlite")) {
 #ifdef HAVE_LIBSQLITE3
 	dut = make_shared<dut_sqlite>(options["sqlite"]);
@@ -180,10 +195,18 @@ int main(int argc, char *argv[])
 #endif
       }
       else if(options.count("monetdb")) {
-#ifdef HAVE_MONETDB	   
+#ifdef HAVE_MONETDB
 	dut = make_shared<dut_monetdb>(options["monetdb"]);
 #else
 	cerr << "Sorry, " PACKAGE_NAME " was compiled without MonetDB support." << endl;
+	return 1;
+#endif
+      }
+      else if(options.count("redshift")) {
+#ifdef HAVE_REDSHIFT
+	dut = make_shared<dut_monetdb>(options["redshift"]);
+#else
+	cerr << "Sorry, " PACKAGE_NAME " was compiled without Redshift support." << endl;
 	return 1;
 #endif
       }
@@ -201,13 +224,13 @@ int main(int argc, char *argv[])
 		global_cerr_logger->report();
 	      return 0;
 	    }
-	    
+
 	    /* Invoke top-level production to generate AST */
 	    shared_ptr<prod> gen = statement_factory(&scope);
 
 	    for (auto l : loggers)
 	      l->generated(*gen);
-	  
+
 	    /* Generate SQL from AST */
 	    ostringstream s;
 	    gen->out(s);
