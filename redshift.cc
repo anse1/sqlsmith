@@ -1,4 +1,4 @@
-#include "postgres.hh"
+#include "redshift.hh"
 #include "config.h"
 #include <iostream>
 
@@ -283,7 +283,7 @@ schema_redshift::schema_redshift(std::string &conninfo, bool no_catalog) : c(con
   c.disconnect();
   generate_indexes();
 }
-*/
+
 extern "C" {
     void dut_libpq_notice_rx(void *arg, const PGresult *res);
 }
@@ -311,13 +311,12 @@ void dut_redshift::connect(std::string &conninfo)
     PQsetNoticeReceiver(conn, dut_libpq_notice_rx, (void *) 0);
 }
 
-dut_libpq::dut_libpq(std::string conninfo)
+dut_redshift::dut_redshift(std::string conninfo)
     : conninfo_(conninfo)
 {
     connect(conninfo);
 }
 
-*/
 void dut_redshift::command(const std::string &stmt)
 {
     if (!conn)
