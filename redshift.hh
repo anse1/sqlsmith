@@ -16,6 +16,7 @@ extern "C" {
 
 #define OID long
 
+/*
 struct pg_type : sqltype {
   OID oid_;
   char typdelim_;
@@ -63,5 +64,5 @@ struct dut_libpq : dut_base {
      void connect(std::string &conninfo);
      dut_libpq(std::string conninfo);
 };
-
+*/
 #endif
