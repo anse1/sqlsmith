@@ -206,7 +206,7 @@ schema_redshift::schema_redshift(std::string &conninfo, bool no_catalog) : c(con
   cerr << "Loading routines...";
   r = w.exec("select (select nspname from pg_namespace where oid = pronamespace), oid, prorettype, proname "
 	     "from pg_proc "
-	     "where prorettype::regtype::text not in ('event_trigger', 'trigger', 'opaque', 'internal') "
+	     "where (select typname from pg_type where oid = prorettype) not in ('event_trigger', 'trigger', 'opaque', 'internal') "
 	     "and proname <> 'pg_event_trigger_table_rewrite_reason' "
 	     "and proname <> 'pg_event_trigger_table_rewrite_oid' "
 	     "and proname !~ '^ri_fkey_' "
