@@ -135,7 +135,7 @@ schema_redshift::schema_redshift(std::string &conninfo, bool no_catalog) : c(con
   cerr << "Loading tables...";
   r = w.exec("select table_name, "
 		    "table_schema, "
-	            "is_insertable_into, "
+	            "(CASE WHEN table_type = 'BASE TABLE' THEN 'YES' ELSE 'NO' END) is_insertable_into, "
 	            "table_type "
 	     "from information_schema.tables");
 
