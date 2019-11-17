@@ -8,9 +8,6 @@ AX_CXX_COMPILE_STDCXX_11(noext,mandatory)
 AX_LIB_POSTGRESQL()
 PKG_CHECK_MODULES(LIBPQXX, libpqxx >= 4.0)
 
-AX_LIB_REDSHIFT()
-PKG_CHECK_MODULES(LIBPQXX, libpqxx >= 4.0)
-
 PKG_CHECK_MODULES(MONETDB_MAPI, monetdb-mapi >= 11.23.0,
 		[AC_DEFINE([HAVE_MONETDB], [1], [define if the MonetDB client library is available])],
 		[]

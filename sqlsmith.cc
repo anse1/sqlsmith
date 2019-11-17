@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
   cerr << PACKAGE_NAME " " GITREV << endl;
 
   map<string,string> options;
-  regex optregex("--(help|log-to|verbose|target|sqlite|monetdb|version|dump-all-graphs|dump-all-queries|seed|dry-run|max-queries|rng-state|exclude-catalog)(?:=((?:.|\n)*))?");
+  regex optregex("--(help|log-to|verbose|target|sqlite|monetdb|redshift|version|dump-all-graphs|dump-all-queries|seed|dry-run|max-queries|rng-state|exclude-catalog)(?:=((?:.|\n)*))?");
 
   for(char **opt = argv+1 ;opt < argv+argc; opt++) {
     smatch match;

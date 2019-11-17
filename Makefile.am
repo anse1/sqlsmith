@@ -14,6 +14,10 @@ if DUT_SQLITE
 DUT += sqlite.cc
 endif
 
+if DUT_REDSHIFT
+DUT += redshift.cc
+endif
+
 
 sqlsmith_SOURCES = relmodel.cc schema.cc $(DUT)	 			\
     random.cc prod.cc expr.cc grammar.cc log.cc dump.cc impedance.cc	\
