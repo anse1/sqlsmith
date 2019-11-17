@@ -39,7 +39,7 @@ struct pg_type : sqltype {
 };
 
 
-struct schema_pqxx : public schema {
+struct schema_redshift : public schema {
   pqxx::connection c;
   map<OID, pg_type*> oid2type;
   map<string, pg_type*> name2type;

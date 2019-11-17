@@ -321,7 +321,8 @@ dut_libpq::dut_libpq(std::string conninfo)
     connect(conninfo);
 }
 
-void dut_libpq::command(const std::string &stmt)
+*/
+void dut_redshift::command(const std::string &stmt)
 {
     if (!conn)
 	connect(conninfo_);
@@ -364,6 +365,7 @@ void dut_libpq::command(const std::string &stmt)
     }
 }
 
+/*
 void dut_libpq::test(const std::string &stmt)
 {
     command("ROLLBACK;");
