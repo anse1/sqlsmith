@@ -249,7 +249,7 @@ schema_redshift::schema_redshift(std::string &conninfo, bool no_catalog) : c(con
   cerr << "Loading aggregates...";
   r = w.exec("select (select nspname from pg_namespace where oid = pronamespace), oid, prorettype, proname "
 	     "from pg_proc "
-	     "where prorettype::regtype::text not in ('event_trigger', 'trigger', 'opaque', 'internal') "
+	     "where (select typname from pg_type where oid = prorettype) not in ('event_trigger', 'trigger', 'opaque', 'internal') "
 	     "and proname not in ('pg_event_trigger_table_rewrite_reason') "
 	     "and proname not in ('percentile_cont', 'dense_rank', 'cume_dist', "
 	     "'rank', 'test_rank', 'percent_rank', 'percentile_disc', 'mode', 'test_percentile_disc') "
@@ -270,9 +270,15 @@ schema_redshift::schema_redshift(std::string &conninfo, bool no_catalog) : c(con
   cerr << "Loading aggregate parameters...";
 
   for (auto &proc : aggregates) {
-    string q("select unnest(proargtypes) "
-	     "from pg_proc ");
-    q += " where oid = " + w.quote(proc.specific_name);
+    string q(" WITH cnt AS ("
+	" SELECT 1 AS n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL "
+	" SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL "
+	" SELECT 9 UNION ALL SELECT 10 "
+" ), x AS ( SELECT oid, oidvectortypes(proargtypes) oi FROM pg_proc WHERE pronargs > 0 and oid = " + w.quote(proc.specific_name) + ")"
+" SELECT"
+"  (SELECT oid FROM pg_type WHERE format_type(oid, NULL) = TRIM(SPLIT_PART(oi, ',', cnt.n))) AS oid"
+" FROM cnt"
+"	INNER JOIN x ON cnt.n <= REGEXP_COUNT(oi, ',') + 1;");
 
     r = w.exec(q);
     for (auto row : r) {
