@@ -101,8 +101,9 @@ schema_redshift::schema_redshift(std::string &conninfo, bool no_catalog) : c(con
 
   cerr << "Loading types...";
 
-  r = w.exec("select quote_ident(typname), oid, typdelim, typrelid, typelem, typarray, typtype "
-	     "from pg_type ");
+  r = w.exec("select quote_ident(typname), oid, typdelim, typrelid, typelem, "
+	     "COALESCE((SELECT oid from pg_type where typname = '_' || t.typname),0) as typarray, "
+             " typtype from pg_type t");
 
   for (auto row = r.begin(); row != r.end(); ++row) {
     string name(row[0].as<string>());
