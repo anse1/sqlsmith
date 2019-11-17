@@ -225,9 +225,17 @@ schema_redshift::schema_redshift(std::string &conninfo, bool no_catalog) : c(con
   cerr << "Loading routine parameters...";
 
   for (auto &proc : routines) {
-    string q("select unnest(proargtypes) "
-	     "from pg_proc ");
-    q += " where oid = " + w.quote(proc.specific_name);
+    string q(" WITH cnt AS ("
+	" SELECT 1 AS n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL "
+	" SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL "
+	" SELECT 9 UNION ALL SELECT 10 "
+" ), x AS ( SELECT oid, oidvectortypes(proargtypes) oi FROM pg_proc WHERE pronargs > 0 and oid = " + w.quote(proc.specific_name) + ")"
+" SELECT"
+"  (SELECT oid FROM pg_type WHERE format_type(oid, NULL) = TRIM(SPLIT_PART(oi, ',', cnt.n))) AS oid"
+" FROM cnt"
+"	INNER JOIN x ON cnt.n <= REGEXP_COUNT(oi, ',') + 1;");
+
+/*"   TRIM(SPLIT_PART(oi, ',', cnt.n)) ," */
 
     r = w.exec(q);
     for (auto row : r) {
