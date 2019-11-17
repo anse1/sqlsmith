@@ -55,8 +55,8 @@ struct dut_pqxx : dut_base {
   virtual void test(const std::string &stmt);
   dut_pqxx(std::string conninfo);
 };
-
-struct dut_libpq : dut_base {
+*/
+struct dut_redshift : dut_base {
      PGconn *conn = 0;
      std::string conninfo_;
      virtual void test(const std::string &stmt);
@@ -64,5 +64,4 @@ struct dut_libpq : dut_base {
      void connect(std::string &conninfo);
      dut_libpq(std::string conninfo);
 };
-*/
 #endif
