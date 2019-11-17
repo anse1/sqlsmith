@@ -16,7 +16,6 @@ using namespace std;
 static regex e_timeout("ERROR:  canceling statement due to statement timeout(\n|.)*");
 static regex e_syntax("ERROR:  syntax error at or near(\n|.)*");
 
-/*
 bool pg_type::consistent(sqltype *rvalue)
 {
   pg_type *t = dynamic_cast<pg_type*>(rvalue);
@@ -92,8 +91,7 @@ void dut_pqxx::test(const std::string &stmt)
   }
 }
 
-
-schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
+schema_redshift::schema_redshift(std::string &conninfo, bool no_catalog) : c(conninfo)
 {
   c.set_variable("application_name", "'" PACKAGE "::schema'");
 
@@ -290,15 +288,13 @@ extern "C" {
     void dut_libpq_notice_rx(void *arg, const PGresult *res);
 }
 
-/*
 void dut_libpq_notice_rx(void *arg, const PGresult *res)
 {
     (void) arg;
     (void) res;
 }
 
-
-void dut_libpq::connect(std::string &conninfo)
+void dut_redshift::connect(std::string &conninfo)
 {
     if (conn) {
 	PQfinish(conn);
@@ -365,12 +361,10 @@ void dut_redshift::command(const std::string &stmt)
     }
 }
 
-/*
-void dut_libpq::test(const std::string &stmt)
+void dut_redshift::test(const std::string &stmt)
 {
     command("ROLLBACK;");
     command("BEGIN;");
     command(stmt.c_str());
     command("ROLLBACK;");
 }
-*/
