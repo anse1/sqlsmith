@@ -140,14 +140,14 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
   cerr << "done." << endl;
 
   cerr << "Loading tables...";
-  r = w.exec("SELECT table_name, table_schema, is_insertable_into, table_type"
-             "FROM information_schema.tables t"
-             "JOIN pg_class c"
-             "  ON t.table_name = c.relname"
-             "JOIN pg_namespace n"
-             "  ON n.oid = c.relnamespace AND n.nspname = table_schema"
-             "WHERE relkind IN ('r', 'm', 'p', 'v')"
-             "  AND has_table_privilege(c.oid, 'select')");
+  r = w.exec("SELECT table_name, table_schema, is_insertable_into, table_type "
+             "FROM information_schema.tables t "
+             "JOIN pg_class c "
+             "  ON t.table_name = c.relname "
+             "JOIN pg_namespace n "
+             "  ON n.oid = c.relnamespace AND n.nspname = table_schema "
+             "WHERE relkind IN ('r', 'm', 'p', 'v') "
+             "  AND has_table_privilege(c.oid, 'select') ");
 	     
   for (auto row = r.begin(); row != r.end(); ++row) {
     string schema(row[1].as<string>());
