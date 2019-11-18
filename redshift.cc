@@ -133,11 +133,15 @@ schema_redshift::schema_redshift(std::string &conninfo, bool no_catalog) : c(con
   cerr << "done." << endl;
 
   cerr << "Loading tables...";
-  r = w.exec("select table_name, "
-		    "table_schema, "
-	            "(CASE WHEN table_type = 'BASE TABLE' THEN 'YES' ELSE 'NO' END) is_insertable_into, "
-	            "table_type "
-	     "from information_schema.tables");
+  r = w.exec("SELECT table_name, table_schema, "
+             "(CASE WHEN table_type = 'BASE TABLE' THEN 'YES' ELSE 'NO' END) is_insertable_into, table_type "
+             "FROM information_schema.tables t "
+             "JOIN pg_class c "
+             "  ON t.table_name = c.relname "
+             "JOIN pg_namespace n "
+             "  ON n.oid = c.relnamespace AND n.nspname = table_schema "
+             "WHERE relkind IN ('r', 'm', 'p', 'v') "
+             "  AND has_table_privilege(c.oid, 'select') ");
 
   for (auto row = r.begin(); row != r.end(); ++row) {
     string schema(row[1].as<string>());
@@ -209,6 +213,7 @@ schema_redshift::schema_redshift(std::string &conninfo, bool no_catalog) : c(con
 	     "where (select typname from pg_type where oid = prorettype) not in ('event_trigger', 'trigger', 'opaque', 'internal') "
 	     "and proname <> 'pg_event_trigger_table_rewrite_reason' "
 	     "and proname <> 'pg_event_trigger_table_rewrite_oid' "
+	     "and has_function_privilege(pg_proc.oid, 'execute') " 
 	     "and proname !~ '^ri_fkey_' "
 	     "and not (proretset or proisagg) ");
 
