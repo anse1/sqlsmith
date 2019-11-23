@@ -167,8 +167,7 @@ schema_redshift::schema_redshift(std::string &conninfo, bool no_catalog) : c(con
 	     "from pg_attribute join pg_class c on( c.oid = attrelid ) "
 	     "join pg_namespace n on n.oid = relnamespace "
 	     "where not attisdropped "
-	     "and attname not in "
-	     "('xmin', 'xmax', 'ctid', 'cmin', 'cmax', 'tableoid', 'oid') ");
+	     "and attnum > 0 ");
     q += " and relname = " + w.quote(t->name);
     q += " and nspname = " + w.quote(t->schema);
 
