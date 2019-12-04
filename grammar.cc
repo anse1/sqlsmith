@@ -20,10 +20,10 @@ shared_ptr<table_ref> table_ref::factory(prod *p) {
       if (d6() > 3)
 	return make_shared<joined_table>(p);
     }
-    if (d6() > 3)
+//    if (d6() > 3)
       return make_shared<table_or_query_name>(p);
-    else
-      return make_shared<table_sample>(p);
+//    else
+//      return make_shared<table_sample>(p);
   } catch (runtime_error &e) {
     p->retry();
   }
@@ -204,7 +204,7 @@ from_clause::from_clause(prod *p) : prod(p) {
 
   while (d6() > 5) {
     // add a lateral subquery
-    if (!impedance::matched(typeid(lateral_subquery)))
+//    if (!impedance::matched(typeid(lateral_subquery)))
       break;
     reflist.push_back(make_shared<lateral_subquery>(this));
     for (auto r : reflist.back()->refs)
@@ -467,16 +467,16 @@ shared_ptr<prod> statement_factory(struct scope *s)
 {
   try {
     s->new_stmt();
-    if (d42() == 1)
-      return make_shared<merge_stmt>((struct prod *)0, s);
+//    if (d42() == 1)
+//      return make_shared<merge_stmt>((struct prod *)0, s);
     if (d42() == 1)
       return make_shared<insert_stmt>((struct prod *)0, s);
-    else if (d42() == 1)
-      return make_shared<delete_returning>((struct prod *)0, s);
+//    else if (d42() == 1)
+//      return make_shared<delete_returning>((struct prod *)0, s);
     else if (d42() == 1) {
       return make_shared<upsert_stmt>((struct prod *)0, s);
-    } else if (d42() == 1)
-      return make_shared<update_returning>((struct prod *)0, s);
+    } //else if (d42() == 1)
+      //return make_shared<update_returning>((struct prod *)0, s);
     else if (d6() > 4)
       return make_shared<select_for_update>((struct prod *)0, s);
     else if (d6() > 5)
