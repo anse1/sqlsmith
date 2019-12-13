@@ -110,7 +110,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
   cerr << "Loading types...";
 
   r = w.exec("select quote_ident(typname), oid, typdelim, typrelid, typelem, typarray, typtype "
-	     "from pg_type ");
+	     "from pg_type where has_type_privilege (oid, 'usage')");
   
   for (auto row = r.begin(); row != r.end(); ++row) {
     string name(row[0].as<string>());
@@ -140,11 +140,14 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
   cerr << "done." << endl;
 
   cerr << "Loading tables...";
-  r = w.exec("select table_name, "
-		    "table_schema, "
-	            "is_insertable_into, "
-	            "table_type "
-	     "from information_schema.tables");
+  r = w.exec("SELECT table_name, table_schema, is_insertable_into, table_type "
+             "FROM information_schema.tables t "
+             "JOIN pg_class c "
+             "  ON t.table_name = c.relname "
+             "JOIN pg_namespace n "
+             "  ON n.oid = c.relnamespace AND n.nspname = table_schema "
+             "WHERE relkind IN ('r', 'm', 'p', 'v') "
+             "  AND has_table_privilege(c.oid, 'select') ");
 	     
   for (auto row = r.begin(); row != r.end(); ++row) {
     string schema(row[1].as<string>());
@@ -169,7 +172,8 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 	     "atttypid "
 	     "from pg_attribute join pg_class c on( c.oid = attrelid ) "
 	     "join pg_namespace n on n.oid = relnamespace "
-	     "where not attisdropped "
+             "AND has_column_privilege (c.oid, attname, 'select') "
+ 	     "where not attisdropped "
 	     "and attname not in "
 	     "('xmin', 'xmax', 'ctid', 'cmin', 'cmax', 'tableoid', 'oid') ");
     q += " and relname = " + w.quote(t->name);
@@ -216,6 +220,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 	     "where prorettype::regtype::text not in ('event_trigger', 'trigger', 'opaque', 'internal') "
 	     "and proname <> 'pg_event_trigger_table_rewrite_reason' "
 	     "and proname <> 'pg_event_trigger_table_rewrite_oid' "
+             "and has_function_privilege(pg_proc.oid, 'execute') "
 	     "and proname !~ '^ri_fkey_' "
 	     "and not (proretset or " + procedure_is_aggregate + " or " + procedure_is_window + ") ");
 
