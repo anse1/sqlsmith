@@ -17,9 +17,9 @@ using impedance::matched;
 shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
 {
   try {
-//    if (1 == d20() && p->level < d6() && window_function::allowed(p))
-//      return make_shared<window_function>(p, type_constraint);
-//    else 
+    if (1 == d20() && p->level < d6() && window_function::allowed(p))
+      return make_shared<window_function>(p, type_constraint);
+    else
 if (1 == d42() && p->level < d6())
       return make_shared<coalesce>(p, type_constraint);
     else if (1 == d42() && p->level < d6())
@@ -52,7 +52,7 @@ case_expr::case_expr(prod *p, sqltype *type_constraint)
 	  concrete one for a better match. */
        if (true_expr->type->consistent(false_expr->type))
 	    true_expr = value_expr::factory(this, false_expr->type);
-       else 
+       else
 	    false_expr = value_expr::factory(this, true_expr->type);
   }
   type = true_expr->type;
@@ -114,7 +114,7 @@ shared_ptr<bool_expr> bool_expr::factory(prod *p)
   }
   p->retry();
   return factory(p);
-     
+
 }
 
 exists_predicate::exists_predicate(prod *p) : bool_expr(p)
@@ -172,7 +172,7 @@ coalesce::coalesce(prod *p, sqltype *type_constraint, const char *abbrev)
     retry();
     if (first_expr->type->consistent(second_expr->type))
       first_expr = value_expr::factory(this, second_expr->type);
-    else 
+    else
       second_expr = value_expr::factory(this, first_expr->type);
   }
   type = second_expr->type;
@@ -180,7 +180,7 @@ coalesce::coalesce(prod *p, sqltype *type_constraint, const char *abbrev)
   value_exprs.push_back(first_expr);
   value_exprs.push_back(second_expr);
 }
- 
+
 void coalesce::out(std::ostream &out)
 {
   out << "cast(" << abbrev_ << "(";
@@ -197,7 +197,7 @@ const_expr::const_expr(prod *p, sqltype *type_constraint)
     : value_expr(p), expr("")
 {
   type = type_constraint ? type_constraint : scope->schema->inttype;
-      
+
   if (type == scope->schema->inttype)
     expr = to_string(d100());
   else if (type == scope->schema->booltype)
@@ -220,7 +220,7 @@ funcall::funcall(prod *p, sqltype *type_constraint, bool agg)
     : p->scope->schema->parameterless_routines_returning_type;
 
  retry:
-  
+
   if (!type_constraint) {
     proc = random_pick(idx.begin(), idx.end())->second;
   } else {
@@ -253,7 +253,7 @@ funcall::funcall(prod *p, sqltype *type_constraint, bool agg)
       retry();
       goto retry;
     }
-  
+
   for (auto argtype : proc->argtypes) {
     assert(argtype);
     auto expr = value_expr::factory(this, argtype);
@@ -325,7 +325,7 @@ void atomic_subselect::out(std::ostream &out)
     out << agg->ident() << "(" << col->name << ")";
   else
     out << col->name;
-  
+
   out << " from " << tab->ident();
 
   if (!agg)
@@ -339,7 +339,7 @@ void window_function::out(std::ostream &out)
 {
   indent(out);
   out << *aggregate << " over (partition by ";
-    
+
   for (auto ref = partition_by.begin(); ref != partition_by.end(); ref++) {
     out << **ref;
     if (ref+1 != partition_by.end())
@@ -347,7 +347,7 @@ void window_function::out(std::ostream &out)
   }
 
   out << " order by ";
-    
+
   for (auto ref = order_by.begin(); ref != order_by.end(); ref++) {
     out << **ref;
     if (ref+1 != order_by.end())
