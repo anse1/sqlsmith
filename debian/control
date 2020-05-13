@@ -10,7 +10,7 @@ Vcs-Git: https://github.com/anse1/sqlsmith.git -b debian
 Build-Depends:
  autoconf,
  autoconf-archive,
- debhelper (>= 9),
+ debhelper-compat (= 12),
  libboost-regex-dev,
  libpq-dev,
  libpqxx-dev (>= 4.0),
