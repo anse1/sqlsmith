@@ -70,9 +70,6 @@ dut_pqxx::dut_pqxx(std::string conninfo)
 void dut_pqxx::test(const std::string &stmt)
 {
   try {
-    if(!c.is_open())
-       c.activate();
-
     pqxx::work w(c);
     w.exec(stmt.c_str());
     w.abort();

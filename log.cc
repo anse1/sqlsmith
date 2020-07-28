@@ -146,7 +146,7 @@ pqxx_logger::pqxx_logger(std::string target, std::string conninfo, struct schema
   ostringstream seed;
   seed << smith::rng;
     
-  result r = w.prepared("instance")(GITREV)(target)(hostname)(s.version)(seed.str()).exec();
+  result r = w.exec_prepared("instance", GITREV, target, hostname, s.version, seed.str());
   
   id = r[0][0].as<long>(id);
 
@@ -169,7 +169,7 @@ void pqxx_logger::error(prod &query, const dut::failure &e)
   work w(*c);
   ostringstream s;
   s << query;
-  w.prepared("error")(e.what())(s.str())(e.sqlstate).exec();
+  w.exec_prepared("error", e.what(), s.str(), e.sqlstate);
   w.commit();
 }
 
@@ -180,7 +180,7 @@ void pqxx_logger::generated(prod &query)
     work w(*c);
     ostringstream s;
     impedance::report(s);
-    w.prepared("stat")(queries)(sum_height/queries)(sum_nodes/queries)(sum_retries/queries)(s.str()).exec();
+    w.exec_prepared("stat", queries, sum_height/queries, sum_nodes/queries, sum_retries/queries, s.str());
     w.commit();
   }
 }
