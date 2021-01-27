@@ -33,6 +33,8 @@ EXTRA_DIST = gitrev.h dump.hh expr.hh grammar.hh log.hh prod.hh		\
 gitrev.h: $(HEADERS) $(SOURCES)
 	-if git describe --dirty --tags --always > /dev/null ; then \
 	echo "#define GITREV \"$$(git describe --dirty --tags --always)\"" > $@ ;\
+	else \
+	echo "#define GITREV \"unreleased\"" > $@ ;\
 	fi
 
 filterdump:
