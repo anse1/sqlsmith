@@ -30,10 +30,11 @@ bool pg_type::consistent(sqltype *rvalue)
   case 'c': /* composite type */
   case 'd': /* domain */
   case 'r': /* range */
+  case 'm': /* multirange */
   case 'e': /* enum */
     return this == t;
     
-  case 'p':
+  case 'p': /* pseudo type */
     if (name == "anyarray") {
       return t->typelem_ != InvalidOid;
     } else if (name == "anynonarray") {
