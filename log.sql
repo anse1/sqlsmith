@@ -109,6 +109,7 @@ comment on view instance_speed is 'query speed of recently active instances';
 create table boring_sqlstates (sqlstate text primary key);
 comment on table boring_sqlstates is 'sqlstates to reject';
 grant select on boring_sqlstates to public;
+\copy boring_sqlstates from boring_sqlstates.txt
 
 create table known(error text);
 comment on table known is 'error messages to reject';
