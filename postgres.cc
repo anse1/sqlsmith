@@ -301,9 +301,12 @@ void dut_libpq::connect(std::string &conninfo)
 	PQfinish(conn);
     }
     conn = PQconnectdb(conninfo.c_str());
-    char *errmsg = PQerrorMessage(conn);
-    if (strlen(errmsg))
-	 throw dut::broken(errmsg, "08001");
+    if (PQstatus(conn) != CONNECTION_OK)
+    {
+	char *errmsg = PQerrorMessage(conn);
+	if (strlen(errmsg))
+	    throw dut::broken(errmsg, "08001");
+    }
 
     command("set statement_timeout to '1s'");
     command("set client_min_messages to 'ERROR';");
