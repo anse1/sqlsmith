@@ -88,6 +88,16 @@ create view report24h as
        where i.t > now() - interval '1 days'
        	     group by 2 order by count desc;
 
+create or replace view reporthosts as
+ SELECT count(1) AS count,
+    substring(firstline(e.msg),1,80) as firstline,
+    array_agg(DISTINCT i.hostname) AS hosts
+   FROM error e
+     JOIN instance i ON i.id = e.id
+  WHERE e.t > (now() - '24:00:00'::interval)
+  GROUP BY 2
+  ORDER BY (count(1));
+
 create view instance_activity as
        select i.hostname, i.target, max(e.t)
        	      from instance i join error e on (i.id = e.id)
