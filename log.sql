@@ -48,7 +48,6 @@ grant insert,select on table instance to smith;
 grant insert on table error to smith;
 grant update,insert,select on table stat to smith;
 grant usage on all sequences in schema public to smith;
-grant select on boring_sqlstates to smith;
 
 -- stuff beyond this line is not referenced by sqlsmith
 
@@ -109,12 +108,15 @@ comment on view instance_speed is 'query speed of recently active instances';
 
 create table boring_sqlstates (sqlstate text primary key);
 comment on table boring_sqlstates is 'sqlstates to reject';
+grant select on boring_sqlstates to public;
 
 create table known(error text);
 comment on table known is 'error messages to reject';
+\copy known from known.txt
 
 create table known_re(re text);
 comment on table known_re is 'regular expressions to match error messages to reject';
+\copy known_re from known_re.txt
 
 create or replace function discard_known() returns trigger as $$
 begin
