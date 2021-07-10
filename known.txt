@@ -30,6 +30,7 @@ ERROR:  SET requires parameter name
 ERROR:  Some PX error (not specified)
 ERROR:  TABLESAMPLE clause can only be applied to tables and materialized views
 ERROR:  UPDATE is not allowed in a non-volatile function
+ERROR:  Unexpected end of string
 ERROR:  Unexpected packet in key data
 ERROR:  WAL level not sufficient for creating a restore point
 ERROR:  WAL level not sufficient for making an online backup
@@ -45,6 +46,7 @@ ERROR:  argument declared "anyrange" is not a range type but type anyrange
 ERROR:  argument exceeds the maximum length of 255 bytes
 ERROR:  argument must be empty or one-dimensional array
 ERROR:  array must have even number of elements
+ERROR:  array must not contain nulls
 ERROR:  array of weight is too short
 ERROR:  array size exceeds the maximum allowed (134217727)
 ERROR:  arrays must contain identical number of items
@@ -109,6 +111,7 @@ ERROR:  cannot convert abstime "invalid" to timestamp
 ERROR:  cannot convert circle with radius zero to polygon
 ERROR:  cannot convert reltime "invalid" to interval
 ERROR:  cannot convert reserved abstime value to date
+ERROR:  cannot create logical replication slot in transaction that has performed writes
 ERROR:  cannot delete from object using integer index
 ERROR:  cannot delete from scalar
 ERROR:  cannot display a value of type anyelement
@@ -139,6 +142,7 @@ ERROR:  cannot merge addresses from different families
 ERROR:  cannot open BEGIN query as cursor
 ERROR:  cannot open CREATE INDEX query as cursor
 ERROR:  cannot open CREATE RULE query as cursor
+ERROR:  cannot open DECLARE CURSOR query as cursor
 ERROR:  cannot open INSERT query as cursor
 ERROR:  cannot open ROLLBACK query as cursor
 ERROR:  cannot open multi-query plan as cursor
@@ -341,6 +345,7 @@ ERROR:  could not open file "base/16384/PG_VERSION": Cannot allocate memory
 ERROR:  could not open relation with OID 2619
 ERROR:  could not open stop-word file "/home/smith/postgres/inst/master/share/tsearch_data/english.stop": Cannot allocate memory
 ERROR:  could not read file "backup_label": Cannot allocate memory
+ERROR:  could not read file "current_logfiles": Cannot allocate memory
 ERROR:  could not read time zone file "Default": Cannot allocate memory
 ERROR:  count must be greater than zero
 ERROR:  currtid cannot handle views with no CTID
@@ -371,12 +376,14 @@ ERROR:  first argument of jsonb_populate_record must be a row type
 ERROR:  float4_accum: expected 3-element float8 array
 ERROR:  float8_accum: expected 3-element float8 array
 ERROR:  float8_avg: expected 3-element float8 array
+ERROR:  float8_combine: expected 3-element float8 array
 ERROR:  float8_corr: expected 6-element float8 array
 ERROR:  float8_covar_pop: expected 6-element float8 array
 ERROR:  float8_covar_samp: expected 6-element float8 array
 ERROR:  float8_regr_accum: expected 6-element float8 array
 ERROR:  float8_regr_avgx: expected 6-element float8 array
 ERROR:  float8_regr_avgy: expected 6-element float8 array
+ERROR:  float8_regr_combine: expected 6-element float8 array
 ERROR:  float8_regr_intercept: expected 6-element float8 array
 ERROR:  float8_regr_r2: expected 6-element float8 array
 ERROR:  float8_regr_slope: expected 6-element float8 array
@@ -400,6 +407,7 @@ ERROR:  gen_salt: Unknown salt algorithm
 ERROR:  getQuadrant: impossible case
 ERROR:  gtsvector_in not implemented
 ERROR:  identifier too long
+ERROR:  index row size 5752 exceeds btree version 4 maximum 2704 for index "clstr_tst_c"
 ERROR:  input is out of range
 ERROR:  input of anonymous composite types is not implemented
 ERROR:  integer out of range
@@ -414,6 +422,7 @@ ERROR:  invalid input value for enum insenum: "(0) with time zone"
 ERROR:  invalid line specification: must be two distinct points
 ERROR:  invalid name syntax
 ERROR:  invalid number of arguments: object must be matched key value pairs
+ERROR:  invalid preceding or following size in window function
 ERROR:  invalid prewarm type
 ERROR:  invalid query
 ERROR:  invalid range bound flags
@@ -539,6 +548,7 @@ ERROR:  pg_event_trigger_table_rewrite_reason() can only be called in a table_re
 ERROR:  pg_extension_config_dump() can only be called from an SQL script executed by CREATE EXTENSION
 ERROR:  pg_stat_statements must be loaded via shared_preload_libraries
 ERROR:  prewarm type cannot be null
+ERROR:  querytree is no longer implemented
 ERROR:  range constructor flags argument must not be null
 ERROR:  range lower bound must be less than or equal to range upper bound
 ERROR:  record type has not been registered
@@ -570,6 +580,7 @@ ERROR:  stack depth limit exceeded
 ERROR:  syntax error at end of input
 ERROR:  syntax error at or near "ARRAY"
 ERROR:  syntax error at or near "USER"
+ERROR:  test_fdw_handler is not implemented
 ERROR:  timestamp cannot be NaN
 ERROR:  timestamp out of range
 ERROR:  too many points requested
@@ -579,6 +590,7 @@ ERROR:  type matched to anyenum is not an enum type: anyenum
 ERROR:  type planets is not composite
 ERROR:  unexpected dtype 7 while parsing reltime "invalid"
 ERROR:  unexpected duplicate for tablespace 0, relfilenode 0
+ERROR:  unexpected end of flag array
 ERROR:  unrecognized privilege type: "
 ERROR:  unrecognized storage manager name
 ERROR:  unsupported XML feature
@@ -605,8 +617,6 @@ ERROR:  weight out of range
 ERROR:  wrong limit, should be between 0 and 1
 ERROR:  wrong number of array subscripts
 ERROR:  zero raised to a negative power is undefined
-Line style is ascii.
-Pager usage is off.
 RIGHT and FULL OUTER JOINs are not currently supported
 Some PX error (not specified)
 ^ERROR:  cannot take cube root of a unit

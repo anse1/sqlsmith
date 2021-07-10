@@ -1,5 +1,3 @@
-Line style is ascii.
-Pager usage is off.
 \\nCONTEXT:  PL/pgSQL function tg_backlink_set
 \\nCONTEXT:  PL/pgSQL function tg_iface_biu
 \\nCONTEXT:  PL/pgSQL function tg_pslot_biu
@@ -65,9 +63,12 @@ Pager usage is off.
 ^ERROR:  could not identify a hash function for type
 ^ERROR:  could not identify an equality operator for type
 ^ERROR:  could not identify an ordering operator for type
+^ERROR:  could not open file "
 ^ERROR:  could not open relation with OID (\\d+)
+^ERROR:  could not open server file "
 ^ERROR:  could not perform block dump because dump file is being used by PID
 ^ERROR:  could not read symbolic link ".*": No such file or directory
+^ERROR:  could not stat file "
 ^ERROR:  cross-database references are not implemented
 ^ERROR:  cube index [0-9]+ is out of bounds
 ^ERROR:  currval of sequence "[^"]+" is not yet defined in this session
@@ -89,6 +90,7 @@ Pager usage is off.
 ^ERROR:  index -?[0-9]+ out of valid range
 ^ERROR:  index [^o]+out of valid range, 0..127
 ^ERROR:  index row requires \\d+ bytes, maximum size is \\d+
+^ERROR:  index row size \\+ exceeds btree version \\d+ maximum \\d+ for index
 ^ERROR:  index row size \\d+ exceeds maximum \\d+ for index
 ^ERROR:  insert or update on table "[^"]+" violates foreign key constraint
 ^ERROR:  interval field value out of range

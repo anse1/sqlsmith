@@ -38,7 +38,8 @@ gitrev.h: $(HEADERS) $(SOURCES)
 	fi
 
 filterdump:
-	psql -c 'copy (select error from known) to stdout' smith|sort -u > known.txt
-	psql -c 'copy (select re from known_re) to stdout' smith|sort -u > known_re.txt
+	psql -Xc 'copy (select error from known) to stdout' |sort -u > known.txt
+	psql -Xc 'copy (select re from known_re) to stdout' |sort -u > known_re.txt
+	psql -Xc 'copy (select sqlstate from boring_sqlstates) to stdout' |sort -u > boring_sqlstates.txt
 
 .PHONY: filterdump
