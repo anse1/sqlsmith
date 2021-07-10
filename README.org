@@ -32,7 +32,7 @@ optional:
 - SQLite3
 - monetdb_mapi
 
-** Building on Debian Jessie
+** Building on Debian
 
 : apt-get install build-essential autoconf autoconf-archive libpqxx-dev libboost-regex-dev libsqlite3-dev
 : cd sqlsmith
@@ -164,7 +164,8 @@ filter tables for testing PostgreSQL into the files [[./known_re.txt]] and
 
 ** Resources
 
-- [[https://korte.credativ.com/~ase/sqlsmith-talk.pdf][Slides from PGConf.EU 2016]]
+- [[https://www.postgresql.eu/events/pgconfeu2018/sessions/session/2221/slides/145/sqlsmith-talk.pdf][Slides from PGConf.EU 2018]]
+- [[https://anse1.github.io/sqlsmith-doc/structsqltype.html][Doxygen output for SQLsmith]]
 
 ** License
 
