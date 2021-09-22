@@ -3,10 +3,19 @@ AC_LANG(C++)
 
 AM_INIT_AUTOMAKE(-Wall -Werror foreign)
 AC_PROG_CXX
-AX_CXX_COMPILE_STDCXX_11(noext,mandatory)
 
 AX_LIB_POSTGRESQL()
-PKG_CHECK_MODULES(LIBPQXX, libpqxx >= 4.0)
+
+PKG_CHECK_MODULES(LIBPQXX, libpqxx < 7.0,
+        [AX_CXX_COMPILE_STDCXX_11(noext,mandatory)],
+        [PKG_CHECK_MODULES([LIBPQXX], [libpqxx >= 7.0],
+                 [libpqxx7=yes],
+                 []
+         )]
+)
+
+AS_IF([test "x$libpqxx7" = "xyes"], [AC_DEFINE([HAVE_LIBPQXX7], [1], [define if libpqxx >= 7 is used])], [])
+AS_IF([test "x$libpqxx7" = "xyes"], [AX_CXX_COMPILE_STDCXX_17(noext,mandatory)], [])
 
 PKG_CHECK_MODULES(MONETDB_MAPI, monetdb-mapi >= 11.23.0,
 		[AC_DEFINE([HAVE_MONETDB], [1], [define if the MonetDB client library is available])],
