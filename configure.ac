@@ -14,6 +14,7 @@ PKG_CHECK_MODULES(LIBPQXX, libpqxx < 7.0,
          )]
 )
 
+AS_IF([test "x$libpqxx7" = "xyes"], AC_MSG_NOTICE([libpqxx version >= 7 detected]), [])
 AS_IF([test "x$libpqxx7" = "xyes"], [AC_DEFINE([HAVE_LIBPQXX7], [1], [define if libpqxx >= 7 is used])], [])
 AS_IF([test "x$libpqxx7" = "xyes"], [AX_CXX_COMPILE_STDCXX_17(noext,mandatory)], [])
 
