@@ -3,7 +3,7 @@ Section: database
 Priority: optional
 Maintainer: Andreas Seltenreich <seltenreich@gmx.de>
 Uploaders: Christoph Berg <myon@debian.org>
-Standards-Version: 4.1.4
+Standards-Version: 4.6.0
 Homepage: https://github.com/anse1/sqlsmith
 Vcs-Browser: https://github.com/anse1/sqlsmith
 Vcs-Git: https://github.com/anse1/sqlsmith.git -b debian
@@ -15,6 +15,7 @@ Build-Depends:
  libpq-dev,
  libpqxx-dev (>= 4.0),
  libsqlite3-dev,
+ libssl-dev,
 
 Package: sqlsmith
 Architecture: any

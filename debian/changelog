@@ -8,7 +8,8 @@ sqlsmith (1.2.1-2) unstable; urgency=medium
     Repository-Browse.
 
   [ Christoph Berg ]
-  * Support PG14's multirange types
+  * Support PG14's multirange types.
+  * B-D on libssl-dev.
 
  -- Christoph Berg <myon@debian.org>  Wed, 06 Oct 2021 17:14:29 +0200
 
