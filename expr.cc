@@ -374,7 +374,7 @@ window_function::window_function(prod *p, sqltype *type_constraint)
 bool window_function::allowed(prod *p)
 {
   if (dynamic_cast<select_list *>(p))
-    return dynamic_cast<query_spec *>(p->pprod) ? true : false;
+    return dynamic_cast<query_spec *>(p->pprod) != nullptr;
   if (dynamic_cast<window_function *>(p))
     return false;
   if (dynamic_cast<value_expr *>(p))

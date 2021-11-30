@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
 	loggers.push_back(make_shared<query_dumper>());
 
       if (options.count("dry-run")) {
-	while (1) {
+	while (true) {
 	  shared_ptr<prod> gen = statement_factory(&scope);
 	  gen->out(cout);
 	  for (auto l : loggers)
@@ -190,10 +190,10 @@ int main(int argc, char *argv[])
       else
 	dut = make_shared<dut_libpq>(options["target"]);
 
-      while (1) /* Loop to recover connection loss */
+      while (true) /* Loop to recover connection loss */
       {
 	try {
-            while (1) { /* Main loop */
+            while (true) { /* Main loop */
 
 	    if (options.count("max-queries")
 		&& (++queries_generated > stol(options["max-queries"]))) {

@@ -167,7 +167,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 
   cerr << "Loading columns and constraints...";
 
-  for (auto t = tables.begin(); t != tables.end(); ++t) {
+  for (auto & table : tables) {
     string q("select attname, "
 	     "atttypid "
 	     "from pg_attribute join pg_class c on( c.oid = attrelid ) "
@@ -175,23 +175,23 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 	     "where not attisdropped "
 	     "and attname not in "
 	     "('xmin', 'xmax', 'ctid', 'cmin', 'cmax', 'tableoid', 'oid') ");
-    q += " and relname = " + w.quote(t->name);
-    q += " and nspname = " + w.quote(t->schema);
+    q += " and relname = " + w.quote(table.name);
+    q += " and nspname = " + w.quote(table.schema);
 
     r = w.exec(q);
     for (auto row : r) {
       column c(row[0].as<string>(), oid2type[row[1].as<OID>()]);
-      t->columns().push_back(c);
+      table.columns().push_back(c);
     }
 
     q = "select conname from pg_class t "
       "join pg_constraint c on (t.oid = c.conrelid) "
       "where contype in ('f', 'u', 'p') ";
-    q += " and relnamespace = " " (select oid from pg_namespace where nspname = " + w.quote(t->schema) + ")";
-    q += " and relname = " + w.quote(t->name);
+    q += " and relnamespace = " " (select oid from pg_namespace where nspname = " + w.quote(table.schema) + ")";
+    q += " and relname = " + w.quote(table.name);
 
     for (auto row : w.exec(q)) {
-      t->constraints.push_back(row[0].as<string>());
+      table.constraints.push_back(row[0].as<string>());
     }
     
   }
@@ -375,6 +375,6 @@ void dut_libpq::test(const std::string &stmt)
 {
     command("ROLLBACK;");
     command("BEGIN;");
-    command(stmt.c_str());
+    command(stmt);
     command("ROLLBACK;");
 }

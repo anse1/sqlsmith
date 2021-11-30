@@ -117,12 +117,12 @@ schema_sqlite::schema_sqlite(std::string &conninfo, bool no_catalog)
 
   cerr << "Loading columns and constraints...";
 
-  for (auto t = tables.begin(); t != tables.end(); ++t) {
+  for (auto & table : tables) {
     string q("pragma table_info(");
-    q += t->name;
+    q += table.name;
     q += ");";
 
-    rc = sqlite3_exec(db, q.c_str(), column_callback, (void *)&*t, &zErrMsg);
+    rc = sqlite3_exec(db, q.c_str(), column_callback, (void *)&table, &zErrMsg);
     if (rc!=SQLITE_OK) {
       auto e = std::runtime_error(zErrMsg);
       sqlite3_free(zErrMsg);
