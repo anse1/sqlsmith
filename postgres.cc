@@ -353,7 +353,7 @@ void dut_libpq::command(const std::string &stmt)
 
 	if (CONNECTION_OK != PQstatus(conn)) {
             PQfinish(conn);
-	    conn = 0;
+	    conn = nullptr;
 	    throw dut::broken(error_string.c_str(), sqlstate_string.c_str());
 	}
 	if (sqlstate_string == "42601")

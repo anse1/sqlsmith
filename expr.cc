@@ -288,16 +288,16 @@ atomic_subselect::atomic_subselect(prod *p, sqltype *type_constraint)
       agg = &random_pick<>(scope->schema->aggregates);
     }
     if (agg->argtypes.size() != 1)
-      agg = 0;
+      agg = nullptr;
     else
       type_constraint = agg->argtypes[0];
   } else {
-    agg = 0;
+    agg = nullptr;
   }
 
   if (type_constraint) {
     auto idx = scope->schema->tables_with_columns_of_type;
-    col = 0;
+    col = nullptr;
     auto iters = idx.equal_range(type_constraint);
     tab = random_pick<>(iters)->second;
 

@@ -256,7 +256,7 @@ schema_sqlite::schema_sqlite(std::string &conninfo, bool no_catalog)
 
   generate_indexes();
   sqlite3_close(db);
-  db = 0;
+  db = nullptr;
 }
 
 dut_sqlite::dut_sqlite(std::string &conninfo)

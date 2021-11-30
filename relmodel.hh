@@ -85,7 +85,7 @@ struct scope {
   struct schema *schema;
   /// Counters for prefixed stmt-unique identifiers
   shared_ptr<map<string,unsigned int> > stmt_seq;
-  scope(struct scope *parent = 0) : parent(parent) {
+  scope(struct scope *parent = nullptr) : parent(parent) {
     if (parent) {
       schema = parent->schema;
       tables = parent->tables;
