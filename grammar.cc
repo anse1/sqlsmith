@@ -221,7 +221,7 @@ select_list::select_list(prod *p) : prod(p)
     name << "c" << columns++;
     sqltype *t=e->type;
     assert(t);
-    derived_table.columns().push_back(column(name.str(), t));
+    derived_table.columns().emplace_back(name.str(), t);
   } while (d6() > 1);
 }
 

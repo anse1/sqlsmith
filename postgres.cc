@@ -157,10 +157,10 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 	if (no_catalog && ((schema == "pg_catalog") || (schema == "information_schema")))
 		continue;
       
-    tables.push_back(table(row[0].as<string>(),
+    tables.emplace_back(row[0].as<string>(),
 			   schema,
-			   ((insertable == "YES") ? true : false),
-			   ((table_type == "BASE TABLE") ? true : false)));
+         (insertable == "YES"),
+         (table_type == "BASE TABLE"));
   }
 	     
   cerr << "done." << endl;

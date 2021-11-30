@@ -43,7 +43,7 @@ struct stats_visitor : prod_visitor {
     cerr << "production statistics" << endl;
     vector<pair<const char *, long> > report;
     for (auto p : production_stats)
-      report.push_back(p);
+      report.emplace_back(p);
     stable_sort(report.begin(), report.end(),
 		[](const pair<std::string, long> &a,
 		   const pair<std::string, long> &b)
@@ -76,7 +76,7 @@ void cerr_logger::report()
 
     vector<pair<std::string, long> > report;
     for (auto e : errors) {
-      report.push_back(e);
+      report.emplace_back(e);
     }
     stable_sort(report.begin(), report.end(),
 		[](const pair<std::string, long> &a,
