@@ -4,6 +4,7 @@
 #ifndef RELMODEL_HH
 #define RELMODEL_HH
 #include <string>
+#include <utility>
 #include <vector>
 #include <map>
 #include <utility>
@@ -37,8 +38,8 @@ struct sqltype {
 struct column {
   string name;
   sqltype *type;
-  column(string name) : name(name) { }
-  column(string name, sqltype *t) : name(name), type(t) {
+  column(string name) : name(std::move(name)) { }
+  column(string name, sqltype *t) : name(std::move(name)), type(t) {
     assert(t);
   }
 };
@@ -52,14 +53,14 @@ struct named_relation : relation {
   string name;
   virtual string ident() { return name; }
   virtual ~named_relation() { }
-  named_relation(string n) : name(n) { }
+  named_relation(string n) : name(std::move(n)) { }
 };
 
 struct aliased_relation : named_relation {
   relation *rel;
-  virtual ~aliased_relation() { }
-  aliased_relation(string n, relation* r) : named_relation(n), rel(r) { }
-  virtual vector<column>& columns() { return rel->columns(); }
+  ~aliased_relation() override { }
+  aliased_relation(string n, relation* r) : named_relation(std::move(n)), rel(r) { }
+  vector<column>& columns() override { return rel->columns(); }
 };
 
 struct table : named_relation {
@@ -68,8 +69,8 @@ struct table : named_relation {
   bool is_base_table;
   vector<string> constraints;
   table(string name, string schema, bool insertable, bool base_table)
-    : named_relation(name),
-      schema(schema),
+    : named_relation(std::move(name)),
+      schema(std::move(schema)),
       is_insertable(insertable),
       is_base_table(base_table) { }
   string ident() override { return schema + "." + name; }
@@ -120,7 +121,7 @@ struct op {
   sqltype *right;
   sqltype *result;
   op(string n,sqltype *l,sqltype *r, sqltype *res)
-    : name(n), left(l), right(r), result(res) { }
+    : name(std::move(n)), left(l), right(r), result(res) { }
   op() { }
 };
 
@@ -131,7 +132,7 @@ struct routine {
   sqltype *restype;
   string name;
   routine(string schema, string specific_name, sqltype* data_type, string name)
-    : specific_name(specific_name), schema(schema), restype(data_type), name(name) {
+    : specific_name(std::move(specific_name)), schema(std::move(schema)), restype(data_type), name(std::move(name)) {
     assert(data_type);
   }
   virtual string ident() {
