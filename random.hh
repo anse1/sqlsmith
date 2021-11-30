@@ -14,7 +14,7 @@ namespace smith {
 }
 
 template<typename T> T& random_pick(std::vector<T>& container) {
-  if (!container.size())
+  if (container.empty())
     throw std::runtime_error("No candidates available");
   
   std::uniform_int_distribution<int> pick(0, container.size()-1);

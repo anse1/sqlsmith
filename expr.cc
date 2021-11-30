@@ -29,7 +29,7 @@ shared_ptr<value_expr> value_expr::factory(prod *p, sqltype *type_constraint)
       return make_shared<atomic_subselect>(p, type_constraint);
     else if (p->level< d6() && d9()==1)
       return make_shared<case_expr>(p, type_constraint);
-    else if (p->scope->refs.size() && d20() > 1)
+    else if (!p->scope->refs.empty() && d20() > 1)
       return make_shared<column_reference>(p, type_constraint);
     else
       return make_shared<const_expr>(p, type_constraint);
@@ -193,7 +193,7 @@ void coalesce::out(std::ostream &out)
 }
 
 const_expr::const_expr(prod *p, sqltype *type_constraint)
-    : value_expr(p), expr("")
+    : value_expr(p)
 {
   type = type_constraint ? type_constraint : scope->schema->inttype;
       

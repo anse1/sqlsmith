@@ -135,7 +135,7 @@ struct routine {
     assert(data_type);
   }
   virtual string ident() {
-    if (schema.size())
+    if (!schema.empty())
       return schema + "." + name;
     else
       return name;

@@ -23,7 +23,7 @@ void schema::generate_indexes() {
       if (!type->consistent(r.restype))
 	continue;
       routines_returning_type.insert(pair<sqltype*, routine*>(type, &r));
-      if(!r.argtypes.size())
+      if(r.argtypes.empty())
 	parameterless_routines_returning_type.insert(pair<sqltype*, routine*>(type, &r));
     }
     

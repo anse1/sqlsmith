@@ -44,7 +44,7 @@ target_table::target_table(prod *p, table *victim) : table_ref(p)
   while (! victim
 	 || victim->schema == "pg_catalog"
 	 || !victim->is_base_table
-	 || !victim->columns().size()) {
+	 || victim->columns().empty()) {
     struct named_relation *pick = random_pick(scope->tables);
     victim = dynamic_cast<table *>(pick);
     retry();
@@ -112,7 +112,7 @@ simple_join_cond::simple_join_cond(prod *p, table_ref &lhs, table_ref &rhs)
 retry:
   named_relation *left_rel = &*random_pick(lhs.refs);
   
-  if (!left_rel->columns().size())
+  if (left_rel->columns().empty())
     { retry(); goto retry; }
 
   named_relation *right_rel = &*random_pick(rhs.refs);
@@ -126,7 +126,7 @@ retry:
       break;
     }
   }
-  if (condition == "") {
+  if (condition.empty()) {
     retry(); goto retry;
   }
 }
@@ -185,7 +185,7 @@ void table_subquery::out(std::ostream &out) {
 }
 
 void from_clause::out(std::ostream &out) {
-  if (! reflist.size())
+  if (reflist.empty())
     return;
   out << "from ";
 
@@ -345,7 +345,7 @@ void modifying_stmt::pick_victim()
     } while (! victim
 	   || victim->schema == "pg_catalog"
 	   || !victim->is_base_table
-	   || !victim->columns().size());
+	   || victim->columns().empty());
 }
 
 modifying_stmt::modifying_stmt(prod *p, struct scope *s, table *victim)
@@ -387,7 +387,7 @@ void insert_stmt::out(std::ostream &out)
 {
   out << "insert into " << victim->ident() << " ";
 
-  if (!value_exprs.size()) {
+  if (value_exprs.empty()) {
     out << "default values";
     return;
   }
@@ -415,12 +415,12 @@ set_list::set_list(prod *p, table *target) : prod(p)
       value_exprs.push_back(expr);
       names.push_back(col.name);
     }
-  } while (!names.size());
+  } while (names.empty());
 }
 
 void set_list::out(std::ostream &out)
 {
-  assert(names.size());
+  assert(!names.empty());
   out << " set ";
   for (size_t i = 0; i < names.size(); i++) {
     indent(out);
@@ -455,7 +455,7 @@ upsert_stmt::upsert_stmt(prod *p, struct scope *s, table *v)
 {
   match();
 
-  if (!victim->constraints.size())
+  if (victim->constraints.empty())
     fail("need table w/ constraint for upsert");
     
   set_list = std::make_shared<struct set_list>(this, victim);
