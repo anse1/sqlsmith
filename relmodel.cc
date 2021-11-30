@@ -2,7 +2,7 @@
 
 map<string, sqltype*> sqltype::typemap;
 
-sqltype * sqltype::get(string n)
+sqltype * sqltype::get(const string& n)
 {
   if (typemap.count(n))
     return typemap[n];

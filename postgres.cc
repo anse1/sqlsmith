@@ -60,7 +60,7 @@ bool pg_type::consistent(sqltype *rvalue)
   }
 }
 
-dut_pqxx::dut_pqxx(std::string conninfo)
+dut_pqxx::dut_pqxx(const std::string& conninfo)
   : c(conninfo)
 {
      c.set_variable("statement_timeout", "'1s'");

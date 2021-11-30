@@ -129,7 +129,7 @@ void cerr_logger::error(prod &query, const dut::failure &e)
     cerr << "e";
 }
 
-pqxx_logger::pqxx_logger(std::string target, std::string conninfo, struct schema &s)
+pqxx_logger::pqxx_logger(const std::string& target, const std::string& conninfo, struct schema &s)
 {
   c = make_shared<pqxx::connection>(conninfo);
 

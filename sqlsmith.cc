@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
 	    /* Invoke top-level production to generate AST */
 	    shared_ptr<prod> gen = statement_factory(&scope);
 
-	    for (auto l : loggers)
+	    for (const auto& l : loggers)
 	      l->generated(*gen);
 	  
 	    /* Generate SQL from AST */
@@ -215,10 +215,10 @@ int main(int argc, char *argv[])
 	    /* Try to execute it */
 	    try {
 	      dut->test(s.str());
-	      for (auto l : loggers)
+	      for (const auto& l : loggers)
 		l->executed(*gen);
 	    } catch (const dut::failure &e) {
-	      for (auto l : loggers)
+	      for (const auto& l : loggers)
 		try {
 		  l->error(*gen, e);
 		} catch (runtime_error &e) {

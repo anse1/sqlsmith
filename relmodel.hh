@@ -20,8 +20,8 @@ using std::shared_ptr;
 struct sqltype {
   string name;
   static map<string, struct sqltype*> typemap;
-  static struct sqltype *get(string s);
-  sqltype(string n) : name(n) { }
+  static struct sqltype *get(const string& s);
+  sqltype(string n) : name(std::move(n)) { }
 
   /** This function is used to model postgres-style pseudotypes.
       A generic type is consistent with a more concrete type.

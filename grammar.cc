@@ -119,7 +119,7 @@ retry:
 
   column &c1 = random_pick(left_rel->columns());
 
-  for (auto c2 : right_rel->columns()) {
+  for (const auto& c2 : right_rel->columns()) {
     if (c1.type == c2.type) {
       condition +=
 	left_rel->ident() + "." + c1.name + " = " + right_rel->ident() + "." + c2.name + " ";
@@ -139,9 +139,9 @@ expr_join_cond::expr_join_cond(prod *p, table_ref &lhs, table_ref &rhs)
      : join_cond(p, lhs, rhs), joinscope(p->scope)
 {
      scope = &joinscope;
-     for (auto ref: lhs.refs)
+     for (const auto& ref: lhs.refs)
 	  joinscope.refs.push_back(&*ref);
-     for (auto ref: rhs.refs)
+     for (const auto& ref: rhs.refs)
 	  joinscope.refs.push_back(&*ref);
      search = bool_expr::factory(this);
 }
@@ -164,9 +164,9 @@ joined_table::joined_table(prod *p) : table_ref(p) {
     type = "right";
   }
 
-  for (auto ref: lhs->refs)
+  for (const auto& ref: lhs->refs)
     refs.push_back(ref);
-  for (auto ref: rhs->refs)
+  for (const auto& ref: rhs->refs)
     refs.push_back(ref);
 }
 
@@ -199,7 +199,7 @@ void from_clause::out(std::ostream &out) {
 
 from_clause::from_clause(prod *p) : prod(p) {
   reflist.push_back(table_ref::factory(this));
-  for (auto r : reflist.back()->refs)
+  for (const auto& r : reflist.back()->refs)
     scope->refs.push_back(&*r);
 
   while (d6() > 5) {
@@ -207,7 +207,7 @@ from_clause::from_clause(prod *p) : prod(p) {
     if (!impedance::matched(typeid(lateral_subquery)))
       break;
     reflist.push_back(make_shared<lateral_subquery>(this));
-    for (auto r : reflist.back()->refs)
+    for (const auto& r : reflist.back()->refs)
       scope->refs.push_back(&*r);
   }
 }
@@ -376,7 +376,7 @@ insert_stmt::insert_stmt(prod *p, struct scope *s, table *v)
 {
   match();
 
-  for (auto col : victim->columns()) {
+  for (const auto& col : victim->columns()) {
     auto expr = value_expr::factory(this, col.type);
     assert(expr->type == col.type);
     value_exprs.push_back(expr);
@@ -408,7 +408,7 @@ void insert_stmt::out(std::ostream &out)
 set_list::set_list(prod *p, table *target) : prod(p)
 {
   do {
-    for (auto col : target->columns()) {
+    for (const auto& col : target->columns()) {
       if (d6() < 4)
 	continue;
       auto expr = value_expr::factory(this, col.type);
@@ -565,7 +565,7 @@ void merge_stmt::out(std::ostream &out)
      indent(out);
      out << "ON " << *join_condition;
      indent(out);
-     for (auto p : clauselist) {
+     for (const auto& p : clauselist) {
        out << *p;
        indent(out);
      }
@@ -577,7 +577,7 @@ void merge_stmt::accept(prod_visitor *v)
   target_table_->accept(v);
   data_source->accept(v);
   join_condition->accept(v);
-  for (auto p : clauselist)
+  for (const auto& p : clauselist)
     p->accept(v);
     
 }
@@ -632,7 +632,7 @@ void when_clause_update::accept(prod_visitor *v)
 when_clause_insert::when_clause_insert(struct merge_stmt *p)
   : when_clause(p)
 {
-  for (auto col : p->victim->columns()) {
+  for (const auto& col : p->victim->columns()) {
     auto expr = value_expr::factory(this, col.type);
     assert(expr->type == col.type);
     exprs.push_back(expr);
@@ -658,7 +658,7 @@ void when_clause_insert::out(std::ostream &out) {
 void when_clause_insert::accept(prod_visitor *v)
 {
   v->visit(this);
-  for (auto p : exprs)
+  for (const auto& p : exprs)
     p->accept(v);
 }
 

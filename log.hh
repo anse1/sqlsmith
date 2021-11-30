@@ -52,9 +52,9 @@ struct cerr_logger : stats_collecting_logger {
 struct pqxx_logger : stats_collecting_logger {
   long id;
   std::shared_ptr<pqxx::connection> c;
-  pqxx_logger(std::string target, std::string conninfo, struct schema &s);
-  virtual void generated(prod &query);
-  virtual void error(prod &query, const dut::failure &e);
+  pqxx_logger(const std::string& target, const std::string& conninfo, struct schema &s);
+  void generated(prod &query) override;
+  void error(prod &query, const dut::failure &e) override;
 };
 
 #endif
