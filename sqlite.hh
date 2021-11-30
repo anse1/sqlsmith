@@ -13,8 +13,8 @@ extern "C"  {
 #include "dut.hh"
 
 struct sqlite_connection {
-  sqlite3 *db;
-  char *zErrMsg = 0;
+  sqlite3 *db{nullptr};
+  char *zErrMsg{nullptr};
   int rc;
   void q(const char *query);
   sqlite_connection(std::string &conninfo);
