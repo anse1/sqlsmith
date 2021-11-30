@@ -255,23 +255,23 @@ struct for_update_verify : prod_visitor {
   virtual void visit(prod *p) {
     if (dynamic_cast<window_function*>(p))
       throw("window function");
-    joined_table* join = dynamic_cast<joined_table*>(p);
+    auto* join = dynamic_cast<joined_table*>(p);
     if (join && join->type != "inner")
       throw("outer join");
-    query_spec* subquery = dynamic_cast<query_spec*>(p);
+    auto* subquery = dynamic_cast<query_spec*>(p);
     if (subquery)
       subquery->set_quantifier = "";
-    table_or_query_name* tab = dynamic_cast<table_or_query_name*>(p);
+    auto* tab = dynamic_cast<table_or_query_name*>(p);
     if (tab) {
-      table *actual_table = dynamic_cast<table*>(tab->t);
+      auto *actual_table = dynamic_cast<table*>(tab->t);
       if (actual_table && !actual_table->is_insertable)
 	throw("read only");
       if (actual_table->name.find("pg_"))
 	throw("catalog");
     }
-    table_sample* sample = dynamic_cast<table_sample*>(p);
+    auto* sample = dynamic_cast<table_sample*>(p);
     if (sample) {
-      table *actual_table = dynamic_cast<table*>(sample->t);
+      auto *actual_table = dynamic_cast<table*>(sample->t);
       if (actual_table && !actual_table->is_insertable)
 	throw("read only");
       if (actual_table->name.find("pg_"))
@@ -500,7 +500,7 @@ common_table_expression::common_table_expression(prod *parent, struct scope *s)
 {
   scope = &myscope;
   do {
-    shared_ptr<query_spec> query = make_shared<query_spec>(this, s);
+    auto query = make_shared<query_spec>(this, s);
     with_queries.push_back(query);
     string alias = scope->stmt_uid("jennifer");
     relation *relation = &query->select_list->derived_table;

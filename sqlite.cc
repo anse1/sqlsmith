@@ -53,7 +53,7 @@ extern "C" int table_callback(void *arg, int argc, char **argv, char **azColName
 extern "C" int column_callback(void *arg, int argc, char **argv, char **azColName)
 {
   (void) argc; (void) azColName;
-  table *tab = (table *)arg;
+  auto *tab = (table *)arg;
   column c(argv[1], sqltype::get(argv[2]));
   tab->columns().push_back(c);
   return 0;

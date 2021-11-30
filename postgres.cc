@@ -18,7 +18,7 @@ static regex e_syntax("ERROR:  syntax error at or near(\n|.)*");
 
 bool pg_type::consistent(sqltype *rvalue)
 {
-  pg_type *t = dynamic_cast<pg_type*>(rvalue);
+  auto *t = dynamic_cast<pg_type*>(rvalue);
 
   if (!t) {
     cerr << "unknown type: " << rvalue->name  << endl;
@@ -116,19 +116,19 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 	     "from pg_type ");
   
   for (auto row = r.begin(); row != r.end(); ++row) {
-    string name(row[0].as<string>());
-    OID oid(row[1].as<OID>());
-    string typdelim(row[2].as<string>());
-    OID typrelid(row[3].as<OID>());
-    OID typelem(row[4].as<OID>());
-    OID typarray(row[5].as<OID>());
-    string typtype(row[6].as<string>());
+    auto name(row[0].as<string>());
+    auto oid(row[1].as<OID>());
+    auto typdelim(row[2].as<string>());
+    auto typrelid(row[3].as<OID>());
+    auto typelem(row[4].as<OID>());
+    auto typarray(row[5].as<OID>());
+    auto typtype(row[6].as<string>());
     //       if (schema == "pg_catalog")
     // 	continue;
     //       if (schema == "information_schema")
     // 	continue;
 
-    pg_type *t = new pg_type(name,oid,typdelim[0],typrelid, typelem, typarray, typtype[0]);
+    auto *t = new pg_type(name,oid,typdelim[0],typrelid, typelem, typarray, typtype[0]);
     oid2type[oid] = t;
     name2type[name] = t;
     types.push_back(t);
@@ -150,9 +150,9 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 	     "from information_schema.tables");
 	     
   for (auto row = r.begin(); row != r.end(); ++row) {
-    string schema(row[1].as<string>());
-    string insertable(row[2].as<string>());
-    string table_type(row[3].as<string>());
+    auto schema(row[1].as<string>());
+    auto insertable(row[2].as<string>());
+    auto table_type(row[3].as<string>());
 
 	if (no_catalog && ((schema == "pg_catalog") || (schema == "information_schema")))
 		continue;
