@@ -1,0 +1,16 @@
+/* we know these paramters as they are required during the CMake configure phase */
+#define HAVE_CXX17 1
+
+
+
+#cmakedefine HAVE_BOOST 1
+#cmakedefine HAVE_BOOST_REGEX 1
+
+#cmakedefine HAVE_LIBPQXX7 1
+
+#cmakedefine HAVE_LIBSQLITE3 1
+#cmakedefine HAVE_MONETDB 1
+
+#cmakedefine PACKAGE "@PACKAGE@"
+#cmakedefine PACKAGE_NAME "@PACKAGE_NAME@"
+
