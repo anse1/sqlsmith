@@ -72,8 +72,8 @@ struct table : named_relation {
       schema(schema),
       is_insertable(insertable),
       is_base_table(base_table) { }
-  virtual string ident() { return schema + "." + name; }
-  virtual ~table() { };
+  string ident() override { return schema + "." + name; }
+  ~table() override { };
 };
 
 struct scope {

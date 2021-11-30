@@ -22,7 +22,7 @@ struct logger {
 
 /// logger to dump all generated queries
 struct query_dumper : logger {
-  virtual void generated(prod &query) {
+  void generated(prod &query) override {
        query.out(std::cout);
        std::cout << ";" << std::endl;
   }
@@ -34,7 +34,7 @@ struct stats_collecting_logger : logger {
   float sum_nodes = 0;
   float sum_height = 0;
   float sum_retries = 0;
-  virtual void generated(prod &query);
+  void generated(prod &query) override;
 };
 
 /// stderr logger
@@ -42,9 +42,9 @@ struct cerr_logger : stats_collecting_logger {
   const int columns = 80;
   std::map<std::string, long> errors;
   virtual void report();
-  virtual void generated(prod &query);
-  virtual void executed(prod &query);
-  virtual void error(prod &query, const dut::failure &e);
+  void generated(prod &query) override;
+  void executed(prod &query) override;
+  void error(prod &query, const dut::failure &e) override;
   void report(prod &p);
 };
 

@@ -32,7 +32,7 @@ struct stats_visitor : prod_visitor {
   int maxlevel = 0;
   long retries = 0;
   map<const char*, long> production_stats;
-  virtual void visit(struct prod *p) {
+  void visit(struct prod *p) override {
     nodes++;
     if (p->level > maxlevel)
       maxlevel = p->level;

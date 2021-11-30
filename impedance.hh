@@ -15,14 +15,14 @@
 struct impedance_visitor : prod_visitor {
   std::map<const char*, long> &_occured;
   std::map<const char*, bool> found;
-  virtual void visit(struct prod *p);
+  void visit(struct prod *p) override;
   impedance_visitor(std::map<const char*, long> &occured);
-  virtual ~impedance_visitor();
+  ~impedance_visitor() override;
 };
 
 struct impedance_feedback : logger {
-  virtual void executed(prod &query);
-  virtual void error(prod &query, const dut::failure &e);
+  void executed(prod &query) override;
+  void error(prod &query, const dut::failure &e) override;
   impedance_feedback() { }
 };
 

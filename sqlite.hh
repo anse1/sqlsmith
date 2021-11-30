@@ -23,13 +23,13 @@ struct sqlite_connection {
 
 struct schema_sqlite : schema, sqlite_connection {
   schema_sqlite(std::string &conninfo, bool no_catalog);
-  virtual std::string quote_name(const std::string &id) {
+  std::string quote_name(const std::string &id) override {
     return id;
   }
 };
 
 struct dut_sqlite : dut_base, sqlite_connection {
-  virtual void test(const std::string &stmt);
+  void test(const std::string &stmt) override;
   dut_sqlite(std::string &conninfo);
 };
 

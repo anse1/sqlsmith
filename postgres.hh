@@ -33,7 +33,7 @@ struct pg_type : sqltype {
     : sqltype(name), oid_(oid), typdelim_(typdelim), typrelid_(typrelid),
       typelem_(typelem), typarray_(typarray), typtype_(typtype) { }
 
-  virtual bool consistent(struct sqltype *rvalue);
+  bool consistent(struct sqltype *rvalue) override;
   bool consistent_(sqltype *rvalue);
 };
 
@@ -43,7 +43,7 @@ struct schema_pqxx : public schema {
   map<OID, pg_type*> oid2type;
   map<string, pg_type*> name2type;
 
-  virtual std::string quote_name(const std::string &id) {
+  std::string quote_name(const std::string &id) override {
     return c.quote_name(id);
   }
   schema_pqxx(std::string &conninfo, bool no_catalog);
