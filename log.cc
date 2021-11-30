@@ -61,9 +61,9 @@ void stats_collecting_logger::generated(prod &query)
   stats_visitor v;
   query.accept(&v);
 
-  sum_nodes += v.nodes;
-  sum_height += v.maxlevel;
-  sum_retries += v.retries;
+  sum_nodes += static_cast<float>(v.nodes);
+  sum_height += static_cast<float>(v.maxlevel);
+  sum_retries += static_cast<float>(v.retries);
 }
 
 void cerr_logger::report()
