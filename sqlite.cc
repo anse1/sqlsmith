@@ -15,7 +15,7 @@ using boost::regex_match;
 
 using namespace std;
 
-static regex e_syntax("near \".*\": syntax error");
+static regex e_syntax(R"(near ".*": syntax error)");
 static regex e_user_abort("callback requested query abort");
   
 extern "C"  {

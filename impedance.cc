@@ -71,12 +71,12 @@ void report(std::ostream &out)
   for (auto pair = occurances_in_failed_query.begin();
        pair != occurances_in_failed_query.end();
        ++pair) {
-    out << "{\"prod\": \"" << pretty_type(pair->first) << "\","
-	<< "\"bad\": " << pair->second << ", "
-	<< "\"ok\": " << occurances_in_ok_query[pair->first] << ", "
-	<< "\"limited\": " << limited[pair->first] << ", "
-	<< "\"failed\": " << failed[pair->first] << ", "
-	<< "\"retries\": " << retries[pair->first] << "} ";
+    out << R"({"prod": ")" << pretty_type(pair->first) << R"(",)"
+	<< R"("bad": )" << pair->second << ", "
+	<< R"("ok": )" << occurances_in_ok_query[pair->first] << ", "
+	<< R"("limited": )" << limited[pair->first] << ", "
+	<< R"("failed": )" << failed[pair->first] << ", "
+	<< R"("retries": )" << retries[pair->first] << "} ";
 
     if (next(pair) != occurances_in_failed_query.end())
       out << "," << endl;

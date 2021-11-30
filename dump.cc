@@ -14,34 +14,34 @@ std::string graphml_dumper::id(struct prod *p)
 }
 
 graphml_dumper::graphml_dumper(ostream &out)
-  : o(out)
+    : o(out)
 {
-  o << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << endl <<
-    "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" " <<
-    "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " <<
-    "xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns " <<
-    "http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">" << endl;
+  o << R"(<?xml version="1.0" encoding="UTF-8"?>)" << endl <<
+    R"(<graphml xmlns="http://graphml.graphdrawing.org/xmlns" )" <<
+    R"(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" )" <<
+    R"(xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns )" <<
+    R"(http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">)" << endl;
 
-  o << "<key id=\"retries\" for=\"node\" "
-            "attr.name=\"retries\" attr.type=\"double\" />" << endl;
-  o << "<key id=\"label\" for=\"node\" "
-            "attr.name=\"label\" attr.type=\"string\" />" << endl;
-  o << "<key id=\"scope\" for=\"node\" "
-            "attr.name=\"scope\" attr.type=\"string\" />" << endl;
+  o << R"(<key id="retries" for="node" )"
+       R"(attr.name="retries" attr.type="double" />)" << endl;
+  o << R"(<key id="label" for="node" )"
+       R"(attr.name="label" attr.type="string" />)" << endl;
+  o << R"(<key id="scope" for="node" )"
+       R"(attr.name="scope" attr.type="string" />)" << endl;
 
-  o << "<graph id=\"ast\" edgedefault=\"directed\">" << endl;
-  
+  o << R"(<graph id="ast" edgedefault="directed">)" << endl;
+
 }
 
 void graphml_dumper::visit(struct prod *p)
 {
-  o << "<node id=\"" << id(p) <<  "\">";
-  o << "<data key=\"retries\">" << p->retries << "</data>";
-  o << "<data key=\"label\">" << pretty_type(p) << "</data>";
-  o << "<data key=\"scope\">" << p->scope << "</data>";
+  o << R"(<node id=")" << id(p) << R"(">)";
+  o << R"(<data key="retries">)" << p->retries << "</data>";
+  o << R"(<data key="label">)" << pretty_type(p) << "</data>";
+  o << R"(<data key="scope">)" << p->scope << "</data>";
   o << "</node>" << endl;
   if (p->pprod) {
-    o << "<edge source=\"" << id(p) << "\" target=\"" << id(p->pprod) << "\"/>";
+    o << R"(<edge source=")" << id(p) << R"(" target=")" << id(p->pprod) << R"("/>)";
   }
   o << endl;
 }
