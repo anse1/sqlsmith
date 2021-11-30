@@ -14,7 +14,7 @@ struct graphml_dumper : prod_visitor {
   std::ostream &o;
   virtual void visit(struct prod *p);
   graphml_dumper(std::ostream &out);
-  std::string id(prod *p);
+  static std::string id(prod *p);
   std::string type(struct prod *p);
   virtual ~graphml_dumper();
 };
