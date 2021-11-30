@@ -46,7 +46,7 @@ struct schema {
   
   virtual std::string quote_name(const std::string &id) = 0;
   
-  void summary() {
+  void summary() const {
     std::cout << "Found " << tables.size() <<
       " user table(s) in information schema." << std::endl;
   }
