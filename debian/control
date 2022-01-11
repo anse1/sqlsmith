@@ -1,0 +1,34 @@
+Source: sqlsmith
+Section: database
+Priority: optional
+Maintainer: Andreas Seltenreich <seltenreich@gmx.de>
+Uploaders: Christoph Berg <myon@debian.org>
+Standards-Version: 4.6.0
+Homepage: https://github.com/anse1/sqlsmith
+Vcs-Browser: https://github.com/anse1/sqlsmith
+Vcs-Git: https://github.com/anse1/sqlsmith.git -b debian
+Build-Depends:
+ autoconf,
+ autoconf-archive,
+ debhelper-compat (= 12),
+ libboost-regex-dev,
+ libpq-dev,
+ libpqxx-dev (>= 4.0),
+ libsqlite3-dev,
+ libssl-dev,
+
+Package: sqlsmith
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: random SQL query generator
+ SQLsmith is a random SQL query generator. Its paragon is Csmith, which proved
+ valuable for quality assurance in C compilers.
+ .
+ It currently supports generating queries for PostgreSQL 9.5+ and sqlite3.
+ .
+ Besides PostgreSQL developers, users developing extensions of PostgreSQL might
+ also be interested in exposing their code to SQLsmith's random workload.
+ .
+ During its prototyping stage, it already found about thirty bugs in
+ PostgreSQL alphas, betas and releases, including security vulnerabilities in
+ released versions.

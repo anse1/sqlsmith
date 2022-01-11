@@ -1,0 +1,35 @@
+sqlsmith (1.2.1-2) unstable; urgency=medium
+
+  [ Debian Janitor ]
+  * Use secure copyright file specification URI.
+  * Bump debhelper from deprecated 9 to 12.
+  * Set debhelper-compat version in Build-Depends.
+  * Set upstream metadata fields: Bug-Database, Bug-Submit, Repository,
+    Repository-Browse.
+
+  [ Christoph Berg ]
+  * Support PG14's multirange types.
+  * B-D on libssl-dev.
+
+ -- Christoph Berg <myon@debian.org>  Wed, 06 Oct 2021 17:14:29 +0200
+
+sqlsmith (1.2.1-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- Christoph Berg <myon@debian.org>  Fri, 04 May 2018 19:37:14 +0200
+
+sqlsmith (1.2-1) unstable; urgency=medium
+
+  * SQLsmith v1.2 is released.
+  * Adds support for testing sqlite3.
+  * Built without support for MonetDB since the latter is not packaged
+    yet.
+
+ -- Andreas Seltenreich <seltenreich@gmx.de>  Thu, 03 May 2018 08:46:07 +0200
+
+sqlsmith (1.0-1) unstable; urgency=medium
+
+  * Initial release.
+
+ -- Christoph Berg <myon@debian.org>  Mon, 30 May 2016 10:17:16 +0200

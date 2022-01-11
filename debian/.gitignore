@@ -1,0 +1,4 @@
+autoreconf.*
+*debhelper*
+files
+*.substvars
