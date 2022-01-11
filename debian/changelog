@@ -1,3 +1,9 @@
+sqlsmith (1.3-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Christoph Berg <myon@debian.org>  Tue, 11 Jan 2022 11:20:16 +0100
+
 sqlsmith (1.2.1-2) unstable; urgency=medium
 
   [ Debian Janitor ]
