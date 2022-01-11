@@ -28,7 +28,7 @@ AM_CPPFLAGS = $(BOOST_CPPFLAGS) $(LIBPQXX_CFLAGS) $(POSTGRESQL_CPPFLAGS) $(MONET
 EXTRA_DIST = gitrev.h dump.hh expr.hh grammar.hh log.hh prod.hh		\
     random.hh relmodel.hh schema.hh impedance.hh known.txt known_re.txt log.sql	\
     README.org TODO.org ast.png logo.png dump.xsl util.hh sqlite.hh	\
-    dut.hh postgres.hh monetdb.hh log-v1.0-to-v1.2.sql
+    dut.hh postgres.hh monetdb.hh log-v1.0-to-v1.2.sql boring_sqlstates.txt
 
 gitrev.h: $(HEADERS) $(SOURCES)
 	-if git describe --dirty --tags --always > /dev/null ; then \
