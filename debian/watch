@@ -1,2 +1,2 @@
-version=3
-https://github.com/anse1/sqlsmith/releases .*/sqlsmith-(.*).tar.gz
+version=4
+https://github.com/anse1/sqlsmith/tags .*/v(.*).tar.gz
