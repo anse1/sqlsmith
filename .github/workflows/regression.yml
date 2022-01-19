@@ -1,0 +1,38 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: sh
+
+    strategy:
+      matrix:
+        configure:
+          - autoconf
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+
+    - name: install build dependencies
+      run: |
+        sudo apt-get build-dep -y .
+        sudo apt-get install -y postgresql
+
+    - name: configure
+      run: |
+        autoreconf -i
+        ./configure
+
+    - name: build
+      run: |
+        make
+
+    - name: test
+      run: |
+        pg_virtualenv ./sqlsmith --max-queries=100 --verbose
