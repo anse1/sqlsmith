@@ -47,6 +47,8 @@ bool pg_type::consistent(sqltype *rvalue)
       return t->typelem_ == InvalidOid;
     } else if (name == "anyrange") {
       return t->typtype_ == 'r';
+    } else if (name == "anymultirange") {
+      return t->typtype_ == 'm';
     } else if (name == "record") {
       return t->typtype_ == 'c';
     } else if (name == "cstring") {
