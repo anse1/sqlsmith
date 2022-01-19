@@ -112,7 +112,9 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 
   cerr << "Loading types...";
 
-  r = w.exec("select quote_ident(typname), oid, typdelim, typrelid, typelem, typarray, typtype "
+  r = w.exec("select case typnamespace when 'pg_catalog'::regnamespace then quote_ident(typname) "
+	     "else format('%I.%I', typnamespace::regnamespace, typname) end, "
+	     "oid, typdelim, typrelid, typelem, typarray, typtype "
 	     "from pg_type ");
   
   for (auto row = r.begin(); row != r.end(); ++row) {
