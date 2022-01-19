@@ -34,15 +34,15 @@ bool pg_type::consistent(sqltype *rvalue)
   case 'e': /* enum */
     return this == t;
     
-  case 'p': /* pseudo type */
+  case 'p': /* pseudo type: accept any concrete matching type */
     if (name == "anyarray") {
       return t->typelem_ != InvalidOid;
     } else if (name == "anynonarray") {
       return t->typelem_ == InvalidOid;
     } else if(name == "anyenum") {
       return t->typtype_ == 'e';
-    } else if (name == "any") {
-      return true;
+    } else if (name == "\"any\"") { /* as quoted by quote_ident() */
+      return t->typtype_ != 'p'; /* any non-pseudo type */
     } else if (name == "anyelement") {
       return t->typelem_ == InvalidOid;
     } else if (name == "anyrange") {
