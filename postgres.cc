@@ -35,19 +35,19 @@ bool pg_type::consistent(sqltype *rvalue)
     return this == t;
     
   case 'p': /* pseudo type: accept any concrete matching type */
-    if (name == "anyarray") {
+    if (name == "anyarray" || name == "anycompatiblearray") {
       return t->typelem_ != InvalidOid;
-    } else if (name == "anynonarray") {
+    } else if (name == "anynonarray" || name == "anycompatiblenonarray") {
       return t->typelem_ == InvalidOid;
     } else if(name == "anyenum") {
       return t->typtype_ == 'e';
-    } else if (name == "\"any\"") { /* as quoted by quote_ident() */
+    } else if (name == "\"any\"" || name == "anycompatible") { /* as quoted by quote_ident() */
       return t->typtype_ != 'p'; /* any non-pseudo type */
     } else if (name == "anyelement") {
       return t->typelem_ == InvalidOid;
-    } else if (name == "anyrange") {
+    } else if (name == "anyrange" || name == "anycompatiblerange") {
       return t->typtype_ == 'r';
-    } else if (name == "anymultirange") {
+    } else if (name == "anymultirange" || name == "anycompatiblemultirange") {
       return t->typtype_ == 'm';
     } else if (name == "record") {
       return t->typtype_ == 'c';
