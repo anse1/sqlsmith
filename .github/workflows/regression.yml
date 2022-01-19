@@ -14,6 +14,7 @@ jobs:
       matrix:
         configure:
           - autoconf
+          - cmake
 
     steps:
     - name: checkout
@@ -26,13 +27,22 @@ jobs:
 
     - name: configure
       run: |
-        autoreconf -i
-        ./configure
+        mkdir build
+        case ${{ matrix.configure }} in
+          autoconf)
+            autoreconf -i
+            cd build && ../configure
+            ;;
+          cmake)
+            sudo apt-get install -y cmake
+            cd build && cmake ..
+            ;;
+        esac
 
     - name: build
       run: |
-        make
+        make -C build
 
     - name: test
       run: |
-        pg_virtualenv ./sqlsmith --max-queries=100 --verbose
+        pg_virtualenv build/sqlsmith --max-queries=100 --verbose
