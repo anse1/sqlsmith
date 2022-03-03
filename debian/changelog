@@ -1,8 +1,9 @@
-sqlsmith (1.3-2) UNRELEASED; urgency=medium
+sqlsmith (1.4-1) unstable; urgency=medium
 
+  * New upstream release.
   * Remove libboost-regex-dev B-D, not required with modern g++.
 
- -- Christoph Berg <myon@debian.org>  Wed, 19 Jan 2022 12:50:13 +0100
+ -- Christoph Berg <myon@debian.org>  Thu, 03 Mar 2022 09:33:23 +0100
 
 sqlsmith (1.3-1) unstable; urgency=medium
 
