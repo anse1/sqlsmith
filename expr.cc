@@ -145,7 +145,7 @@ comparison_op::comparison_op(prod *p) : bool_binop(p)
   auto &idx = p->scope->schema->operators_returning_type;
 
   auto iters = idx.equal_range(scope->schema->booltype);
-  oper = random_pick<>(iters)->second;
+  oper = random_pick(random_pick(iters)->second);
 
   lhs = value_expr::factory(this, oper->left);
   rhs = value_expr::factory(this, oper->right);
@@ -221,10 +221,10 @@ funcall::funcall(prod *p, sqltype *type_constraint, bool agg)
  retry:
   
   if (!type_constraint) {
-    proc = random_pick(idx.begin(), idx.end())->second;
+    proc = random_pick(random_pick(idx.begin(), idx.end())->second);
   } else {
     auto iters = idx.equal_range(type_constraint);
-    proc = random_pick<>(iters)->second;
+    proc = random_pick(random_pick(iters)->second);
     if (proc && !type_constraint->consistent(proc->restype)) {
       retry();
       goto retry;
@@ -283,7 +283,7 @@ atomic_subselect::atomic_subselect(prod *p, sqltype *type_constraint)
     if (type_constraint) {
       auto idx = scope->schema->aggregates_returning_type;
       auto iters = idx.equal_range(type_constraint);
-      agg = random_pick<>(iters)->second;
+      agg = random_pick(random_pick(iters)->second);
     } else {
       agg = &random_pick<>(scope->schema->aggregates);
     }
@@ -299,7 +299,7 @@ atomic_subselect::atomic_subselect(prod *p, sqltype *type_constraint)
     auto idx = scope->schema->tables_with_columns_of_type;
     col = 0;
     auto iters = idx.equal_range(type_constraint);
-    tab = random_pick<>(iters)->second;
+    tab = random_pick(random_pick(iters)->second);
 
     for (auto &cand : tab->columns()) {
       if (type_constraint->consistent(cand.type)) {
