@@ -12,7 +12,7 @@ Build-Depends:
  autoconf-archive,
  debhelper-compat (= 12),
  libpq-dev,
- libpqxx-dev (>= 4.0),
+ libpqxx-dev,
  libsqlite3-dev,
  libssl-dev,
 
