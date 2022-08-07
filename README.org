@@ -18,7 +18,7 @@ workload.
 
 Since 2015, it found 118 bugs in alphas, betas and releases in the
 aforementioned products, including security vulnerabilities in
-released versions.  Addtional bugs were squashed in extensions and
+released versions.  Additional bugs were squashed in extensions and
 libraries such as orafce and glibc.
 
     https://github.com/anse1/sqlsmith/wiki#score-list
