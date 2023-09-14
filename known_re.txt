@@ -79,6 +79,7 @@
 ^ERROR:  dimension mismatch in
 ^ERROR:  division by zero-valued unit:
 ^ERROR:  duplicate JSON key "
+^ERROR:  duplicate JSON object key value
 ^ERROR:  duplicate key value violates unique constraint
 ^ERROR:  encoding conversion from 
 ^ERROR:  foreign-data wrapper "
