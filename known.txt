@@ -13,6 +13,7 @@ ERROR:  INSERT with ON CONFLICT clause cannot be used with table that has INSERT
 ERROR:  Illegal argument to function
 ERROR:  LIKE pattern must not end with escape character
 ERROR:  Length not in range
+ERROR:  MERGE command cannot affect row a second time
 ERROR:  NOTIFY is not allowed in a non-volatile function
 ERROR:  NULL elements in initial value not implemented yet.
 ERROR:  NULL input values not supported
@@ -95,6 +96,7 @@ ERROR:  cannot accept a value of type language_handler
 ERROR:  cannot accumulate arrays of different dimensionality
 ERROR:  cannot accumulate empty arrays
 ERROR:  cannot accumulate null arrays
+ERROR:  cannot advance OID counter anymore
 ERROR:  cannot assign TransactionIds during recovery
 ERROR:  cannot cast type name to anyarray
 ERROR:  cannot cast type point to anyarray
@@ -173,6 +175,7 @@ ERROR:  constraint in ON CONFLICT clause has no associated index
 ERROR:  control reached end of function without RETURN
 ERROR:  could not determine polymorphic type because input has type "unknown"
 ERROR:  could not determine which collation to use for string comparison
+ERROR:  could not establish connection
 ERROR:  could not find array type for data type anyarray
 ERROR:  could not find array type for data type anyelement
 ERROR:  could not find array type for data type anynonarray
@@ -362,6 +365,7 @@ ERROR:  distance in phrase operator should be non-negative and less than 16384
 ERROR:  division by zero
 ERROR:  division of unit by zero
 ERROR:  domain pos_int does not allow null values
+ERROR:  duplicate JSON object key
 ERROR:  end of function
 ERROR:  exclusive backup currently starting
 ERROR:  exclusive backup not in progress
@@ -433,6 +437,7 @@ ERROR:  invalid regular expression: parentheses () not balanced
 ERROR:  invalid regular expression: quantifier operand invalid
 ERROR:  invalid regular expression: regular expression is too complex
 ERROR:  invalid salt
+ERROR:  label string is too long
 ERROR:  lastval is not yet defined in this session
 ERROR:  levenshtein argument exceeds maximum length of 255 characters
 ERROR:  lexeme array may not contain nulls
@@ -580,6 +585,7 @@ ERROR:  stack depth limit exceeded
 ERROR:  syntax error at end of input
 ERROR:  syntax error at or near "ARRAY"
 ERROR:  syntax error at or near "USER"
+ERROR:  t_bits string must not be NULL
 ERROR:  test_fdw_handler is not implemented
 ERROR:  timestamp cannot be NaN
 ERROR:  timestamp out of range
@@ -591,6 +597,7 @@ ERROR:  type planets is not composite
 ERROR:  unexpected dtype 7 while parsing reltime "invalid"
 ERROR:  unexpected duplicate for tablespace 0, relfilenode 0
 ERROR:  unexpected end of flag array
+ERROR:  unexpected end of tuple data
 ERROR:  unrecognized privilege type: "
 ERROR:  unrecognized storage manager name
 ERROR:  unsupported XML feature

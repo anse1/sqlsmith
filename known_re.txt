@@ -78,6 +78,7 @@
 ^ERROR:  date/time field value out of range: 
 ^ERROR:  dimension mismatch in
 ^ERROR:  division by zero-valued unit:
+^ERROR:  duplicate JSON key "
 ^ERROR:  duplicate key value violates unique constraint
 ^ERROR:  encoding conversion from 
 ^ERROR:  foreign-data wrapper "
@@ -157,6 +158,7 @@
 ^ERROR:  syntax error in tsquery: 
 ^ERROR:  syntax error in tsvector: "
 ^ERROR:  system "[^"]+" does not exist
+^ERROR:  t_bits string is expected to be 
 ^ERROR:  tablespace .*does not exist
 ^ERROR:  text search configuration.*does not exist
 ^ERROR:  text search dictionary .* does not exist
@@ -170,6 +172,7 @@
 ^ERROR:  type ".*" does not exist
 ^ERROR:  type .* is not a domain
 ^ERROR:  type \\d+ is not a range type
+^ERROR:  unexpected length of t_bits string: 
 ^ERROR:  unit ".*" is not known
 ^ERROR:  unrecognized configuration parameter
 ^ERROR:  unrecognized conversion type specifier 
