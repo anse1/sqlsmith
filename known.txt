@@ -146,6 +146,7 @@ ERROR:  cannot open CREATE INDEX query as cursor
 ERROR:  cannot open CREATE RULE query as cursor
 ERROR:  cannot open DECLARE CURSOR query as cursor
 ERROR:  cannot open INSERT query as cursor
+ERROR:  cannot open MERGE query as cursor
 ERROR:  cannot open ROLLBACK query as cursor
 ERROR:  cannot open multi-query plan as cursor
 ERROR:  cannot perform UPDATE RETURNING on relation "rules_src"
@@ -367,6 +368,7 @@ ERROR:  division of unit by zero
 ERROR:  domain pos_int does not allow null values
 ERROR:  duplicate JSON object key
 ERROR:  end of function
+ERROR:  end of tuple reached without looking at all its data
 ERROR:  exclusive backup currently starting
 ERROR:  exclusive backup not in progress
 ERROR:  expected 2-element int8 array
@@ -467,6 +469,7 @@ ERROR:  missing support function 1(35074,35074) in opfamily 1976
 ERROR:  missing support function 1(35076,35076) in opfamily 1976
 ERROR:  multi-dimensional array not supported
 ERROR:  multiple decimal points
+ERROR:  multirange_intersect_agg_transfn called in non-aggregate context
 ERROR:  must be a member of the role whose process is being terminated
 ERROR:  must be a member of the role whose process is being terminated or member of pg_signal_backend
 ERROR:  must be a member of the role whose query is being canceled
@@ -482,6 +485,7 @@ ERROR:  non-exclusive backup in progress)
 ERROR:  null array element not allowed in this context
 ERROR:  null character not permitted
 ERROR:  null value not allowed for object key
+ERROR:  number of attributes in tuple header is greater than number of attributes in tuple descriptor
 ERROR:  numeric field overflow
 ERROR:  only superuser may access generic file functions
 ERROR:  only superusers can query or manipulate replication origins
@@ -591,6 +595,7 @@ ERROR:  timestamp cannot be NaN
 ERROR:  timestamp out of range
 ERROR:  too many points requested
 ERROR:  ts_rewrite query must return two tsquery columns
+ERROR:  tuple to be deleted was already modified by an operation triggered by the current command
 ERROR:  type bigint is not composite
 ERROR:  type matched to anyenum is not an enum type: anyenum
 ERROR:  type planets is not composite
@@ -600,6 +605,7 @@ ERROR:  unexpected end of flag array
 ERROR:  unexpected end of tuple data
 ERROR:  unrecognized privilege type: "
 ERROR:  unrecognized storage manager name
+ERROR:  unsupported Unicode escape sequence
 ERROR:  unsupported XML feature
 ERROR:  update or delete on table "clstr_tst_s" violates foreign key constraint "clstr_tst_con" on table "clstr_tst"
 ERROR:  update or delete on table "customer" violates foreign key constraint "credit_card_cid_fkey" on table "credit_card"
