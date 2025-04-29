@@ -61,7 +61,7 @@ void case_expr::out(std::ostream &out)
 {
   out << "case when " << *condition;
   out << " then " << *true_expr;
-  out << " else " << *true_expr;
+  out << " else " << *false_expr;
   out << " end";
   indent(out);
 }
