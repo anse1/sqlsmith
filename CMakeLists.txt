@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(SQLsmith LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 include(FeatureTests)
@@ -26,9 +26,15 @@ if (NOT USE_UPSTREAM_LIBPQXX)
     # This check is done by the CMakeLists.txt of the libpqxx project otherwise
     find_package(PQXX REQUIRED)
 
-    if (PQXX_VERSION GREATER 7.0)
+    if (PQXX_VERSION VERSION_GREATER 7.0 AND PQXX_VERSION VERSION_LESS 8.0)
         set(HAVE_LIBPQXX7 TRUE)
-    endif (PQXX_VERSION GREATER 7.0)
+        set_target_properties(sqlsmith PROPERTIES CXX_STANDARD 17)
+    endif ()
+
+    if (PQXX_VERSION VERSION_GREATER 8.0)
+        set(HAVE_LIBPQXX8 TRUE)
+        set_target_properties(sqlsmith PROPERTIES CXX_STANDARD 20)
+    endif()
 
     target_link_libraries(sqlsmith PQXX::PQXX)
 else (NOT USE_UPSTREAM_LIBPQXX)

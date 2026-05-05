@@ -146,7 +146,7 @@ pqxx_logger::pqxx_logger(std::string target, std::string conninfo, struct schema
   ostringstream seed;
   seed << smith::rng;
 
-#ifdef HAVE_LIBPQXX7
+#if defined(HAVE_LIBPQXX7) || defined(HAVE_LIBPQXX8)
   result r = w.exec_prepared("instance", GITREV, target, hostname, s.version, seed.str());
 #else
   result r = w.prepared("instance")(GITREV)(target)(hostname)(s.version)(seed.str()).exec();
@@ -173,7 +173,7 @@ void pqxx_logger::error(prod &query, const dut::failure &e)
   work w(*c);
   ostringstream s;
   s << query;
-#ifdef HAVE_LIBPQXX7
+#if defined(HAVE_LIBPQXX7) || defined(HAVE_LIBPQXX8)
   w.exec_prepared("error", e.what(), s.str(), e.sqlstate);
 #else
   w.prepared("error")(e.what())(s.str())(e.sqlstate).exec();
@@ -188,7 +188,7 @@ void pqxx_logger::generated(prod &query)
     work w(*c);
     ostringstream s;
     impedance::report(s);
-#ifdef HAVE_LIBPQXX7
+#if defined(HAVE_LIBPQXX7) || defined(HAVE_LIBPQXX8)
     w.exec_prepared("stat", queries, sum_height/queries, sum_nodes/queries, sum_retries/queries, s.str());
 #else
     w.prepared("stat")(queries)(sum_height/queries)(sum_nodes/queries)(sum_retries/queries)(s.str()).exec();

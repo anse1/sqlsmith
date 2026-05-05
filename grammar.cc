@@ -82,7 +82,7 @@ table_subquery::table_subquery(prod *p, bool lateral)
   : table_ref(p), is_lateral(lateral) {
   query = make_shared<query_spec>(this, scope, lateral);
   string alias = scope->stmt_uid("subq");
-  relation *aliased_rel = &query->select_list->derived_table;
+  auto *aliased_rel = &query->select_list->derived_table;
   refs.push_back(make_shared<aliased_relation>(alias, aliased_rel));
 }
 
@@ -503,7 +503,7 @@ common_table_expression::common_table_expression(prod *parent, struct scope *s)
     shared_ptr<query_spec> query = make_shared<query_spec>(this, s);
     with_queries.push_back(query);
     string alias = scope->stmt_uid("jennifer");
-    relation *relation = &query->select_list->derived_table;
+    auto *relation = &query->select_list->derived_table;
     auto aliased_rel = make_shared<aliased_relation>(alias, relation);
     refs.push_back(aliased_rel);
     scope->tables.push_back(&*aliased_rel);

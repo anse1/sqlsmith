@@ -73,7 +73,7 @@ dut_pqxx::dut_pqxx(std::string conninfo)
 void dut_pqxx::test(const std::string &stmt)
 {
   try {
-#ifndef HAVE_LIBPQXX7
+#if !defined(HAVE_LIBPQXX7) && !defined(HAVE_LIBPQXX8)
     if(!c.is_open())
        c.activate();
 #endif
@@ -120,6 +120,16 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 	     "from pg_type ");
   
   for (auto row = r.begin(); row != r.end(); ++row) {
+#ifdef HAVE_LIBPQXX8
+    pqxx::row_ref row_ref = row[0];
+    string name(row_ref[0].as<string>());
+    OID oid(row_ref[1].as<OID>());
+    string typdelim(row_ref[2].as<string>());
+    OID typrelid(row_ref[3].as<OID>());
+    OID typelem(row_ref[4].as<OID>());
+    OID typarray(row_ref[5].as<OID>());
+    string typtype(row_ref[6].as<string>());
+#else
     string name(row[0].as<string>());
     OID oid(row[1].as<OID>());
     string typdelim(row[2].as<string>());
@@ -127,6 +137,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
     OID typelem(row[4].as<OID>());
     OID typarray(row[5].as<OID>());
     string typtype(row[6].as<string>());
+#endif
     //       if (schema == "pg_catalog")
     // 	continue;
     //       if (schema == "information_schema")
@@ -154,14 +165,26 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
 	     "from information_schema.tables");
 	     
   for (auto row = r.begin(); row != r.end(); ++row) {
+#ifdef HAVE_LIBPQXX8
+    pqxx::row_ref row_ref = row[0];
+    string schema(row_ref[1].as<string>());
+    string insertable(row_ref[2].as<string>());
+    string table_type(row_ref[3].as<string>());
+#else
     string schema(row[1].as<string>());
     string insertable(row[2].as<string>());
     string table_type(row[3].as<string>());
+#endif
 
 	if (no_catalog && ((schema == "pg_catalog") || (schema == "information_schema")))
 		continue;
       
-    tables.push_back(table(row[0].as<string>(),
+    tables.push_back(
+#ifdef HAVE_LIBPQXX8
+			   table(row[0][0].as<string>(),
+#else
+			   table(row[0].as<string>(),
+#endif
 			   schema,
 			   ((insertable == "YES") ? true : false),
 			   ((table_type == "BASE TABLE") ? true : false)));
@@ -288,7 +311,7 @@ schema_pqxx::schema_pqxx(std::string &conninfo, bool no_catalog) : c(conninfo)
     }
   }
   cerr << "done." << endl;
-#ifdef HAVE_LIBPQXX7
+#if defined(HAVE_LIBPQXX7) || defined(HAVE_LIBPQXX8)
   c.close();
 #else
   c.disconnect();
