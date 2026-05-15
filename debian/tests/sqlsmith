@@ -1,3 +1,0 @@
-#!/bin/sh
-
-pg_virtualenv sqlsmith --max-queries=100 --verbose
