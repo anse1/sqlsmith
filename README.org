@@ -162,8 +162,9 @@ contents of the tables known and known_re.  I periodically COPY my
 filter tables for testing PostgreSQL into the files [[./known_re.txt]] and
 [[./known.txt]] to serve as a starting point.
 
-** Resources
+** Links
 
+- [[https://github.com/credativ/sqlreduce][SQLreduce]]
 - [[https://www.postgresql.eu/events/pgconfeu2018/sessions/session/2221/slides/145/sqlsmith-talk.pdf][Slides from PGConf.EU 2018]]
 - [[https://anse1.github.io/sqlsmith-doc/structsqltype.html][Doxygen output for SQLsmith]]
 
