@@ -23,9 +23,9 @@ extern "C"  {
 #include <unistd.h>
 }
 
-extern "C" int my_sqlite3_busy_handler(void *, int)
+extern "C" int my_sqlite3_progress_handler(void *)
 {
-  throw std::runtime_error("sqlite3 timeout");
+     return -1; /* interrupt query */
 }
 
 extern "C" int callback(void *arg, int argc, char **argv, char **azColName)
@@ -96,7 +96,6 @@ schema_sqlite::schema_sqlite(std::string &conninfo, bool no_catalog)
   
   version = "SQLite " SQLITE_VERSION " " SQLITE_SOURCE_ID;
 
-//   sqlite3_busy_handler(db, my_sqlite3_busy_handler, 0);
   cerr << "Loading tables...";
 
   rc = sqlite3_exec(db, query.c_str(), table_callback, (void *)&tables, &zErrMsg);
@@ -273,11 +272,14 @@ extern "C" int dut_callback(void *arg, int argc, char **argv, char **azColName)
 
 void dut_sqlite::test(const std::string &stmt)
 {
-  alarm(6);
+  alarm(60);
   rc = sqlite3_exec(db, stmt.c_str(), dut_callback, 0, &zErrMsg);
+  sqlite3_progress_handler(db, 5000000, my_sqlite3_progress_handler, 0);
   if( rc!=SQLITE_OK ){
     try {
-      if (regex_match(zErrMsg, e_syntax))
+      if (SQLITE_INTERRUPT == rc or SQLITE_ABORT == rc)
+	throw dut::timeout(zErrMsg);
+      else if (regex_match(zErrMsg, e_syntax))
 	throw dut::syntax(zErrMsg);
       else if (regex_match(zErrMsg, e_user_abort)) {
 	sqlite3_free(zErrMsg);
