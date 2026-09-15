@@ -354,7 +354,10 @@ modifying_stmt::modifying_stmt(prod *p, struct scope *s, table *victim)
   scope = &myscope;
   scope->tables = s->tables;
 
-  if (!victim)
+  /* the parameter shadows the member */
+  if (victim)
+    this->victim = victim;
+  else
     pick_victim();
 }
 
