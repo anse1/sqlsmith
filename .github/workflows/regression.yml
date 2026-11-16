@@ -22,7 +22,7 @@ jobs:
 
     - name: install build dependencies
       run: |
-        sudo apt-get build-dep -y .
+        sudo apt-get build-dep -y sqlsmith
         sudo apt-get install -y postgresql
 
     - name: configure
